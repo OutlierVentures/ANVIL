@@ -12,33 +12,46 @@ error_report() {
 }
 trap 'error_report $LINENO' ERR
 
+# Script functions
+get_latest() {
+    if [ ! -d $2 ]; then
+        git clone https://github.com/$1/$2.git --recursive
+        cd $2/
+    else
+        cd $2/
+        git pull
+    fi
+    cd ../
+}
+
 # Install initial requirements
 echo -e "${onyellow}Installing dependencies...$endcolor"
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    yes | sudo apt-get install build-essential python3-dev python3-pip python3-sphinx git protobuf-compiler
+    yes | sudo apt-get install build-essential python3-dev python3-pip git protobuf-compiler
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     xcode-select --version || xcode-select --install
     brew --version || yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    brew install python sphinx-doc protobuf
+    brew install python protobuf
 fi
 pip3 install --upgrade setuptools
 pip3 install wheel
 
 # Install OEFPython and test
 echo -e "${onyellow}Installing OEF components...$endcolor"
-git clone https://github.com/fetchai/oef-sdk-python.git --recursive
-cd oef-sdk-python/
+get_latest fetchai oef-sdk-python
+cd oef-sdk-python
 sudo python3 setup.py install
-echo -e "${onyellow}Testing installation...$endcolor"
+pip3 install -r requirements.txt
 python3 scripts/setup_test.py
+echo -e "${onyellow}Testing installation...$endcolor"
 cp ../tox-fix.ini tox.ini # REMOVE ONCE ISSUE CLOSED
 sudo tox # Run tests
 cd docs
 make html
+cd ../../
 
 # Install OEFCore Docker image for running nodes
 echo -e "${onyellow}Installing Fetch node software...$endcolor"
-cd ../..
-git clone https://github.com/fetchai/oef-core.git --recursive
+get_latest fetchai oef-core
 cd oef-core/
 ./oef-core-image/scripts/docker-build-img.sh
