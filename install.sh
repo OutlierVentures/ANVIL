@@ -39,7 +39,8 @@ pip3 install wheel
 # Install OEFPython and test
 echo -e "${onyellow}Installing OEF components...$endcolor"
 get_latest fetchai oef-sdk-python
-cd oef-sdk-python
+mv oef-sdk-python oefpy
+cd oefpy
 sudo python3 setup.py install
 pip3 install -r requirements.txt
 python3 scripts/setup_test.py
@@ -53,5 +54,8 @@ cd ../../
 # Install OEFCore Docker image for running nodes
 echo -e "${onyellow}Installing Fetch node software...$endcolor"
 get_latest fetchai oef-core
-cd oef-core/
+mv oef-core oefcore
+cd oefcore/
 ./oef-core-image/scripts/docker-build-img.sh
+
+echo -e "${ongreen}ANVIL installed successfully.$endcolor"
