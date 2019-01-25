@@ -34,5 +34,5 @@ echo_description = Description({}, echo_model)
 
 # Register the agent service and start it
 server_agent.register_service(echo_description)
-server_agent.run()
 print('Service ready.')
+server_agent.run() # Blocking
