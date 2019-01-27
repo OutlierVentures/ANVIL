@@ -4,7 +4,13 @@ Agent Negotiation Verifiable Interaction Layer – an app in the Convergence Sta
 
 Bridges Fetch.AI and Sovrin, mitigating risk in AEA FIPA negotiations with verifiable claims.
 
-Requirements: Linux or MacOS, Docker.
+
+## Requirements
+
+Linux or MacOS, Docker.
+
+
+## Setup
 
 Install: `./install.sh`
 
