@@ -27,7 +27,7 @@ get_latest() {
 # Install initial requirements
 echo -e "${onyellow}Installing dependencies...$endcolor"
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    yes | sudo apt-get install build-essential python3-dev python3-pip git protobuf-compiler
+    yes | sudo apt-get install build-essential python3-dev python3-pip python3-sphinx git protobuf-compiler libprotobuf-dev cmake tox
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     xcode-select --version || xcode-select --install
     brew --version || yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
