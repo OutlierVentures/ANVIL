@@ -8,7 +8,7 @@ endcolor="\033[0m"
 # Handle errors
 set -e
 error_report() {
-    echo -e "${onred}Error: install.sh failed on line $1.$endcolor"
+    echo -e "${onred}Error: failed on line $1.$endcolor"
 }
 trap 'error_report $LINENO' ERR
 
