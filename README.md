@@ -20,6 +20,11 @@ Start Fetch node: `./startnode.sh`
 Stop Fetch node: `./stopnode.sh`
 
 
+## Notes for OV Labs
+
+Indy failures may be due to missing environment variables, see install.sh for variables. These may need to be set in `.bashrc` (non-login interactive shells) instead of `.bash_profile`.
+
+
 ## Sovrin credential issuance steps
 
 Actors: User, Establishment (credential issuer e.g. college), Steward
