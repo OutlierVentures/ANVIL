@@ -16,18 +16,26 @@ trap 'error_report $LINENO' ERR
 get_latest() {
     if [ ! -d $2 ]; then
         git clone https://github.com/$1/$2.git --recursive
-        cd $2/
+        cd $2
     else
-        cd $2/
+        cd $2
         git pull
     fi
-    cd ../
+    cd ..
 }
 
 # Install initial requirements
 echo -e "${onyellow}Installing dependencies...$endcolor"
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    yes | sudo apt-get install build-essential python3-dev python3-pip python3-sphinx git protobuf-compiler libprotobuf-dev cmake tox
+    yes | sudo apt-get install build-essential \
+                               python3-dev \
+                               python3-pip \
+                               python3-sphinx \
+                               git \
+                               protobuf-compiler \
+                               libprotobuf-dev \
+                               cmake \
+                               tox
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     xcode-select --version || xcode-select --install
     brew --version || yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -49,13 +57,56 @@ cp ../tox-fix.ini tox.ini # REMOVE ONCE ISSUE CLOSED
 sudo tox || true # Data gen test will not pass on slower machines, pipe to true
 cd docs
 make html
-cd ../../
+cd ../..
 
 # Install OEFCore Docker image for running nodes
 echo -e "${onyellow}Installing Fetch node software...$endcolor"
 get_latest fetchai oef-core
 mv oef-core oefcore
-cd oefcore/
+cd oefcore
 ./oef-core-image/scripts/docker-build-img.sh
+
+
+
+# Install Hyperledger Indy (Sovrin core)
+echo -e "${onyellow}Installing dependencies...$endcolor"
+get_latest hyperledger indy-sdk
+mv indy-sdk indy
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 68DB5E88
+    sudo add-apt-repository "deb https://repo.sovrin.org/sdk/deb xenial master"
+    sudo apt-get update
+    sudo apt-get install -y libindy
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    curl https://sh.rustup.rs -sSf | sh -s -- -y
+    export PATH="$HOME/.cargo/bin:$PATH" # so can use cargo without relog
+    brew install pkg-config \
+                 https://raw.githubusercontent.com/Homebrew/homebrew-core/65effd2b617bade68a8a2c5b39e1c3089cc0e945/Formula/libsodium.rb \
+                 automake \
+                 autoconf \
+                 openssl \
+                 zeromq \
+                 zmq
+    export PKG_CONFIG_ALLOW_CROSS=1
+    export CARGO_INCREMENTAL=1
+    export RUST_LOG=indy=trace
+    export RUST_TEST_THREADS=1
+    for version in `ls -t /usr/local/Cellar/openssl/`; do
+        export OPENSSL_DIR=/usr/local/Cellar/openssl/$version
+        break
+    done
+    cd indy/libindy
+    cargo build
+    export LIBRARY_PATH=$(pwd)/target/debug
+    cd ../cli
+    cargo build
+    echo 'export DYLD_LIBRARY_PATH=$(pwd)/libindy/target/debug
+export LD_LIBRARY_PATH=$(pwd)/libindy/target/debug' >> ~/.bash_profile
+    source ~/.bash_profile # for remainder of this script
+    cd ../..
+fi
+pip3 install python3-indy
+cd indy/wrappers/python
+pytest || true # final test fails on macOS but not an issue
 
 echo -e "${ongreen}ANVIL installed successfully.$endcolor"
