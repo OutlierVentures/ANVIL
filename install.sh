@@ -24,52 +24,69 @@ get_latest() {
     cd ..
 }
 
-# Install initial requirements
-echo -e "${onyellow}Installing dependencies...$endcolor"
+
+##### CORE DEPENDENCIES #####
+
+echo -e "${onyellow}Installing core tools...$endcolor"
+
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     yes | sudo apt-get install build-essential \
-                               python3-dev \
-                               python3-pip \
-                               python3-sphinx \
                                git \
-                               protobuf-compiler \
-                               libprotobuf-dev \
                                cmake \
-                               tox
+                               python3-dev \
+                               python3-pip
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     xcode-select --version || xcode-select --install
     brew --version || yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    brew install python protobuf cmake
+    brew install python cmake
 fi
+
 pip3 install --upgrade setuptools
 pip3 install wheel
 
-# Install OEFPython and test
-echo -e "${onyellow}Installing OEF components...$endcolor"
+
+##### FETCH #####
+
+echo -e "${onyellow}Installing Fetch...$endcolor"
+
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    yes | sudo apt-get install python3-sphinx \
+                               protobuf-compiler \
+                               libprotobuf-dev \
+                               tox
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    brew install protobuf
+fi
+
+# Install OEFPython
 get_latest fetchai oef-sdk-python
 mv oef-sdk-python oefpy
 cd oefpy
 sudo python3 setup.py install
 pip3 install -r requirements.txt
 python3 scripts/setup_test.py
-echo -e "${onyellow}Testing installation...$endcolor"
+
+# Tox environment fix for Python 3.7
 cp ../tox-fix.ini tox.ini # REMOVE ONCE ISSUE CLOSED
-sudo tox || true # Data gen test will not pass on slower machines, pipe to true
+
+# Build docs
 cd docs
 make html
 cd ../..
 
 # Install OEFCore Docker image for running nodes
-echo -e "${onyellow}Installing Fetch node software...$endcolor"
 get_latest fetchai oef-core
 mv oef-core oefcore
 cd oefcore
 ./oef-core-image/scripts/docker-build-img.sh
+cd ..
 
 
+##### SOVRIN #####
 
-# Install Hyperledger Indy (Sovrin core)
-echo -e "${onyellow}Installing dependencies...$endcolor"
+echo -e "${onyellow}Installing Sovrin...$endcolor"
+
+# Install Hyperledger Indy
 get_latest hyperledger indy-sdk
 mv indy-sdk indy
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
@@ -100,13 +117,15 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     export LIBRARY_PATH=$(pwd)/target/debug
     cd ../cli
     cargo build
-    echo 'export DYLD_LIBRARY_PATH=$(pwd)/libindy/target/debug
-export LD_LIBRARY_PATH=$(pwd)/libindy/target/debug' >> ~/.bash_profile
-    source ~/.bash_profile # for remainder of this script
+    echo 'export DYLD_LIBRARY_PATH='$LIBRARY_PATH'
+export LD_LIBRARY_PATH='$LIBRARY_PATH >> ~/.bash_profile 
     cd ../..
 fi
+
+# Install Python wrapper for Hyperledger Indy
 pip3 install python3-indy
-cd indy/wrappers/python
-pytest || true # final test fails on macOS but not an issue
+
+# Testing Sovrin is done once connected to a node pool
+# Hence Sovrin tests are in a separate file
 
 echo -e "${ongreen}ANVIL installed successfully.$endcolor"
