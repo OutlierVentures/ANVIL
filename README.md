@@ -11,18 +11,32 @@ Bridges Fetch.AI and Sovrin, mitigating risk in AEA FIPA negotiations with verif
 - Docker
 
 
-## Setup
+## Basics
 
 Install: `./install.sh`
 
-Start Fetch node: `./startnode.sh`
+Start Fetch node: `./start_fetch_node.sh`
 
-Stop Fetch node: `./stopnode.sh`
+Spin up Sovrin node pool: `./start_sovrin_pool.sh`
+
+Test install (requires a running Sovrin pool): `./test_install.sh`
+
+Stop Fetch node: `./stop_fetch_node.sh`
+
+Stop Sovrin node pool: `./stop_sovrin_pool.sh`
+
+Nodes are currently local.
+
+The Fetch node sits on port 3333.
+
+The Sovrin node pool sits on ports 9701 through 9708.
 
 
 ## Notes for OV Labs
 
 Indy failures may be due to missing environment variables, see install.sh for variables. These may need to be set in `.bashrc` (non-login interactive shells) instead of `.bash_profile`.
+
+Potential improvement: laoding bar for installer.
 
 
 ## Sovrin credential issuance steps
