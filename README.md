@@ -56,6 +56,8 @@ The Sovrin node pool sits on ports 9701 through 9708.
 ### Could-haves
 
 1. Revocation registries (under credential issuance).
+2. Verifiable claim that transaction took place after accepting CFP.
+
 
 ## Issue fixes
 
