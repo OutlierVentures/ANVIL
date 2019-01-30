@@ -61,6 +61,7 @@ The Sovrin node pool sits on ports 9701 through 9708.
 
 Indy failures may be due to missing environment variables, see install.sh for variables. These may need to be set in `.bashrc` (non-login interactive shells) instead of `.bash_profile`.
 
+Indy clashes such as already existsing DIDs and pools may be fixed by deleting the `.indy_client` in your home folder.
 
 
 ## Sovrin credential issuance steps
