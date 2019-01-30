@@ -34,7 +34,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
                                git \
                                cmake \
                                python3-dev \
-                               python3-pip
+                               python3-pip \
+                               python3-pytest
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     xcode-select --version || xcode-select --install
     brew --version || yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
