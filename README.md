@@ -32,11 +32,35 @@ The Fetch node sits on port 3333.
 The Sovrin node pool sits on ports 9701 through 9708.
 
 
-## Notes for OV Labs
+## Roadmap
+
+### Next up
+
+1. Trust anchor onboarding for:
+	1. Credential issuer (Authority).
+	2. Credential user (Alice).
+	3. Credential verifier (Bob).
+2. Credential issuance and verification on Sovrin node pool.
+3. Restructure: Fetch, Sovrin and ANVIL folders (0.0.5).
+4. Map Fetch AEAs to Sovrin trust anchors.
+5. FIPA negotiation between Alice and Bob:
+	1. Alice initiates a Call For Proposal (CFP) pointing to a verifiable claim in a Fetch `DataModel`.
+	2. Bob verifies claim & accepts or rejects the CFP.
+6. CLI interface for FIPA negotiations with verifiable claims (0.1).
+
+### Backlog
+
+1. Split Fetch, Sovrin and ANVIL into separate repositories.
+2. Loading bar for `install.sh`.
+
+### Could-haves
+
+1. Revocation registries (under credential issuance).
+
+## Issue fixes
 
 Indy failures may be due to missing environment variables, see install.sh for variables. These may need to be set in `.bashrc` (non-login interactive shells) instead of `.bash_profile`.
 
-Potential improvement: laoding bar for installer.
 
 
 ## Sovrin credential issuance steps
