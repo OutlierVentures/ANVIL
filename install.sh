@@ -95,6 +95,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     sudo add-apt-repository "deb https://repo.sovrin.org/sdk/deb xenial master"
     sudo apt-get update
     sudo apt-get install -y libindy
+    pip3 install base58
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     curl https://sh.rustup.rs -sSf | sh -s -- -y
     export PATH="$HOME/.cargo/bin:$PATH" # so can use cargo without relog
