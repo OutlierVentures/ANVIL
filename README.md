@@ -31,22 +31,41 @@ The Fetch node sits on port 3333.
 
 The Sovrin node pool sits on ports 9701 through 9708.
 
+### Run Fetch AEAs
+
+Go to the `fetch` folder.
+
+In one terminal window:
+```
+python3 client_agent.py
+```
+
+In another:
+```
+python3 server_agent.py
+```
+
+### Run Sovrin verifiable claims
+
+Go to the `sovrin` folder.
+
+Run:
+```
+python3 claims.py
+```
+
 
 ## Roadmap
 
 ### Next up
 
-1. Trust anchor onboarding for:
-	1. Credential issuer (Authority).
-	2. Credential user (Alice).
-	3. Credential verifier (Bob).
-2. Credential issuance and verification on Sovrin node pool.
-3. Restructure: Fetch, Sovrin and ANVIL folders (0.0.5).
-4. Map Fetch AEAs to Sovrin trust anchors.
-5. FIPA negotiation between Alice and Bob:
+0. Refactor `claims.py` into modular comnponents (half done).
+1. Restructure: Fetch, Sovrin and ANVIL folders (0.0.5).
+2. Map Fetch AEAs to Sovrin trust anchors.
+3. FIPA negotiation between Alice and Bob:
 	1. Alice initiates a Call For Proposal (CFP) pointing to a verifiable claim in a Fetch `DataModel`.
 	2. Bob verifies claim & accepts or rejects the CFP.
-6. CLI interface for FIPA negotiations with verifiable claims (0.1).
+4. CLI interface for FIPA negotiations with verifiable claims (0.1).
 
 ### Backlog
 
