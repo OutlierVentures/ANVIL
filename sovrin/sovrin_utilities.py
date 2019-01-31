@@ -8,9 +8,6 @@ from pathlib import Path
 from tempfile import gettempdir
 
 
-PROTOCOL_VERSION = 2
-
-
 '''
 MAY NOT NEED
 '''
