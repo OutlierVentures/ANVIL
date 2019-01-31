@@ -190,11 +190,10 @@ async def run():
     # Get key for prover's DID
     issuer['alic_key_for_issuer'] = \
         await did.key_for_did(issuer['pool'], issuer['wallet'], issuer['prover_connection_response']['did'])
-    # Authenticate and encrypt
+    # Authenticate, encrypt and send
     issuer['authcrypted_transcript_cred_offer'] = \
         await crypto.auth_crypt(issuer['wallet'], issuer['key_for_prover'], issuer['alic_key_for_issuer'],
                                 issuer['transcript_cred_offer'].encode('utf-8'))
-    # Send to prover
     prover['authcrypted_transcript_cred_offer'] = issuer['authcrypted_transcript_cred_offer']
 
     print('Prover getting credential offer from Issuer...')
@@ -214,10 +213,12 @@ async def run():
         await anoncreds.prover_create_credential_req(prover['wallet'], prover['did_for_issuer'],
                                                      prover['transcript_cred_offer'], prover['issuer_transcript_cred_def'],
                                                      prover['master_secret_id'])
-    # Authenticate and encrypt
+    # Authenticate, encrypt and send
     prover['authcrypted_transcript_cred_request'] = \
         await crypto.auth_crypt(prover['wallet'], prover['key_for_issuer'], prover['issuer_key_for_prover'],
                                 prover['transcript_cred_request'].encode('utf-8'))
+    issuer['authcrypted_transcript_cred_request'] = prover['authcrypted_transcript_cred_request']
+    
     # Specify values of credential request
     prover['transcript_cred_values'] = json.dumps({
         "first_name": {"raw": "Prover", "encoded": "1139481716457488690172217916278103335"},
@@ -228,9 +229,8 @@ async def run():
         "year": {"raw": "2015", "encoded": "2015"},
         "average": {"raw": "5", "encoded": "5"}
     })
-    # Send to issuer
-    issuer['authcrypted_transcript_cred_request'] = prover['authcrypted_transcript_cred_request']
-    
+
+
     print('Issuer creating credential and sending to Prover...')
     # Get request and decrypt
     issuer['prover_transcript_cred_values'] = prover['transcript_cred_values']
@@ -241,7 +241,6 @@ async def run():
         await anoncreds.issuer_create_credential(issuer['wallet'], issuer['transcript_cred_offer'],
                                                  issuer['transcript_cred_request'],
                                                  issuer['prover_transcript_cred_values'], None, None)
-
     # Authenticate, encrypt and send
     issuer['authcrypted_transcript_cred'] = \
         await crypto.auth_crypt(issuer['wallet'], issuer['key_for_prover'], issuer['prover_key_for_issuer'],
@@ -386,7 +385,12 @@ async def run():
                                                  verifier['revoc_regs'])
 
     print('Credential verified.')
-    
+    print(steward.keys())
+    print(issuer.keys())
+    print(prover.keys())
+    print(verifier.keys())
+
+
 
 
 async def onboarding(_from, to):
