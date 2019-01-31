@@ -77,18 +77,14 @@ if args.storage_type:
 
 
 async def run():
-    logger.info("Getting started -> started")
+
 
     pool_ = {
         'name': POOL_NAME
     }
-    logger.info("Open Pool Ledger: {}".format(pool_['name']))
     pool_['genesis_txn_path'] = get_pool_genesis_txn_path(pool_['name'])
     pool_['config'] = json.dumps({"genesis_txn": str(pool_['genesis_txn_path'])})
-
-    # Set protocol version 2 to work with Indy Node 1.4
     await pool.set_protocol_version(PROTOCOL_VERSION)
-
     try:
         await pool.create_pool_ledger_config(pool_['name'], pool_['config'])
     except IndyError as ex:
@@ -98,7 +94,6 @@ async def run():
 
 
     print('Setting up Steward...')
-
     steward = {
         'name': STEWARD_NAME,
         'wallet_config': json.dumps({'id': STEWARD_WALLET_ID}),
@@ -106,22 +101,18 @@ async def run():
         'pool': pool_['handle'],
         'seed': STEWARD_SEED
     }
-
     try:
         await wallet.create_wallet(steward['wallet_config'], steward['wallet_credentials'])
     except IndyError as ex:
         if ex.error_code == ErrorCode.WalletAlreadyExistsError:
             pass
-
     steward['wallet'] = await wallet.open_wallet(steward['wallet_config'], steward['wallet_credentials'])
-
-    logger.info("\"Sovrin Steward\" -> Create and store in Wallet DID from seed")
+    # Generate DID from seed
     steward['did_info'] = json.dumps({'seed': steward['seed']})
     steward['did'], steward['key'] = await did.create_and_store_my_did(steward['wallet'], steward['did_info'])
 
 
     print('Onboarding issuer...')
-
     issuer = {
         'name': ISSUER_NAME,
         'wallet_config': json.dumps({'id': ISSUER_WALLET_ID}),
@@ -131,14 +122,12 @@ async def run():
     }
     steward['did_for_issuer'], steward['key_for_issuer'], issuer['did_for_steward'], issuer['key_for_steward'], _ = \
         await onboarding(steward, issuer)
-
     issuer['did'] = \
         await get_verinym(steward, steward['did_for_issuer'], steward['key_for_issuer'],
                           issuer, issuer['did_for_steward'], issuer['key_for_steward'])
 
 
     print('Onboarding verifier...')
-
     verifier = {
         'name': VERIFIER_NAME,
         'wallet_config': json.dumps({'id': VERIFIER_WALLET_ID}),
@@ -148,14 +137,11 @@ async def run():
     }
     steward['did_for_verifier'], steward['key_for_verifier'], verifier['did_for_steward'], verifier['key_for_steward'], _ = \
         await onboarding(steward, verifier)
-
     verifier['did'] = await get_verinym(steward, steward['did_for_verifier'], steward['key_for_verifier'],
                                     verifier, verifier['did_for_steward'], verifier['key_for_steward'])
 
 
     print('Issuer creating credential schema...')
-
-    logger.info("\"Issuer\" -> Create \"Transcript\" Schema")
     transcript = {
         'name': 'Transcript',
         'version': '1.2',
@@ -165,20 +151,15 @@ async def run():
         await anoncreds.issuer_create_schema(issuer['did'], transcript['name'], transcript['version'],
                                              json.dumps(transcript['attributes']))
     transcript_schema_id = issuer['transcript_schema_id']
-
-    logger.info("\"Issuer\" -> Send \"Transcript\" Schema to Ledger")
+    # Send schema to ledger
     await send_schema(issuer['pool'], issuer['wallet'], issuer['did'], issuer['transcript_schema'])
-
-    time.sleep(1)  # sleep 1 second before getting schema
-
+    
 
     print('Issuer applying credential definition...')
-
-    logger.info("\"Issuer\" -> Get \"Transcript\" Schema from Ledger")
+    time.sleep(1)  # sleep 1 second before getting schema
     (issuer['transcript_schema_id'], issuer['transcript_schema']) = \
         await get_schema(issuer['pool'], issuer['did'], transcript_schema_id)
-
-    logger.info("\"Issuer\" -> Create and store in Wallet \"Issuer Transcript\" Credential Definition")
+    # Create and store credential definition in wallet
     transcript_cred_def = {
         'tag': 'TAG1',
         'type': 'CL',
@@ -189,13 +170,10 @@ async def run():
                                                                issuer['transcript_schema'], transcript_cred_def['tag'],
                                                                transcript_cred_def['type'],
                                                                json.dumps(transcript_cred_def['config']))
-
-    logger.info("\"Issuer\" -> Send  \"Issuer Transcript\" Credential Definition to Ledger")
+    # Send definition to ledger
     await send_cred_def(issuer['pool'], issuer['wallet'], issuer['did'], issuer['transcript_cred_def'])
 
-
     print('Onboarding credential for Prover...')
-
     prover = {
         'name': PROVER_NAME,
         'wallet_config': json.dumps({'id': PROVER_WALLET_ID}),
@@ -207,108 +185,85 @@ async def run():
 
 
     print('Issuer offering credential to Prover...')
-
-    logger.info("\"Issuer\" -> Create \"Transcript\" Credential Offer for Prover")
     issuer['transcript_cred_offer'] = \
         await anoncreds.issuer_create_credential_offer(issuer['wallet'], issuer['transcript_cred_def_id'])
-
-    logger.info("\"Issuer\" -> Get key for Prover did")
+    # Get key for prover's DID
     issuer['alic_key_for_issuer'] = \
         await did.key_for_did(issuer['pool'], issuer['wallet'], issuer['prover_connection_response']['did'])
-
-    logger.info("\"Issuer\" -> Authcrypt \"Transcript\" Credential Offer for Prover")
+    # Authenticate and encrypt
     issuer['authcrypted_transcript_cred_offer'] = \
         await crypto.auth_crypt(issuer['wallet'], issuer['key_for_prover'], issuer['alic_key_for_issuer'],
                                 issuer['transcript_cred_offer'].encode('utf-8'))
-
-
-    print('Prover requesting credential from Issuer...')
-
-    logger.info("\"Issuer\" -> Send authcrypted \"Transcript\" Credential Offer to Prover")
+    # Send to prover
     prover['authcrypted_transcript_cred_offer'] = issuer['authcrypted_transcript_cred_offer']
 
-    logger.info("\"Prover\" -> Authdecrypted \"Transcript\" Credential Offer from Issuer")
+    print('Prover getting credential offer from Issuer...')
+    # Decrypt
     prover['issuer_key_for_prover'], prover['transcript_cred_offer'], authdecrypted_transcript_cred_offer = \
         await auth_decrypt(prover['wallet'], prover['key_for_issuer'], prover['authcrypted_transcript_cred_offer'])
     prover['transcript_schema_id'] = authdecrypted_transcript_cred_offer['schema_id']
     prover['transcript_cred_def_id'] = authdecrypted_transcript_cred_offer['cred_def_id']
-
-    logger.info("\"Prover\" -> Create and store \"Prover\" Master Secret in Wallet")
+    # Prover creates master secret so they can use the credential
     prover['master_secret_id'] = await anoncreds.prover_create_master_secret(prover['wallet'], None)
-
-    logger.info("\"Prover\" -> Get \"Issuer Transcript\" Credential Definition from Ledger")
+    # Get credential definition from ledger
     (prover['issuer_transcript_cred_def_id'], prover['issuer_transcript_cred_def']) = \
         await get_cred_def(prover['pool'], prover['did_for_issuer'], authdecrypted_transcript_cred_offer['cred_def_id'])
 
-    logger.info("\"Prover\" -> Create \"Transcript\" Credential Request for Issuer")
+    print('Prover requesting credential itself...')
     (prover['transcript_cred_request'], prover['transcript_cred_request_metadata']) = \
         await anoncreds.prover_create_credential_req(prover['wallet'], prover['did_for_issuer'],
                                                      prover['transcript_cred_offer'], prover['issuer_transcript_cred_def'],
                                                      prover['master_secret_id'])
-
-    logger.info("\"Prover\" -> Authcrypt \"Transcript\" Credential Request for Issuer")
+    # Authenticate and encrypt
     prover['authcrypted_transcript_cred_request'] = \
         await crypto.auth_crypt(prover['wallet'], prover['key_for_issuer'], prover['issuer_key_for_prover'],
                                 prover['transcript_cred_request'].encode('utf-8'))
-
-    logger.info("\"Prover\" -> Send authcrypted \"Transcript\" Credential Request to Issuer")
+    # Specify values of credential request
     prover['transcript_cred_values'] = json.dumps({
         "first_name": {"raw": "Prover", "encoded": "1139481716457488690172217916278103335"},
-        "last_name": {"raw": "Garcia", "encoded": "5321642780241790123587902456789123452"},
+        "last_name": {"raw": "SecondName", "encoded": "5321642780241790123587902456789123452"},
         "degree": {"raw": "Bachelor of Science, Marketing", "encoded": "12434523576212321"},
         "status": {"raw": "graduated", "encoded": "2213454313412354"},
         "ssn": {"raw": "123-45-6789", "encoded": "3124141231422543541"},
         "year": {"raw": "2015", "encoded": "2015"},
         "average": {"raw": "5", "encoded": "5"}
     })
-
-
-    print('Issuer creating credential and sending to Prover...')
-
+    # Send to issuer
     issuer['authcrypted_transcript_cred_request'] = prover['authcrypted_transcript_cred_request']
+    
+    print('Issuer creating credential and sending to Prover...')
+    # Get request and decrypt
     issuer['prover_transcript_cred_values'] = prover['transcript_cred_values']
-
-    logger.info("\"Issuer\" -> Authdecrypt \"Transcript\" Credential Request from Prover")
     issuer['prover_key_for_issuer'], issuer['transcript_cred_request'], _ = \
         await auth_decrypt(issuer['wallet'], issuer['key_for_prover'], issuer['authcrypted_transcript_cred_request'])
-
-    logger.info("\"Issuer\" -> Create \"Transcript\" Credential for Prover")
-
+    # Create the credential according to the request
     issuer['transcript_cred'], _, _ = \
         await anoncreds.issuer_create_credential(issuer['wallet'], issuer['transcript_cred_offer'],
                                                  issuer['transcript_cred_request'],
                                                  issuer['prover_transcript_cred_values'], None, None)
 
-    logger.info("\"Issuer\" -> Authcrypt \"Transcript\" Credential for Prover")
+    # Authenticate, encrypt and send
     issuer['authcrypted_transcript_cred'] = \
         await crypto.auth_crypt(issuer['wallet'], issuer['key_for_prover'], issuer['prover_key_for_issuer'],
                                 issuer['transcript_cred'].encode('utf-8'))
-
-
-    print('Prover storing credential...')
-
-    logger.info("\"Issuer\" -> Send authcrypted \"Transcript\" Credential to Prover")
     prover['authcrypted_transcript_cred'] = issuer['authcrypted_transcript_cred']
 
-    logger.info("\"Prover\" -> Authdecrypted \"Transcript\" Credential from Issuer")
+    print('Prover storing credential...')
+    # Decrypt, get definition and store credential
     _, prover['transcript_cred'], _ = \
         await auth_decrypt(prover['wallet'], prover['key_for_issuer'], prover['authcrypted_transcript_cred'])
-
-    logger.info("\"Prover\" -> Store \"Transcript\" Credential from Issuer")
     _, prover['transcript_cred_def'] = await get_cred_def(prover['pool'], prover['did_for_issuer'],
                                                          prover['transcript_cred_def_id'])
-
     await anoncreds.prover_store_credential(prover['wallet'], None, prover['transcript_cred_request_metadata'],
                                             prover['transcript_cred'], prover['transcript_cred_def'], None)
 
 
     print('Verifier requesting proof of credential...')
-
+    # Prover onboarded with verifier
     verifier['did_for_prover'], verifier['key_for_prover'], prover['did_for_verifier'], prover['key_for_verifier'], \
     verifier['prover_connection_response'] = await onboarding(verifier, prover)
 
-
-    logger.info("\"Verifier\" -> Create \"Job-Application\" Proof Request")
+    # Create proof request
     verifier['job_application_proof_request'] = json.dumps({
         'nonce': '1432422343242122312411212',
         'name': 'Job-Application',
@@ -345,58 +300,48 @@ async def run():
             }
         }
     })
-
-    logger.info("\"Verifier\" -> Get key for Prover did")
+    # Get key for prover DID
     verifier['prover_key_for_verifier'] = \
         await did.key_for_did(verifier['pool'], verifier['wallet'], verifier['prover_connection_response']['did'])
 
-    logger.info("\"Verifier\" -> Authcrypt \"Job-Application\" Proof Request for Prover")
+    # Authenticate, encrypt and send
     verifier['authcrypted_job_application_proof_request'] = \
         await crypto.auth_crypt(verifier['wallet'], verifier['key_for_prover'], verifier['prover_key_for_verifier'],
                                 verifier['job_application_proof_request'].encode('utf-8'))
+    prover['authcrypted_job_application_proof_request'] = verifier['authcrypted_job_application_proof_request']
 
 
     print('Prover getting credential and creating proof...')
-
-    logger.info("\"Verifier\" -> Send authcrypted \"Job-Application\" Proof Request to Prover")
-    prover['authcrypted_job_application_proof_request'] = verifier['authcrypted_job_application_proof_request']
-
-    logger.info("\"Prover\" -> Authdecrypt \"Job-Application\" Proof Request from Verifier")
+    # Decrypt
     prover['verifier_key_for_prover'], prover['job_application_proof_request'], _ = \
         await auth_decrypt(prover['wallet'], prover['key_for_verifier'], prover['authcrypted_job_application_proof_request'])
-
-    logger.info("\"Prover\" -> Get credentials for \"Job-Application\" Proof Request")
-
+    # Search for a proof request and get the credential attributes needed
     search_for_job_application_proof_request = \
         await anoncreds.prover_search_credentials_for_proof_req(prover['wallet'],
                                                                 prover['job_application_proof_request'], None)
-
     cred_for_attr1 = await get_credential_for_referent(search_for_job_application_proof_request, 'attr1_referent')
     cred_for_attr2 = await get_credential_for_referent(search_for_job_application_proof_request, 'attr2_referent')
     cred_for_attr3 = await get_credential_for_referent(search_for_job_application_proof_request, 'attr3_referent')
     cred_for_attr4 = await get_credential_for_referent(search_for_job_application_proof_request, 'attr4_referent')
     cred_for_attr5 = await get_credential_for_referent(search_for_job_application_proof_request, 'attr5_referent')
-    cred_for_predicate1 = \
-        await get_credential_for_referent(search_for_job_application_proof_request, 'predicate1_referent')
-
+    cred_for_predicate1 = await get_credential_for_referent(search_for_job_application_proof_request, 'predicate1_referent')
     await anoncreds.prover_close_credentials_search_for_proof_req(search_for_job_application_proof_request)
-
+    # Put the needed attributes in Indy-readable format
     prover['creds_for_job_application_proof'] = {cred_for_attr1['referent']: cred_for_attr1,
                                                 cred_for_attr2['referent']: cred_for_attr2,
                                                 cred_for_attr3['referent']: cred_for_attr3,
                                                 cred_for_attr4['referent']: cred_for_attr4,
                                                 cred_for_attr5['referent']: cred_for_attr5,
                                                 cred_for_predicate1['referent']: cred_for_predicate1}
-
+    # Get attributes from ledger
     prover['schemas'], prover['cred_defs'], prover['revoc_states'] = \
         await prover_get_entities_from_ledger(prover['pool'], prover['did_for_verifier'],
                                               prover['creds_for_job_application_proof'], prover['name'])
-
-    logger.info("\"Prover\" -> Create \"Job-Application\" Proof")
+    # Create the proof, specifiying what to reveal (all are verifiable, though here for ex. personal info stays hidden)
     prover['job_application_requested_creds'] = json.dumps({
         'self_attested_attributes': {
             'attr1_referent': 'Prover',
-            'attr2_referent': 'Garcia',
+            'attr2_referent': 'SecondName',
             'attr6_referent': '123-45-6789'
         },
         'requested_attributes': {
@@ -406,32 +351,26 @@ async def run():
         },
         'requested_predicates': {'predicate1_referent': {'cred_id': cred_for_predicate1['referent']}}
     })
-
     prover['job_application_proof'] = \
         await anoncreds.prover_create_proof(prover['wallet'], prover['job_application_proof_request'],
                                             prover['job_application_requested_creds'], prover['master_secret_id'],
                                             prover['schemas'], prover['cred_defs'], prover['revoc_states'])
-
-    logger.info("\"Prover\" -> Authcrypt \"Job-Application\" Proof for Verifier")
+    # Authenticate, encrypt and send
     prover['authcrypted_job_application_proof'] = \
         await crypto.auth_crypt(prover['wallet'], prover['key_for_verifier'], prover['verifier_key_for_prover'],
                                 prover['job_application_proof'].encode('utf-8'))
+    verifier['authcrypted_job_application_proof'] = prover['authcrypted_job_application_proof']
 
 
     print('Verifier getting proof and verifying credential...')
-
-    logger.info("\"Prover\" -> Send authcrypted \"Job-Application\" Proof to Verifier")
-    verifier['authcrypted_job_application_proof'] = prover['authcrypted_job_application_proof']
-
-    logger.info("\"Verifier\" -> Authdecrypted \"Job-Application\" Proof from Prover")
+    # Decrypt
     _, verifier['job_application_proof'], decrypted_job_application_proof = \
         await auth_decrypt(verifier['wallet'], verifier['key_for_prover'], verifier['authcrypted_job_application_proof'])
-
+    # Get credential attribute values from ledger
     verifier['schemas'], verifier['cred_defs'], verifier['revoc_ref_defs'], verifier['revoc_regs'] = \
         await verifier_get_entities_from_ledger(verifier['pool'], verifier['did'],
                                                 decrypted_job_application_proof['identifiers'], verifier['name'])
-
-    logger.info("\"Verifier\" -> Verify \"Job-Application\" Proof from Prover")
+    # Assert everything is as claimed by the prover and verify
     assert 'Bachelor of Science, Marketing' == \
            decrypted_job_application_proof['requested_proof']['revealed_attrs']['attr3_referent']['raw']
     assert 'graduated' == \
@@ -440,14 +379,14 @@ async def run():
            decrypted_job_application_proof['requested_proof']['revealed_attrs']['attr5_referent']['raw']
 
     assert 'Prover' == decrypted_job_application_proof['requested_proof']['self_attested_attrs']['attr1_referent']
-    assert 'Garcia' == decrypted_job_application_proof['requested_proof']['self_attested_attrs']['attr2_referent']
+    assert 'SecondName' == decrypted_job_application_proof['requested_proof']['self_attested_attrs']['attr2_referent']
     assert '123-45-6789' == decrypted_job_application_proof['requested_proof']['self_attested_attrs']['attr6_referent']
-
     assert await anoncreds.verifier_verify_proof(verifier['job_application_proof_request'], verifier['job_application_proof'],
                                                  verifier['schemas'], verifier['cred_defs'], verifier['revoc_ref_defs'],
                                                  verifier['revoc_regs'])
 
     print('Credential verified.')
+    
 
 
 async def onboarding(_from, to):
