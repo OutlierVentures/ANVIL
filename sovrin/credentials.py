@@ -14,15 +14,15 @@ async def create_schema(schema, creator):
     If 10 independent schema with identical names are used in the same session
     and between the same parties, the percentage chance of a clash is
     (1 - ((35^4 - 1) / 35^4)^10) * 100 = 0.0007%
-    This comes at the cost of 4 random bytes in the attribute string.
+    This comes at the cost of 4 random characters in the attribute string.
     '''
-    unique_schema_name = schema['name'].replace(' ', '_').lower() + secrets.token_hex(4)
-    (creator['schema_id'], creator[unique_schema_name + 'schema']) = \
+    unique_schema_name = schema['name'].replace(' ', '_').lower() + '_' + secrets.token_hex(2)
+    (creator['schema_id'], creator[unique_schema_name + '_schema']) = \
         await anoncreds.issuer_create_schema(creator['did'], schema['name'], schema['version'],
                                              json.dumps(schema['attributes']))
     schema_id = creator['schema_id']
     # Send schema to ledger
-    await send_schema(creator['pool'], creator['wallet'], creator['did'], creator[unique_schema_name + 'schema'])
+    await send_schema(creator['pool'], creator['wallet'], creator['did'], creator[unique_schema_name + '_schema'])
     return unique_schema_name, schema_id, creator
     
 
@@ -30,7 +30,7 @@ async def create_credential_definition(creator, schema_id, unique_schema_name, r
     creator_name = creator['name'].capitalize()
     print(creator_name + ' applying credential definition...')
     time.sleep(1)  # sleep 1 second before getting schema
-    (creator['schema_id'], creator[unique_schema_name + 'schema']) = \
+    (creator['schema_id'], creator[unique_schema_name + '_schema']) = \
         await get_schema(creator['pool'], creator['did'], schema_id)
     # Create and store credential definition in wallet
     certificate_cred_def = {
@@ -40,13 +40,13 @@ async def create_credential_definition(creator, schema_id, unique_schema_name, r
             "support_revocation": revocable
         }
     }
-    (creator[unique_schema_name + 'cred_def_id'], creator[unique_schema_name + 'cred_def']) = \
+    (creator[unique_schema_name + '_cred_def_id'], creator[unique_schema_name + '_cred_def']) = \
         await anoncreds.issuer_create_and_store_credential_def(creator['wallet'], creator['did'],
-                                                               creator[unique_schema_name + 'schema'], certificate_cred_def['tag'],
+                                                               creator[unique_schema_name + '_schema'], certificate_cred_def['tag'],
                                                                certificate_cred_def['type'],
                                                                json.dumps(certificate_cred_def['config']))
     # Send definition to ledger
-    await send_cred_def(creator['pool'], creator['wallet'], creator['did'], creator[unique_schema_name + 'cred_def'])
+    await send_cred_def(creator['pool'], creator['wallet'], creator['did'], creator[unique_schema_name + '_cred_def'])
     return creator
 
 
