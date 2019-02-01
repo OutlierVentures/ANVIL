@@ -16,7 +16,7 @@ async def create_schema(schema, creator):
     (1 - ((35^4 - 1) / 35^4)^10) * 100 = 0.0007%
     This comes at the cost of 4 random characters in the attribute string.
     '''
-    unique_schema_name = schema['name'].replace(' ', '_').lower() + '_' + secrets.token_hex(2)
+    unique_schema_name = schema['name'].replace(' ', '_').replace('-', '_').lower() + '_' + secrets.token_hex(2)
     (creator['schema_id'], creator[unique_schema_name + '_schema']) = \
         await anoncreds.issuer_create_schema(creator['did'], schema['name'], schema['version'],
                                              json.dumps(schema['attributes']))
