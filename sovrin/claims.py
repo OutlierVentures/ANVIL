@@ -19,7 +19,8 @@ from config import PROTOCOL_VERSION
 
 from setup import setup_pool, setup_steward
 from onboarding import simple_onboard, onboard_for_proving, onboarding
-from schema import degree
+from schema import * # Schema to use in this file
+from credentials import create_schema, create_credential_definition
 
 
 
@@ -116,38 +117,10 @@ async def run():
     
     
 
-
-
-
-    print('Issuer creating credential schema...')
-    certificate = degree # Degree defined in the schema file
-    (issuer['certificate_schema_id'], issuer['certificate_schema']) = \
-        await anoncreds.issuer_create_schema(issuer['did'], certificate['name'], certificate['version'],
-                                             json.dumps(certificate['attributes']))
-    certificate_schema_id = issuer['certificate_schema_id']
-    # Send schema to ledger
-    await send_schema(issuer['pool'], issuer['wallet'], issuer['did'], issuer['certificate_schema'])
-    
-
-    print('Issuer applying credential definition...')
-    time.sleep(1)  # sleep 1 second before getting schema
-    (issuer['certificate_schema_id'], issuer['certificate_schema']) = \
-        await get_schema(issuer['pool'], issuer['did'], certificate_schema_id)
-    # Create and store credential definition in wallet
-    certificate_cred_def = {
-        'tag': 'TAG1',
-        'type': 'CL',
-        'config': {"support_revocation": False}
-    }
-    (issuer['certificate_cred_def_id'], issuer['certificate_cred_def']) = \
-        await anoncreds.issuer_create_and_store_credential_def(issuer['wallet'], issuer['did'],
-                                                               issuer['certificate_schema'], certificate_cred_def['tag'],
-                                                               certificate_cred_def['type'],
-                                                               json.dumps(certificate_cred_def['config']))
-    # Send definition to ledger
-    await send_cred_def(issuer['pool'], issuer['wallet'], issuer['did'], issuer['certificate_cred_def'])
-
-
+    # Create schema and corresponding definition
+    certificate = degree # Define type (NOTE MAKE OPTION VAR)
+    certificate_schema_id, issuer = await create_schema(certificate, issuer)
+    issuer = await create_credential_definition(issuer, certificate_schema_id)
 
 
 
@@ -155,11 +128,11 @@ async def run():
     issuer['certificate_cred_offer'] = \
         await anoncreds.issuer_create_credential_offer(issuer['wallet'], issuer['certificate_cred_def_id'])
     # Get key for prover's DID
-    issuer['alic_key_for_issuer'] = \
+    issuer['prover_key_for_issuer'] = \
         await did.key_for_did(issuer['pool'], issuer['wallet'], issuer['prover_connection_response']['did'])
     # Authenticate, encrypt and send
     issuer['authcrypted_certificate_cred_offer'] = \
-        await crypto.auth_crypt(issuer['wallet'], issuer['key_for_prover'], issuer['alic_key_for_issuer'],
+        await crypto.auth_crypt(issuer['wallet'], issuer['key_for_prover'], issuer['prover_key_for_issuer'],
                                 issuer['certificate_cred_offer'].encode('utf-8'))
     prover['authcrypted_certificate_cred_offer'] = issuer['authcrypted_certificate_cred_offer']
 
@@ -370,20 +343,13 @@ async def run():
 
 
 
-async def send_schema(pool_handle, wallet_handle, _did, schema):
-    schema_request = await ledger.build_schema_request(_did, schema)
-    await ledger.sign_and_submit_request(pool_handle, wallet_handle, _did, schema_request)
-
-
-async def send_cred_def(pool_handle, wallet_handle, _did, cred_def_json):
-    cred_def_request = await ledger.build_cred_def_request(_did, cred_def_json)
-    await ledger.sign_and_submit_request(pool_handle, wallet_handle, _did, cred_def_request)
-
 
 async def get_schema(pool_handle, _did, schema_id):
     get_schema_request = await ledger.build_get_schema_request(_did, schema_id)
     get_schema_response = await ledger.submit_request(pool_handle, get_schema_request)
     return await ledger.parse_get_schema_response(get_schema_response)
+
+
 
 
 async def get_cred_def(pool_handle, _did, cred_def_id):
