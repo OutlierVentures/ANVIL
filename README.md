@@ -74,8 +74,9 @@ python3 claims.py
 
 ### Could-haves
 
-1. Revocation registries (under credential issuance).
-2. Verifiable claim that transaction took place after accepting CFP.
+1. Run ANVIL in a Python `venv` (possibly as a Python shell CLI)
+2. Revocation registries (under credential issuance).
+3. Verifiable claim that the Fetch transaction took place after accepting CFP.
 
 
 ## Issue fixes
