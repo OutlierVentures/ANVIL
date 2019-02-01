@@ -49,6 +49,8 @@ python3 server_agent.py
 
 Go to the `sovrin` folder.
 
+### Before any run: `rm ~/.indy_client` (to be patched) 
+
 Run:
 ```
 python3 claims.py
@@ -59,18 +61,19 @@ python3 claims.py
 
 ### Next up
 
-0. Refactor `claims.py` into modular comnponents (half done).
-1. Restructure: Fetch, Sovrin and ANVIL folders (0.0.5).
-2. Map Fetch AEAs to Sovrin trust anchors.
-3. FIPA negotiation between Alice and Bob:
+0. Generalise `job_application_` name. 
+1. Map Fetch AEAs to Sovrin trust anchors.
+2. FIPA negotiation between Alice and Bob:
 	1. Alice initiates a Call For Proposal (CFP) pointing to a verifiable claim in a Fetch `DataModel`.
 	2. Bob verifies claim & accepts or rejects the CFP.
-4. CLI interface for FIPA negotiations with verifiable claims (0.1).
+3. CLI interface for FIPA negotiations with verifiable claims (0.1).
 
 ### Backlog
 
-1. Split Fetch, Sovrin and ANVIL into separate repositories.
-2. Loading bar for `install.sh`.
+1. Simplify duplicate functions across `sovrin` files.
+2. Take sending part out of `sovrin` functions, e.g. `prover['x'] = verifier['x']` and create independent sending function.
+2. Split Fetch, Sovrin and ANVIL into separate repositories.
+3. Loading bar for `install.sh`.
 
 ### Could-haves
 
