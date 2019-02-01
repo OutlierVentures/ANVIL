@@ -21,6 +21,7 @@ from setup import setup_pool, setup_steward
 from onboarding import simple_onboard, onboard_for_proving, onboarding
 from schema import * # Schema to use in this file
 from credentials import create_schema, create_credential_definition
+from issue import offer_credential, receive_credential_offer, request_credential, create_and_send_credential, store_credential
 
 
 
@@ -118,54 +119,16 @@ async def run():
     
 
     # Create schema and corresponding definition
-    certificate = degree # Define type (NOTE MAKE OPTION VAR)
-    certificate_schema_id, issuer = await create_schema(certificate, issuer)
-    issuer = await create_credential_definition(issuer, certificate_schema_id)
-
-
-
-    print('Issuer offering credential to Prover...')
-    issuer['certificate_cred_offer'] = \
-        await anoncreds.issuer_create_credential_offer(issuer['wallet'], issuer['certificate_cred_def_id'])
-    # Get key for prover's DID
-    issuer['prover_key_for_issuer'] = \
-        await did.key_for_did(issuer['pool'], issuer['wallet'], issuer['prover_connection_response']['did'])
-    # Authenticate, encrypt and send
-    issuer['authcrypted_certificate_cred_offer'] = \
-        await crypto.auth_crypt(issuer['wallet'], issuer['key_for_prover'], issuer['prover_key_for_issuer'],
-                                issuer['certificate_cred_offer'].encode('utf-8'))
-    prover['authcrypted_certificate_cred_offer'] = issuer['authcrypted_certificate_cred_offer']
-
-
-    print('Prover getting credential offer from Issuer...')
-    # Decrypt
-    prover['issuer_key_for_prover'], prover['certificate_cred_offer'], authdecrypted_certificate_cred_offer = \
-        await auth_decrypt(prover['wallet'], prover['key_for_issuer'], prover['authcrypted_certificate_cred_offer'])
-    prover['certificate_schema_id'] = authdecrypted_certificate_cred_offer['schema_id']
-    prover['certificate_cred_def_id'] = authdecrypted_certificate_cred_offer['cred_def_id']
-    # Prover creates master secret so they can use the credential
-    prover['master_secret_id'] = await anoncreds.prover_create_master_secret(prover['wallet'], None)
-    # Get credential definition from ledger
-    (prover['issuer_certificate_cred_def_id'], prover['issuer_certificate_cred_def']) = \
-        await get_cred_def(prover['pool'], prover['did_for_issuer'], authdecrypted_certificate_cred_offer['cred_def_id'])
-
-    print('Prover requesting credential itself...')
-    (prover['certificate_cred_request'], prover['certificate_cred_request_metadata']) = \
-        await anoncreds.prover_create_credential_req(prover['wallet'], prover['did_for_issuer'],
-                                                     prover['certificate_cred_offer'], prover['issuer_certificate_cred_def'],
-                                                     prover['master_secret_id'])
-    # Authenticate, encrypt and send
-    prover['authcrypted_certificate_cred_request'] = \
-        await crypto.auth_crypt(prover['wallet'], prover['key_for_issuer'], prover['issuer_key_for_prover'],
-                                prover['certificate_cred_request'].encode('utf-8'))
-    issuer['authcrypted_certificate_cred_request'] = prover['authcrypted_certificate_cred_request']
-
-
-
+    schema = degree # Define type (NOTE MAKE OPTION VAR)
+    unique_schema_name, schema_id, issuer = await create_schema(schema, issuer)
+    issuer = await create_credential_definition(creator = issuer,
+                                                schema_id = schema_id,
+                                                unique_schema_name = unique_schema_name,
+                                                revocable = False)
 
 
     # Specify values of credential request
-    prover['certificate_cred_values'] = json.dumps({
+    values = json.dumps({
         "first_name": {"raw": "Prover", "encoded": "1139481716457488690172217916278103335"},
         "last_name": {"raw": "SecondName", "encoded": "5321642780241790123587902456789123452"},
         "degree": {"raw": "Bachelor of Science, Marketing", "encoded": "12434523576212321"},
@@ -177,35 +140,11 @@ async def run():
 
 
 
-
-
-    print('Issuer creating credential and sending to Prover...')
-    # Get request and decrypt
-    issuer['prover_certificate_cred_values'] = prover['certificate_cred_values']
-    issuer['prover_key_for_issuer'], issuer['certificate_cred_request'], _ = \
-        await auth_decrypt(issuer['wallet'], issuer['key_for_prover'], issuer['authcrypted_certificate_cred_request'])
-    # Create the credential according to the request
-    issuer['certificate_cred'], _, _ = \
-        await anoncreds.issuer_create_credential(issuer['wallet'], issuer['certificate_cred_offer'],
-                                                 issuer['certificate_cred_request'],
-                                                 issuer['prover_certificate_cred_values'], None, None)
-    # Authenticate, encrypt and send
-    issuer['authcrypted_certificate_cred'] = \
-        await crypto.auth_crypt(issuer['wallet'], issuer['key_for_prover'], issuer['prover_key_for_issuer'],
-                                issuer['certificate_cred'].encode('utf-8'))
-    prover['authcrypted_certificate_cred'] = issuer['authcrypted_certificate_cred']
-
-
-    print('Prover storing credential...')
-    # Decrypt, get definition and store credential
-    _, prover['certificate_cred'], _ = \
-        await auth_decrypt(prover['wallet'], prover['key_for_issuer'], prover['authcrypted_certificate_cred'])
-    _, prover['certificate_cred_def'] = await get_cred_def(prover['pool'], prover['did_for_issuer'],
-                                                         prover['certificate_cred_def_id'])
-    await anoncreds.prover_store_credential(prover['wallet'], None, prover['certificate_cred_request_metadata'],
-                                            prover['certificate_cred'], prover['certificate_cred_def'], None)
-
-
+    issuer, prover = await offer_credential(issuer, prover, unique_schema_name)
+    prover = await receive_credential_offer(prover, unique_schema_name)
+    prover, issuer = await request_credential(prover, issuer, values, unique_schema_name)
+    issuer, prover = await create_and_send_credential(issuer, prover, unique_schema_name)
+    prover = await store_credential(prover, unique_schema_name)
 
 
 
@@ -228,15 +167,15 @@ async def run():
             },
             'attr3_referent': {
                 'name': 'degree',
-                'restrictions': [{'cred_def_id': issuer['certificate_cred_def_id']}]
+                'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
             },
             'attr4_referent': {
                 'name': 'status',
-                'restrictions': [{'cred_def_id': issuer['certificate_cred_def_id']}]
+                'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
             },
             'attr5_referent': {
                 'name': 'ssn',
-                'restrictions': [{'cred_def_id': issuer['certificate_cred_def_id']}]
+                'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
             },
             'attr6_referent': {
                 'name': 'phone_number'
@@ -247,7 +186,7 @@ async def run():
                 'name': 'average',
                 'p_type': '>=',
                 'p_value': 4,
-                'restrictions': [{'cred_def_id': issuer['certificate_cred_def_id']}]
+                'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
             }
         }
     })
