@@ -67,6 +67,10 @@ python3 claims.py
 	1. Alice initiates a Call For Proposal (CFP) pointing to a verifiable claim in a Fetch `DataModel`.
 	2. Bob verifies claim & accepts or rejects the CFP.
 3. CLI interface for FIPA negotiations with verifiable claims (0.1).
+4. Revocation registries or credential expiry (under credential issuance).
+5. Issuer whitelist (define who can be issuers) (0.2).
+6. UI (0.3).
+
 
 ### Backlog
 
@@ -77,9 +81,8 @@ python3 claims.py
 
 ### Could-haves
 
-1. Run ANVIL in a Python `venv` (possibly as a Python shell CLI)
-2. Revocation registries (under credential issuance).
-3. Verifiable claim that the Fetch transaction took place after accepting CFP.
+1. Run ANVIL in a Python `venv` (possibly as a Python shell CLI).
+2. Verifiable claim that the Fetch transaction took place after accepting CFP.
 
 
 ## Issue fixes
