@@ -61,7 +61,6 @@ python3 claims.py
 
 ### Next up
 
-0. Generalise `job_application_` name. 
 1. Map Fetch AEAs to Sovrin trust anchors.
 2. FIPA negotiation between Alice and Bob:
 	1. Alice initiates a Call For Proposal (CFP) pointing to a verifiable claim in a Fetch `DataModel`.
