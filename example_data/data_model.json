@@ -1,0 +1,13 @@
+{
+    "name" : "Outlier Ventures Node data",
+    "description": "Bot AEA reporting transactions processed by Outlier Ventures-run Nodes.",
+    "attributes": {
+        "license": "LDAD authorisation.",
+        "fetch": "Fetch.AI node data (mainnet).",
+        "haja": "Haja Networks node data (pre-testnet).",
+        "iota": "IOTA node data (mainnet).",
+        "ocean": "Ocean Protocol node data (tesnet).",
+        "seed": "SEED node data (pre-testnet).",
+        "sovrin": "Sovrin Steward node data (mainnet)."
+    }
+}
