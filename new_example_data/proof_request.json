@@ -1,5 +1,5 @@
 {
-    "nonce": "12345678",
+    "nonce": "0123456789012345678901234",
     "name": "LDAD restricted proof",
     "version": "0.1",
     "requested_attributes": {
