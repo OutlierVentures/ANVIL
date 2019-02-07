@@ -66,9 +66,10 @@ python3 claims.py
 	1. Alice initiates a Call For Proposal (CFP) pointing to a verifiable claim in a Fetch `DataModel`.
 	2. Bob verifies claim & accepts or rejects the CFP.
 3. CLI interface for FIPA negotiations with verifiable claims (0.1).
-4. Revocation registries or credential expiry (under credential issuance).
-5. Issuer whitelist (define who can be issuers) (0.2).
-6. UI (0.3).
+4. Set up files so each agent only runs their own files.
+5. Revocation registries or credential expiry (under credential issuance).
+6. Issuer whitelist (define who can be issuers) (0.2).
+7. UI (0.3).
 
 
 ### Backlog
@@ -82,9 +83,16 @@ python3 claims.py
 
 1. Run ANVIL in a Python `venv` (possibly as a Python shell CLI).
 2. Verifiable claim that the Fetch transaction took place after accepting CFP.
+3. Restrictions on proof request attributes (as defined in Sovrin samples).
 
 
-## Issue fixes
+## Important notes
+
+Both the Prover and Verifier should have `data_model.json`. *ASK FETCH!! VERIFIER-SIDE: WHY DO I NEED THE DATA MODEL OF THE SERVICES I AM SEARCHING FOR (USED TO STRUCTURE QUERY)? I CAN'T POSSIBLY KNOW THE DATA MODEL BEFORE I HAVE PURCHASED THE SERVICE.*
+
+On a proof reply (creating a proof), the requested attributes field is what will be revealed.
+
+Schema versions must be floats to be compatible with Sovrin.
 
 Indy failures may be due to missing environment variables, see install.sh for variables. These may need to be set in `.bashrc` (non-login interactive shells) instead of `.bash_profile`.
 
