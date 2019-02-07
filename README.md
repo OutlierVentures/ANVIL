@@ -61,15 +61,13 @@ python3 claims.py
 
 ### Next up
 
-1. Map Fetch AEAs to Sovrin trust anchors.
-2. FIPA negotiation between Alice and Bob:
-	1. Alice initiates a Call For Proposal (CFP) pointing to a verifiable claim in a Fetch `DataModel`.
-	2. Bob verifies claim & accepts or rejects the CFP.
-3. CLI interface for FIPA negotiations with verifiable claims (0.1).
-4. Set up files so each agent only runs their own files.
+1. Integrate Verification into `verifier.py`. (0.1)
+2. Separate anchoring from claims runner.
+3. Set up files so each agent only runs their own files. (0.2)
+2. Fix `CommonInvalidStructure` error for new OV service-style modular data.
 5. Revocation registries or credential expiry (under credential issuance).
-6. Issuer whitelist (define who can be issuers) (0.2).
-7. UI (0.3).
+6. Issuer whitelist (define who can be issuers) (0.3).
+7. UI (0.4).
 
 
 ### Backlog
