@@ -1,0 +1,11 @@
+{
+    "self_attested_attributes":
+    {
+        "attr1_referent": "Prover",
+        "attr2_referent": "SecondName",
+        "attr6_referent": "123-45-6789"
+    },
+    "requested_attributes": [3, 4, 5],
+    "requested_predicates": [1],
+    "non_issuer_attributes": [6]
+}
