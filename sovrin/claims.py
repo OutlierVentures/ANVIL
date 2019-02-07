@@ -1,4 +1,4 @@
-import logging, argparse, sys, json, time
+import logging, argparse, sys, json, time, os, secrets
 
 from ctypes import CDLL
 
@@ -46,6 +46,16 @@ if args.storage_type:
 
 async def run():
 
+    cred_request, schema, proof_request, self_attested_attributes, requested_attributes, \
+    requested_predicates, non_issuer_attributes = load_example_data()
+
+    # Add a nonce to the proof request and stringify
+    proof_request['nonce'] = secrets.token_hex(16)
+
+    # Requests need to be json formatted
+    proof_request = json.dumps(proof_request)
+    cred_request = json.dumps(cred_request)
+
     # Set up actors
     pool_ = await setup_pool('ANVIL')
     steward = await setup_steward(pool_ = pool_,
@@ -74,9 +84,9 @@ async def run():
     unique_schema_name, schema_id, issuer = await create_schema(schema, issuer)
     issuer = await create_credential_definition(issuer, schema_id, unique_schema_name, revocable = False)
 
-
-    # Specify values for credential request
-    values = json.dumps({
+    '''
+    # Specify cred_request for credential request
+    cred_request = json.dumps({
         "first_name": {"raw": "Prover", "encoded": "1139481716457488690172217916278103335"},
         "last_name": {"raw": "SecondName", "encoded": "5321642780241790123587902456789123452"},
         "degree": {"raw": "Bachelor of Science, Marketing", "encoded": "12434523576212321"},
@@ -85,16 +95,17 @@ async def run():
         "year": {"raw": "2015", "encoded": "2015"},
         "average": {"raw": "5", "encoded": "5"}
     })
-
+    '''
 
     # Issue credential
     issuer, prover = await offer_credential(issuer, prover, unique_schema_name)
     prover = await receive_credential_offer(prover, unique_schema_name)
-    prover, issuer = await request_credential(prover, issuer, values, unique_schema_name)
+    prover, issuer = await request_credential(prover, issuer, cred_request, unique_schema_name)
     issuer, prover = await create_and_send_credential(issuer, prover, unique_schema_name)
     prover = await store_credential(prover, unique_schema_name)
 
 
+    '''
     # Specify proof request
     proof_request = json.dumps({
         'nonce': '1432422343242122312411212',
@@ -109,15 +120,15 @@ async def run():
             },
             'attr3_referent': {
                 'name': 'degree',
-                'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
+                #'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
             },
             'attr4_referent': {
                 'name': 'status',
-                'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
+                #'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
             },
             'attr5_referent': {
                 'name': 'ssn',
-                'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
+                #'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
             },
             'attr6_referent': {
                 'name': 'phone_number'
@@ -128,12 +139,14 @@ async def run():
                 'name': 'average',
                 'p_type': '>=',
                 'p_value': 4,
-                'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
+                #'restrictions': [{'cred_def_id': issuer[unique_schema_name + '_cred_def_id']}]
             }
         }
     })
+    '''
 
-
+    verifier, prover = await request_proof_of_credential(verifier, prover, proof_request)
+    '''
     self_attested_attributes = {
         'attr1_referent': 'Prover',
         'attr2_referent': 'SecondName',
@@ -143,8 +156,7 @@ async def run():
     requested_predicates = [1]
     # Specify attributes that should not be queried of the issuer
     non_issuer_attributes = [6]
-
-    verifier, prover = await request_proof_of_credential(verifier, prover, proof_request)
+    '''
 
     prover, verifier = await create_proof_of_credential(prover, verifier, self_attested_attributes,
                                                         requested_attributes, requested_predicates,
@@ -169,6 +181,26 @@ async def run():
 
     print('Credential verified.')
 
+
+# Loads examples in the example_data folder
+def load_example_data():
+    example_data = {}
+    for filename in os.listdir('../example_data'):
+        with open('../example_data/' + filename) as file_:
+            example_data[filename.replace('.json', '')] = json.load(file_)
+    cred_request = example_data['credential_request']
+    # Specify version of schema since defined two in example file
+    schema = example_data['credential_schema']#['restricted'] # Restricted for new example data
+    print(schema)
+    print(type(schema))
+    proof_request = example_data['proof_request']
+    # Don't json.dump this
+    self_attested_attributes = example_data['proof_creation']['self_attested_attributes']
+    requested_attributes = example_data['proof_creation']['requested_attributes']
+    requested_predicates = example_data['proof_creation']['requested_predicates']
+    non_issuer_attributes = example_data['proof_creation']['non_issuer_attributes']
+    return cred_request, schema, proof_request, self_attested_attributes, \
+           requested_attributes, requested_predicates, non_issuer_attributes
 
 if __name__ == '__main__':
     run_coroutine(run)
