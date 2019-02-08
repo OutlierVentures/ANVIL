@@ -35,14 +35,14 @@ The Sovrin node pool sits on ports 9701 through 9708.
 
 Go to the `fetch` folder.
 
-In one terminal window:
+In one terminal window, run the AEA providing the service:
 ```
-python3 client_agent.py
+python3 verifier.py
 ```
 
-In another:
+In another, run the AEA purchasing it:
 ```
-python3 server_agent.py
+python3 prover.py
 ```
 
 ### Run Sovrin verifiable claims
