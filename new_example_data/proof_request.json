@@ -1,29 +1,42 @@
 {
-    "nonce": "0123456789012345678901234",
-    "name": "LDAD restricted proof",
-    "version": "0.1",
-    "requested_attributes": {
-        "attr1_referent": {
-            "name": "bot_name"
+    "request": {
+        "nonce": "0123456789012345678901234",
+        "name": "LDAD restricted proof",
+        "version": "0.1",
+        "requested_attributes": {
+            "attr1_referent": {
+                "name": "bot_name"
+            },
+            "attr2_referent": {
+                "name": "data_source"
+            },
+            "attr3_referent": {
+                "name": "license"
+            },
+            "attr4_referent": {
+                "name": "status"
+            },
+            "attr5_referent": {
+                "name": "id"
+            }
         },
-        "attr2_referent": {
-            "name": "data_source"
-        },
-        "attr3_referent": {
-            "name": "license"
-        },
-        "attr4_referent": {
-            "name": "status"
-        },
-        "attr5_referent": {
-            "name": "id"
+        "requested_predicates": {
+            "predicate1_referent": {
+                "name": "year",
+                "p_type": ">=",
+                "p_value": 2019
+            }
         }
     },
-    "requested_predicates": {
-        "predicate1_referent": {
-            "name": "year",
-            "p_type": ">=",
-            "p_value": 2019
+    "assertions_to_make": {
+        "revealed": {
+            "attr2_referent": "GitHub",
+            "attr3_referent": "LDAD restricted",
+            "attr4_referent": "active"
+        },
+        "self_attested": {
+            "attr1_referent": "Sophos",
+            "attr5_referent": "did:ov:xb3i0s5v"
         }
     }
 }
