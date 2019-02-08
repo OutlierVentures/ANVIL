@@ -1,46 +1,42 @@
 {
     "request": {
         "nonce": "0123456789012345678901234",
-        "name": "Job-Application",
+        "name": "LDAD restricted proof",
         "version": "0.1",
         "requested_attributes": {
             "attr1_referent": {
-                "name": "first_name"
+                "name": "bot_name"
             },
             "attr2_referent": {
-                "name": "last_name"
+                "name": "data_source"
             },
             "attr3_referent": {
-                "name": "degree"
+                "name": "license"
             },
             "attr4_referent": {
                 "name": "status"
             },
             "attr5_referent": {
-                "name": "ssn"
-            },
-            "attr6_referent": {
-                "name": "phone_number"
+                "name": "id"
             }
         },
         "requested_predicates": {
             "predicate1_referent": {
-                "name": "average",
+                "name": "year",
                 "p_type": ">=",
-                "p_value": 4
+                "p_value": 2019
             }
         }
     },
     "assertions_to_make": {
         "revealed": {
-            "attr3_referent": "Bachelor of Science, Data Structures",
-            "attr4_referent": "graduated",
-            "attr5_referent": "123-45-6789"
+            "attr2_referent": "GitHub",
+            "attr3_referent": "LDAD restricted",
+            "attr4_referent": "active"
         },
         "self_attested": {
-            "attr1_referent": "Jason",
-            "attr2_referent": "Object",
-            "attr6_referent": "123-45-6789"
-        } 
+            "attr1_referent": "Sophos",
+            "attr5_referent": "did:ov:xb3i0s5v"
+        }
     }
 }

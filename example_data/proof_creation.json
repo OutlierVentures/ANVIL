@@ -1,11 +1,10 @@
 {
     "self_attested_attributes":
     {
-        "attr1_referent": "Jason",
-        "attr2_referent": "Object",
-        "attr6_referent": "123-45-6789"
+        "attr1_referent": "Sophos",
+        "attr5_referent": "did:ov:xb3i0s5v"
     },
-    "requested_attributes": [3, 4, 5],
+    "requested_attributes": [2, 3, 4],
     "requested_predicates": [1],
-    "non_issuer_attributes": [6]
+    "non_issuer_attributes": []
 }
