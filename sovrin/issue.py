@@ -2,7 +2,7 @@ from indy import anoncreds, crypto, did, ledger
 import json
 
 
-async def offer_credential(issuer, prover, unique_schema_name):
+async def offer_credential(issuer, unique_schema_name):
     print('Issuer offering credential to Prover...')
     issuer[unique_schema_name + '_cred_offer'] = \
         await anoncreds.issuer_create_credential_offer(issuer['wallet'], issuer[unique_schema_name + '_cred_def_id'])
@@ -13,8 +13,7 @@ async def offer_credential(issuer, prover, unique_schema_name):
     issuer['authcrypted_certificate_cred_offer'] = \
         await crypto.auth_crypt(issuer['wallet'], issuer['key_for_prover'], issuer['prover_key_for_issuer'],
                                 issuer[unique_schema_name + '_cred_offer'].encode('utf-8'))
-    prover['authcrypted_certificate_cred_offer'] = issuer['authcrypted_certificate_cred_offer']
-    return issuer, prover
+    return issuer
 
 
 async def receive_credential_offer(prover, unique_schema_name):
@@ -32,7 +31,7 @@ async def receive_credential_offer(prover, unique_schema_name):
     return prover
 
 
-async def request_credential(prover, issuer, values, unique_schema_name):
+async def request_credential(prover, values, unique_schema_name):
     print('Prover requesting credential itself...')
     prover[unique_schema_name + '_cred_values'] = values
     (prover[unique_schema_name + '_cred_request'], prover[unique_schema_name + '_cred_request_metadata']) = \
@@ -43,15 +42,13 @@ async def request_credential(prover, issuer, values, unique_schema_name):
     prover['authcrypted_certificate_cred_request'] = \
         await crypto.auth_crypt(prover['wallet'], prover['key_for_issuer'], prover['issuer_key_for_prover'],
                                 prover[unique_schema_name + '_cred_request'].encode('utf-8'))
-    issuer['authcrypted_certificate_cred_request'] = prover['authcrypted_certificate_cred_request']
-    return prover, issuer
+    return prover
 
 
 
-async def create_and_send_credential(issuer, prover, unique_schema_name):
+async def create_and_send_credential(issuer, unique_schema_name):
     print('Issuer creating credential and sending to Prover...')
-    # Get request and decrypt
-    issuer['prover_certificate_cred_values'] = prover[unique_schema_name + '_cred_values']
+    # Decrypt
     issuer['prover_key_for_issuer'], issuer[unique_schema_name + '_cred_request'], _ = \
         await auth_decrypt(issuer['wallet'], issuer['key_for_prover'], issuer['authcrypted_certificate_cred_request'])
     # Create the credential according to the request
@@ -63,8 +60,7 @@ async def create_and_send_credential(issuer, prover, unique_schema_name):
     issuer['authcrypted_certificate_cred'] = \
         await crypto.auth_crypt(issuer['wallet'], issuer['key_for_prover'], issuer['prover_key_for_issuer'],
                                 issuer[unique_schema_name + '_cred'].encode('utf-8'))
-    prover['authcrypted_certificate_cred'] = issuer['authcrypted_certificate_cred']
-    return issuer, prover
+    return issuer
 
 
 async def store_credential(prover, unique_schema_name):
