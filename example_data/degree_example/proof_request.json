@@ -1,0 +1,46 @@
+{
+    "request": {
+        "nonce": "0123456789012345678901234",
+        "name": "Job-Application",
+        "version": "0.1",
+        "requested_attributes": {
+            "attr1_referent": {
+                "name": "first_name"
+            },
+            "attr2_referent": {
+                "name": "last_name"
+            },
+            "attr3_referent": {
+                "name": "degree"
+            },
+            "attr4_referent": {
+                "name": "status"
+            },
+            "attr5_referent": {
+                "name": "ssn"
+            },
+            "attr6_referent": {
+                "name": "phone_number"
+            }
+        },
+        "requested_predicates": {
+            "predicate1_referent": {
+                "name": "average",
+                "p_type": ">=",
+                "p_value": 4
+            }
+        }
+    },
+    "assertions_to_make": {
+        "revealed": {
+            "attr3_referent": "Bachelor of Science, Data Structures",
+            "attr4_referent": "graduated",
+            "attr5_referent": "123-45-6789"
+        },
+        "self_attested": {
+            "attr1_referent": "Jason",
+            "attr2_referent": "Object",
+            "attr6_referent": "123-45-6789"
+        } 
+    }
+}
