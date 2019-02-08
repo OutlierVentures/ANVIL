@@ -42,7 +42,8 @@ if args.storage_type:
 async def run():
 
     cred_request, schema, proof_request, assertions_to_make, self_attested_attributes, \
-    requested_attributes, requested_predicates, non_issuer_attributes = load_example_data()
+    requested_attributes, requested_predicates, non_issuer_attributes \
+    = load_example_data('../example_data/service_example/')
 
     # Add a nonce to the proof request and stringify
     proof_request['nonce'] = secrets.token_hex(16)
@@ -85,16 +86,19 @@ async def run():
 
     # Issue credential
     issuer = await offer_credential(issuer, unique_schema_name)
-    prover['authcrypted_certificate_cred_offer'] = issuer['authcrypted_certificate_cred_offer']
+    send_data(issuer['authcrypted_certificate_cred_offer'])
+    prover['authcrypted_certificate_cred_offer'] = receive_data()
 
     prover = await receive_credential_offer(prover, unique_schema_name)
     prover = await request_credential(prover, cred_request, unique_schema_name)
-    issuer['authcrypted_certificate_cred_request'] = prover['authcrypted_certificate_cred_request']
+    send_data(prover['authcrypted_certificate_cred_request'])
+    issuer['authcrypted_certificate_cred_request'] = receive_data()
 
 
     issuer['prover_certificate_cred_values'] = prover[unique_schema_name + '_cred_values']
     issuer = await create_and_send_credential(issuer, unique_schema_name)
-    prover['authcrypted_certificate_cred'] = issuer['authcrypted_certificate_cred']
+    send_data(issuer['authcrypted_certificate_cred'])
+    prover['authcrypted_certificate_cred'] = receive_data()
 
     prover = await store_credential(prover, unique_schema_name)
     
@@ -103,13 +107,15 @@ async def run():
     verifier['did_for_prover'], verifier['key_for_prover'], prover['did_for_verifier'], prover['key_for_verifier'], \
     verifier['prover_connection_response'] = await onboarding(verifier, prover)
     verifier = await request_proof_of_credential(verifier, proof_request)
-    prover['authcrypted_proof_request'] = verifier['authcrypted_proof_request']
+    send_data(verifier['authcrypted_proof_request'])
+    prover['authcrypted_proof_request'] = receive_data()
 
 
 
     prover = await create_proof_of_credential(prover, self_attested_attributes, requested_attributes,
                                               requested_predicates, non_issuer_attributes)
-    verifier['authcrypted_proof'] = prover['authcrypted_proof']
+    send_data(prover['authcrypted_proof'])
+    verifier['authcrypted_proof'] = receive_data()
 
     verifier = await verify_proof(verifier, assertions_to_make)
 
@@ -117,10 +123,10 @@ async def run():
 
 
 # Loads examples in the example_data folder
-def load_example_data():
+def load_example_data(path):
     example_data = {}
-    for filename in os.listdir('../new_example_data'):
-        with open('../new_example_data/' + filename) as file_:
+    for filename in os.listdir(path):
+        with open(path + filename) as file_:
             example_data[filename.replace('.json', '')] = json.load(file_)
     cred_request = example_data['credential_request']
     # Specify schema version
@@ -134,6 +140,21 @@ def load_example_data():
     non_issuer_attributes = example_data['proof_creation']['non_issuer_attributes']
     return cred_request, schema, proof_request, assertions_to_make, self_attested_attributes, \
            requested_attributes, requested_predicates, non_issuer_attributes
+
+
+# Send data to another actor. Currently saves to a network simulation temp file.
+def send_data(data):
+    f = open('temp', 'wb')
+    f.write(data)
+    f.close()
+
+# Receive data from another actor. Currently loads data from a network simulation file.
+def receive_data():
+    f = open('temp', 'rb')
+    data = f.read()
+    f.close()
+    return data
+
 
 if __name__ == '__main__':
     run_coroutine(run)
