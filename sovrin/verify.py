@@ -2,11 +2,8 @@ import json
 from indy import anoncreds, did, crypto, ledger
 from onboarding import onboarding
 
-async def request_proof_of_credential(verifier, prover, proof_request = {}):
+async def request_proof_of_credential(verifier, proof_request = {}):
     print('Verifier requesting proof of credential...')
-    # Prover onboarded with verifier
-    verifier['did_for_prover'], verifier['key_for_prover'], prover['did_for_verifier'], prover['key_for_verifier'], \
-    verifier['prover_connection_response'] = await onboarding(verifier, prover)
     # Create proof request
     verifier['proof_request'] = proof_request
     # Get key for prover DID
@@ -16,8 +13,7 @@ async def request_proof_of_credential(verifier, prover, proof_request = {}):
     verifier['authcrypted_proof_request'] = \
         await crypto.auth_crypt(verifier['wallet'], verifier['key_for_prover'], verifier['prover_key_for_verifier'],
                                 verifier['proof_request'].encode('utf-8'))
-    prover['authcrypted_proof_request'] = verifier['authcrypted_proof_request']
-    return verifier, prover
+    return verifier
 
 
 '''
@@ -27,7 +23,7 @@ Requested attributes, predicates, and non-issuer attributes are provided as an a
 Non-issuer attributes refer to attributes in the proof request that the credential issuer does not have on file.
 Self-attested predicates aren't included since they are (presumably) not helpful.
 '''
-async def create_proof_of_credential(prover, verifier, self_attested_attrs = {}, requested_attrs = [], requested_preds = [], non_issuer_attributes = []):
+async def create_proof_of_credential(prover, self_attested_attrs = {}, requested_attrs = [], requested_preds = [], non_issuer_attributes = []):
     print('Prover getting credential and creating proof...')
     num_attributes_to_search = len(self_attested_attrs) + len(requested_attrs) - len(non_issuer_attributes) 
     num_predicates = len(requested_preds)
@@ -84,8 +80,7 @@ async def create_proof_of_credential(prover, verifier, self_attested_attrs = {},
     prover['authcrypted_proof'] = \
         await crypto.auth_crypt(prover['wallet'], prover['key_for_verifier'], prover['verifier_key_for_prover'],
                                 prover['proof'].encode('utf-8'))
-    verifier['authcrypted_proof'] = prover['authcrypted_proof']
-    return prover, verifier
+    return prover
 
 async def verify_proof(verifier, assertions_to_make):
     print('Verifier getting proof and verifying credential...')
