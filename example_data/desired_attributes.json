@@ -1,9 +1,0 @@
-{
-    "license": true,
-    "fetch": true,
-    "haja": false,
-    "iota": true,
-    "ocean": true,
-    "seed": false,
-    "sovrin": false
-}
