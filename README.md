@@ -56,6 +56,10 @@ Run:
 python3 claims.py
 ```
 
+### Example data
+
+Encoding used is personal preference. For Sophos, octal has been chosen.
+
 
 ## Roadmap
 
@@ -80,11 +84,14 @@ python3 claims.py
 ### Could-haves
 
 1. Run ANVIL in a Python `venv` (possibly as a Python shell CLI).
+2. Assertions on predicates as part of proof verification (not yet implemented by Sovrin).
 2. Verifiable claim that the Fetch transaction took place after accepting CFP.
 3. Restrictions on proof request attributes (as defined in Sovrin samples).
 
 
 ## Important notes
+
+Sovrin is still in beta, a common error with large proofs is `indy.error.IndyError: ErrorCode.CommonInvalidStructure` when searching for proofs on-ledger. If this occurs, simply re-run.
 
 Both the Prover and Verifier should have `data_model.json`. *ASK FETCH!! VERIFIER-SIDE: WHY DO I NEED THE DATA MODEL OF THE SERVICES I AM SEARCHING FOR (USED TO STRUCTURE QUERY)? I CAN'T POSSIBLY KNOW THE DATA MODEL BEFORE I HAVE PURCHASED THE SERVICE.*
 
