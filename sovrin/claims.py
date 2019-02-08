@@ -8,7 +8,7 @@ from setup import setup_pool, setup_steward
 from onboarding import simple_onboard, onboard_for_proving, onboarding
 from credentials import create_schema, create_credential_definition
 from issue import offer_credential, receive_credential_offer, request_credential, create_and_send_credential, store_credential
-from verify import request_proof_of_credential, create_proof_of_credential, verify_proof
+from proofs import request_proof_of_credential, create_proof_of_credential, verify_proof
 
 
 logger = logging.getLogger(__name__)
@@ -32,17 +32,17 @@ if args.storage_type:
     stg_lib = CDLL(args.library)
     result = stg_lib[args.entrypoint]()
     if result != 0:
-        print("Error unable to load wallet storage", result)
+        print('Error unable to load wallet storage', result)
         parser.print_help()
         sys.exit(0)
 
-    print("Success, loaded wallet storage", args.storage_type)
+    print('Success, loaded wallet storage', args.storage_type)
 
 
 async def run():
 
-    cred_request, schema, proof_request, self_attested_attributes, requested_attributes, \
-    requested_predicates, non_issuer_attributes = load_example_data()
+    cred_request, schema, proof_request, assertions_to_make, self_attested_attributes, \
+    requested_attributes, requested_predicates, non_issuer_attributes = load_example_data()
 
     # Add a nonce to the proof request and stringify
     proof_request['nonce'] = secrets.token_hex(16)
@@ -111,21 +111,6 @@ async def run():
                                               requested_predicates, non_issuer_attributes)
     verifier['authcrypted_proof'] = prover['authcrypted_proof']
 
-    # TO VERIFY CODE - drop for release
-    assertions_to_make = {
-        'revealed': {
-            'attr3_referent': 'Bachelor of Science, Marketing',
-            'attr4_referent': 'graduated',
-            'attr5_referent': '123-45-6789'
-        },
-        'self_attested': {
-            'attr1_referent': 'Prover',
-            'attr2_referent': 'SecondName',
-            'attr6_referent': '123-45-6789',
-        }
-        
-    }
-
     verifier = await verify_proof(verifier, assertions_to_make)
 
     print('Credential verified.')
@@ -134,19 +119,20 @@ async def run():
 # Loads examples in the example_data folder
 def load_example_data():
     example_data = {}
-    for filename in os.listdir('../example_data'):
-        with open('../example_data/' + filename) as file_:
+    for filename in os.listdir('../new_example_data'):
+        with open('../new_example_data/' + filename) as file_:
             example_data[filename.replace('.json', '')] = json.load(file_)
     cred_request = example_data['credential_request']
-    # Specify version of schema since defined two in example file
-    schema = example_data['credential_schema']#['restricted'] # Restricted for new example data
-    proof_request = example_data['proof_request']
+    # Specify schema version
+    schema = example_data['credential_schema']['restricted']
+    proof_request = example_data['proof_request']['request']
+    assertions_to_make = example_data['proof_request']['assertions_to_make']
     # Don't json.dump this
     self_attested_attributes = example_data['proof_creation']['self_attested_attributes']
     requested_attributes = example_data['proof_creation']['requested_attributes']
     requested_predicates = example_data['proof_creation']['requested_predicates']
     non_issuer_attributes = example_data['proof_creation']['non_issuer_attributes']
-    return cred_request, schema, proof_request, self_attested_attributes, \
+    return cred_request, schema, proof_request, assertions_to_make, self_attested_attributes, \
            requested_attributes, requested_predicates, non_issuer_attributes
 
 if __name__ == '__main__':
