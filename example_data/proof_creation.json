@@ -1,8 +1,8 @@
 {
     "self_attested_attributes":
     {
-        "attr1_referent": "Prover",
-        "attr2_referent": "SecondName",
+        "attr1_referent": "Jason",
+        "attr2_referent": "Object",
         "attr6_referent": "123-45-6789"
     },
     "requested_attributes": [3, 4, 5],
