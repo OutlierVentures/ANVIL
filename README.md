@@ -65,12 +65,11 @@ Encoding used is personal preference. For Sophos, octal has been chosen.
 
 ### Next up
 
-1. Integrate Verification into `verifier.py`. (0.1)
-2. Separate anchoring from claims runner.
-3. Set up files so each agent only runs their own files. (0.2)
-5. Revocation registries or credential expiry (under credential issuance).
-6. Issuer whitelist (define who can be issuers) (0.3).
-7. UI (0.4).
+1. Setup functions for already-onboarded agents.
+2. Set up files so each agent only runs their own files. (0.2)
+3. Revocation registries or credential expiry (under credential issuance).
+4. Issuer whitelist (define who can be issuers) (0.3).
+5. UI (0.4).
 
 
 ### Backlog
