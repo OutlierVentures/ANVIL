@@ -84,19 +84,32 @@ async def run():
     issuer = await create_credential_definition(issuer, schema_id, unique_schema_name, revocable = False)
 
     # Issue credential
-    issuer, prover = await offer_credential(issuer, prover, unique_schema_name)
+    issuer = await offer_credential(issuer, unique_schema_name)
+    prover['authcrypted_certificate_cred_offer'] = issuer['authcrypted_certificate_cred_offer']
+
     prover = await receive_credential_offer(prover, unique_schema_name)
-    prover, issuer = await request_credential(prover, issuer, cred_request, unique_schema_name)
-    issuer, prover = await create_and_send_credential(issuer, prover, unique_schema_name)
+    prover = await request_credential(prover, cred_request, unique_schema_name)
+    issuer['authcrypted_certificate_cred_request'] = prover['authcrypted_certificate_cred_request']
+
+
+    issuer['prover_certificate_cred_values'] = prover[unique_schema_name + '_cred_values']
+    issuer = await create_and_send_credential(issuer, unique_schema_name)
+    prover['authcrypted_certificate_cred'] = issuer['authcrypted_certificate_cred']
+
     prover = await store_credential(prover, unique_schema_name)
+    
+
+    # Prover onboarded with verifier
+    verifier['did_for_prover'], verifier['key_for_prover'], prover['did_for_verifier'], prover['key_for_verifier'], \
+    verifier['prover_connection_response'] = await onboarding(verifier, prover)
+    verifier = await request_proof_of_credential(verifier, proof_request)
+    prover['authcrypted_proof_request'] = verifier['authcrypted_proof_request']
 
 
-    verifier, prover = await request_proof_of_credential(verifier, prover, proof_request)
 
-
-    prover, verifier = await create_proof_of_credential(prover, verifier, self_attested_attributes,
-                                                        requested_attributes, requested_predicates,
-                                                        non_issuer_attributes)
+    prover = await create_proof_of_credential(prover, self_attested_attributes, requested_attributes,
+                                              requested_predicates, non_issuer_attributes)
+    verifier['authcrypted_proof'] = prover['authcrypted_proof']
 
     # TO VERIFY CODE - drop for release
     assertions_to_make = {
