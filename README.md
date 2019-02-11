@@ -4,6 +4,7 @@ Agent Negotiation Verifiable Interaction Layer – an app in the Convergence Sta
 
 Bridges Fetch.AI and Sovrin, mitigating risk in AEA FIPA negotiations with verifiable claims.
 
+### NOTE DURING DEV OF INDVIDUAL ACTOR FILES: CLEAR .indy_client
 
 ## Requirements
 
