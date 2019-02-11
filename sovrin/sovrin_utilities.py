@@ -2,7 +2,7 @@
 Core utilities for trust anchoring and verifiable claims.
 '''
 
-import asyncio
+import asyncio, json
 from os import environ
 from pathlib import Path
 from tempfile import gettempdir
@@ -53,3 +53,11 @@ def run_coroutine(coroutine, loop=None):
     if loop is None:
         loop = asyncio.get_event_loop()
     loop.run_until_complete(coroutine())
+
+def write_json(data, filename):
+    with open(filename + '.json', 'w') as outfile:
+        json.dump(data, outfile)
+
+def read_json(filename):
+    with open(filename + '.json', 'r') as infile:
+        json.loads(infile)
