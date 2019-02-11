@@ -6,4 +6,4 @@ indy
 log.txt
 .vscode
 /sovrin/temp
-/sovrin/pool_config.json
+/sovrin/*_config.json
