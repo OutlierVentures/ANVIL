@@ -9,14 +9,7 @@ from indy import anoncreds, ledger
 async def create_schema(schema, creator):
     creator_name = creator['name'].capitalize()
     print(creator_name + ' creating credential schema...')
-    '''
-    Unique schema name: helps prevent clashes in the schema referenced.
-    If 10 independent schema with identical names are used in the same session
-    and between the same parties, the percentage chance of a clash is
-    (1 - ((26^4 - 1) / 26^4)^10) * 100 = 0.002%
-    This comes at the cost of 4 random characters in the attribute string.
-    '''
-    unique_schema_name = schema['name'].replace(' ', '_').replace('-', '_').lower()# + '_'.join(random.choice('abcdefghijklmnopqrstuvwxyz') for i in range(4))
+    unique_schema_name = schema['name'].replace(' ', '_').replace('-', '_').lower()
     (creator['schema_id'], creator[unique_schema_name + '_schema']) = \
         await anoncreds.issuer_create_schema(creator['did'], schema['name'], schema['version'],
                                              json.dumps(schema['attributes']))
