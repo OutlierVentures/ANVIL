@@ -1,4 +1,4 @@
-import logging, argparse, sys, json, time, os, secrets
+import logging, argparse, sys, json, time, os, random
 
 from ctypes import CDLL
 
@@ -46,7 +46,7 @@ async def run():
     = load_example_data('../example_data/service_example/')
 
     # Add a nonce to the proof request and stringify
-    proof_request['nonce'] = secrets.token_hex(16)
+    proof_request['nonce'] = ''.join(random.choice('0123456789') for i in range(25))
 
     # Requests need to be json formatted
     proof_request = json.dumps(proof_request)
@@ -110,15 +110,8 @@ async def run():
     send_data(verifier['authcrypted_proof_request'])
     prover['authcrypted_proof_request'] = receive_data()
 
-
-    try:
-        prover = await create_proof_of_credential(prover, self_attested_attributes, requested_attributes,
+    prover = await create_proof_of_credential(prover, self_attested_attributes, requested_attributes,
                                               requested_predicates, non_issuer_attributes)
-    except:
-        print('ERROR: PROOF CREATION FAILED.\n\
-IF THE ERROR CODE ABOVE IS 113, THIS IS A KNOWN BUG OF HYPERLEDGER INDY.\n\
-FIX: JUST RUN THE CLAIMS PROCESS AGAIN.')
-        await teardown(pool_, [steward, issuer, prover, verifier])
     
     send_data(prover['authcrypted_proof'])
     verifier['authcrypted_proof'] = receive_data()
