@@ -61,31 +61,6 @@ python3 claims.py
 Encoding used is personal preference. For Sophos, octal has been chosen.
 
 
-## Roadmap
-
-### Next up
-
-1. Setup functions for already-onboarded agents.
-2. Set up files so each agent only runs their own files. (0.2)
-3. Revocation registries or credential expiry (under credential issuance).
-4. Issuer whitelist (define who can be issuers) (0.3).
-5. UI (0.4).
-
-
-### Backlog
-
-1. Simplify duplicate functions across `sovrin` files.
-2. Take sending part out of `sovrin` functions, e.g. `prover['x'] = verifier['x']` and create independent sending function.
-2. Split Fetch, Sovrin and ANVIL into separate repositories.
-3. Loading bar for `install.sh`.
-
-### Could-haves
-
-1. Run ANVIL in a Python `venv` (possibly as a Python shell CLI).
-2. Assertions on predicates as part of proof verification (not yet implemented by Sovrin).
-2. Verifiable claim that the Fetch transaction took place after accepting CFP.
-3. Restrictions on proof request attributes (as defined in Sovrin samples).
-
 
 ## Important notes
 
