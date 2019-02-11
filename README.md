@@ -66,7 +66,7 @@ Error: `indy.error.IndyError: ErrorCode.CommonInvalidStructure` or `indy.error.I
 
 Fix:`rm ~/.indy_client` and re-run.
 
-The `CommonInvalidStructure` error (code 113) is a [known bug of Hyperledger Indy](https://chat.hyperledger.org/channel/indy-sdk?msg=YLPrdkLR8r6Hknkf4). A workaround is currently in place for ANVIL, which tears down the connection and asks actors to try again.
+Nonces should be fully numeric for Hyperledger Indy. This is a common cause of the `CommonInvalidStructure` error (code 113).
 
 Indy failures may be due to missing environment variables, see install.sh for variables. These may need to be set in `.bashrc` (non-login interactive shells) instead of `.bash_profile`.
 
