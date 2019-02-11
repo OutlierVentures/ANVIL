@@ -62,3 +62,16 @@ def read_json(filename):
     with open(filename + '.json', 'r') as infile:
         data = json.loads(infile.read())
     return data
+
+# Send data to another actor. Currently saves to a network simulation temp file.
+def send_data(data, channel = 0):
+    f = open('net_sim_' + str(channel), 'wb')
+    f.write(data)
+    f.close()
+
+# Receive data from another actor. Currently loads data from a network simulation file.
+def receive_data(channel = 0):
+    f = open('net_sim_' + str(channel), 'rb')
+    data = f.read()
+    f.close()
+    return data
