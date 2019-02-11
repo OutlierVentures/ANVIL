@@ -23,9 +23,9 @@ async def setup_pool(name = 'ANVIL'):
         if ex.error_code == ErrorCode.PoolLedgerConfigAlreadyExistsError:
             pass
     pool_['handle'] = await pool.open_pool_ledger(pool_['name'], None)
-    return pool_
+    return pool_['name'], pool_['handle']
 
-async def setup_steward(pool_,
+async def setup_steward(pool_handle,
                         name = 'Steward',
                         id_ = 'mocked_steward_id',
                         key = 'mocked_steward_key',
@@ -35,7 +35,7 @@ async def setup_steward(pool_,
         'name': name,
         'wallet_config': json.dumps({'id': id_}),
         'wallet_credentials': json.dumps({'key': key}),
-        'pool': pool_['handle'],
+        'pool': pool_handle,
         'seed': seed
     }
     try:
@@ -49,11 +49,11 @@ async def setup_steward(pool_,
     steward['did'], steward['key'] = await did.create_and_store_my_did(steward['wallet'], steward['did_info'])
     return steward
 
-async def teardown(pool_, actor_list = []):
+async def teardown(pool_name, pool_handle, actor_list = []):
     print('Tearing down connections...')
     for actor in actor_list:
         await wallet.close_wallet(actor['wallet'])
         await wallet.delete_wallet(actor['wallet_config'], actor['wallet_credentials'])
-    await pool.close_pool_ledger(pool_['handle'])
-    await pool.delete_pool_ledger_config(pool_['name'])
+    await pool.close_pool_ledger(pool_handle)
+    await pool.delete_pool_ledger_config(pool_name)
     
