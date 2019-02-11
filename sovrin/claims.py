@@ -2,7 +2,6 @@ import logging, argparse, sys, json, time, os, secrets
 
 from ctypes import CDLL
 
-from indy import wallet, pool
 from sovrin_utilities import run_coroutine
 
 from setup import setup_pool, setup_steward, teardown
@@ -112,9 +111,15 @@ async def run():
     prover['authcrypted_proof_request'] = receive_data()
 
 
-
-    prover = await create_proof_of_credential(prover, self_attested_attributes, requested_attributes,
+    try:
+        prover = await create_proof_of_credential(prover, self_attested_attributes, requested_attributes,
                                               requested_predicates, non_issuer_attributes)
+    except:
+        print('ERROR: PROOF CREATION FAILED.\n\
+IF ERROR CODE ABOVE IS 113, THIS IS A KNOWN BUG OF HYPERLEDGER INDY.\n\
+FIX: JUST RUN THE CLAIMS PROCESS AGAIN.')
+        await teardown(pool_, [steward, issuer, prover, verifier])
+    
     send_data(prover['authcrypted_proof'])
     verifier['authcrypted_proof'] = receive_data()
 
