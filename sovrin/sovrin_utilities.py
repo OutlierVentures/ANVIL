@@ -60,4 +60,5 @@ def write_json(data, filename):
 
 def read_json(filename):
     with open(filename + '.json', 'r') as infile:
-        json.loads(infile)
+        data = json.loads(infile.read())
+    return data
