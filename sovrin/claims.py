@@ -2,7 +2,7 @@ import logging, argparse, sys, json, time, os, random
 
 from ctypes import CDLL
 
-from sovrin_utilities import run_coroutine
+from sovrin_utilities import run_coroutine, send_data, receive_data
 
 from setup import setup_pool, setup_steward, teardown
 from onboarding import simple_onboard, onboard_for_proving, onboarding
@@ -60,7 +60,7 @@ async def run():
                                   id_ = 'mocked_steward_id',
                                   key = 'mocked_steward_key',
                                   seed = '000000000000000000000000Steward1')
-
+                                  
     issuer, steward = await simple_onboard(pool_handle = pool_handle,
                                            anchor = steward,
                                            name = 'issuer',
@@ -141,20 +141,6 @@ def load_example_data(path):
     non_issuer_attributes = example_data['proof_creation']['non_issuer_attributes']
     return cred_request, schema, proof_request, assertions_to_make, self_attested_attributes, \
            requested_attributes, requested_predicates, non_issuer_attributes
-
-
-# Send data to another actor. Currently saves to a network simulation temp file.
-def send_data(data):
-    f = open('temp', 'wb')
-    f.write(data)
-    f.close()
-
-# Receive data from another actor. Currently loads data from a network simulation file.
-def receive_data():
-    f = open('temp', 'rb')
-    data = f.read()
-    f.close()
-    return data
 
 
 if __name__ == '__main__':
