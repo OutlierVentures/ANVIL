@@ -24,14 +24,14 @@ parser.add_argument('-s', '--creds', help='entry point for dynamic library')
 args = parser.parse_args()
 
 
-async def simple_onboard(pool_, anchor, name, id_, key):
+async def simple_onboard(pool_handle, anchor, name, id_, key):
     print('Onboarding ' + name + '...')
     anchor_name = anchor['name']
     onboardee = {
         'name': name,
         'wallet_config': json.dumps({'id': id_}),
         'wallet_credentials': json.dumps({'key': key}),
-        'pool': pool_['handle'],
+        'pool': pool_handle,
         'role': 'TRUST_ANCHOR'
     }
     anchor['did_for_' + name], anchor['key_for_' + name], onboardee['did_for_' + anchor_name], onboardee['key_for_' + anchor_name], _ = \
@@ -42,14 +42,14 @@ async def simple_onboard(pool_, anchor, name, id_, key):
     return onboardee, anchor
 
 
-async def onboard_for_proving(pool_, anchor, name, id_, key):
+async def onboard_for_proving(pool_handle, anchor, name, id_, key):
     anchor_name = anchor['name']
     print('Onboarding ' + name + ' with ' + anchor_name +'...')  
     onboardee = {
         'name': name,
         'wallet_config': json.dumps({'id': id_}),
         'wallet_credentials': json.dumps({'key': key}),
-        'pool': pool_['handle']
+        'pool': pool_handle
     }
     anchor['did_for_' + name], anchor['key_for_' + name], onboardee['did_for_' + anchor_name], onboardee['key_for_' + anchor_name], \
         anchor[name + '_connection_response'] = await onboarding(anchor, onboardee)
