@@ -53,27 +53,27 @@ async def run():
     cred_request = json.dumps(cred_request)
 
     # Set up actors - LOAD KEYS AS ENVIRONMENT VARIABLES
-    pool_ = await setup_pool('ANVIL')
+    pool_name, pool_handle = await setup_pool('ANVIL')
 
-    steward = await setup_steward(pool_ = pool_,
+    steward = await setup_steward(pool_handle = pool_handle,
                                   name = 'Steward',
                                   id_ = 'mocked_steward_id',
                                   key = 'mocked_steward_key',
                                   seed = '000000000000000000000000Steward1')
 
-    issuer, steward = await simple_onboard(pool_ = pool_,
+    issuer, steward = await simple_onboard(pool_handle = pool_handle,
                                            anchor = steward,
                                            name = 'issuer',
                                            id_ = 'mocked_issuer_id',
                                            key = 'mocked_issuer_key')
 
-    prover, issuer = await onboard_for_proving(pool_ = pool_,
+    prover, issuer = await onboard_for_proving(pool_handle = pool_handle,
                                                anchor = issuer,
                                                name = 'prover',
                                                id_ = 'mocked_prover_id',
                                                key = 'mocked_prover_key')
 
-    verifier, steward = await simple_onboard(pool_ = pool_,
+    verifier, steward = await simple_onboard(pool_handle = pool_handle,
                                              anchor = steward,
                                              name = 'verifier',
                                              id_ = 'mocked_verifier_id',
@@ -118,7 +118,7 @@ async def run():
 
     verifier = await verify_proof(verifier, assertions_to_make)
 
-    await teardown(pool_, [steward, issuer, prover, verifier])
+    await teardown(pool_name, pool_handle, [steward, issuer, prover, verifier])
 
     print('Credential verified.')
 
