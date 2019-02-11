@@ -2,6 +2,7 @@ import logging, argparse, sys, json, time, os, secrets
 
 from ctypes import CDLL
 
+from indy import wallet, pool
 from sovrin_utilities import run_coroutine
 
 from setup import setup_pool, setup_steward
@@ -118,6 +119,17 @@ async def run():
     verifier['authcrypted_proof'] = receive_data()
 
     verifier = await verify_proof(verifier, assertions_to_make)
+
+    await wallet.close_wallet(steward['wallet'])
+    await wallet.close_wallet(issuer['wallet'])
+    await wallet.close_wallet(prover['wallet'])
+    await wallet.close_wallet(verifier['wallet'])
+    await wallet.delete_wallet(steward['wallet_config'], steward['wallet_credentials'])
+    await wallet.delete_wallet(issuer['wallet_config'], issuer['wallet_credentials'])
+    await wallet.delete_wallet(prover['wallet_config'], prover['wallet_credentials'])
+    await wallet.delete_wallet(verifier['wallet_config'], verifier['wallet_credentials'])
+    await pool.close_pool_ledger(pool_['handle'])
+    await pool.delete_pool_ledger_config(pool_['name'])
 
     print('Credential verified.')
 
