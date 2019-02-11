@@ -16,7 +16,7 @@ async def create_schema(schema, creator):
     (1 - ((26^4 - 1) / 26^4)^10) * 100 = 0.002%
     This comes at the cost of 4 random characters in the attribute string.
     '''
-    unique_schema_name = schema['name'].replace(' ', '_').replace('-', '_').lower() + '_'.join(random.choice('abcdefghijklmnopqrstuvwxyz') for i in range(4))
+    unique_schema_name = schema['name'].replace(' ', '_').replace('-', '_').lower()# + '_'.join(random.choice('abcdefghijklmnopqrstuvwxyz') for i in range(4))
     (creator['schema_id'], creator[unique_schema_name + '_schema']) = \
         await anoncreds.issuer_create_schema(creator['did'], schema['name'], schema['version'],
                                              json.dumps(schema['attributes']))
