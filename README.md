@@ -1,4 +1,4 @@
-# ANVIL
+![ANVIL](./docs/img/anvil-transparent.png)
 
 Agent Negotiation Verifiable Interaction Layer – an app in the Convergence Stack.
 
