@@ -38,12 +38,12 @@ async def create_proof_of_credential(prover, self_attested_attrs = {}, requested
     cred_attrs = {}
     for i in range(1, num_attributes_to_search + 1):
         stri = str(i)
-        print(stri) # REMOVE THIS LINE
+        #print(stri)
         cred_attrs['cred_for_attr' + stri] = await get_credential_for_referent(search_for_proof_request, 'attr' + stri + '_referent')
     cred_predicates = {}
     for i in range(1, num_predicates + 1):
         stri = str(i)
-        print(stri) # REMOVE THIS LINE
+        #print(stri)
         cred_predicates['cred_for_predicate' + stri] = await get_credential_for_referent(search_for_proof_request, 'predicate' + stri + '_referent')
     await anoncreds.prover_close_credentials_search_for_proof_req(search_for_proof_request)
     # Put the needed attributes in Indy-readable format
