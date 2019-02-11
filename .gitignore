@@ -5,5 +5,5 @@ oefpy
 indy
 log.txt
 .vscode
-/sovrin/temp
+/sovrin/net_sim_*
 /sovrin/*_config.json
