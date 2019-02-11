@@ -1,7 +1,8 @@
 '''
-Sovrin setup functions:
+Sovrin setup/teardown functions:
 1. Pool setup.
 2. Steward setup.
+3. Actor teardown.
 '''
 
 import json
@@ -47,3 +48,12 @@ async def setup_steward(pool_,
     steward['did_info'] = json.dumps({'seed': steward['seed']})
     steward['did'], steward['key'] = await did.create_and_store_my_did(steward['wallet'], steward['did_info'])
     return steward
+
+async def teardown(pool_, actor_list = []):
+    print('Tearing down connections...')
+    for actor in actor_list:
+        await wallet.close_wallet(actor['wallet'])
+        await wallet.delete_wallet(actor['wallet_config'], actor['wallet_credentials'])
+    await pool.close_pool_ledger(pool_['handle'])
+    await pool.delete_pool_ledger_config(pool_['name'])
+    
