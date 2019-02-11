@@ -4,7 +4,8 @@ Agent Negotiation Verifiable Interaction Layer – an app in the Convergence Sta
 
 Bridges Fetch.AI and Sovrin, mitigating risk in AEA FIPA negotiations with verifiable claims.
 
-### NOTE DURING DEV OF INDVIDUAL ACTOR FILES: CLEAR .indy_client
+
+### NOTE DURING DEV OF INDVIDUAL ACTOR FILES: CLEAR .indy_client AND RUN 1_, 2_, ... IN ORDER EVERY TIME
 
 ## Requirements
 
@@ -59,7 +60,19 @@ python3 claims.py
 
 Encoding used is personal preference. For Sophos, octal has been chosen.
 
+### Network simulator
 
+Import `send_data` and `receive_data`.
+
+Sending:
+```
+send_data(data, channel)
+```
+
+Receiving:
+```
+receive_data(channel)
+```
 
 ## Debugging
 
