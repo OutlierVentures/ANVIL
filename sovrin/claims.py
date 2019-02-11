@@ -116,7 +116,7 @@ async def run():
                                               requested_predicates, non_issuer_attributes)
     except:
         print('ERROR: PROOF CREATION FAILED.\n\
-IF ERROR CODE ABOVE IS 113, THIS IS A KNOWN BUG OF HYPERLEDGER INDY.\n\
+IF THE ERROR CODE ABOVE IS 113, THIS IS A KNOWN BUG OF HYPERLEDGER INDY.\n\
 FIX: JUST RUN THE CLAIMS PROCESS AGAIN.')
         await teardown(pool_, [steward, issuer, prover, verifier])
     
