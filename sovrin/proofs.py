@@ -8,10 +8,10 @@ async def request_proof_of_credential(verifier, proof_request = {}):
     verifier['proof_request'] = proof_request
     # Get key for prover DID
     verifier['prover_key_for_verifier'] = \
-        await did.key_for_did(verifier['pool'], verifier['wallet'], verifier['prover_connection_response']['did'])
+        await did.key_for_did(verifier['pool'], verifier['wallet'], verifier['connection_response']['did'])
     # Authenticate, encrypt and send
     verifier['authcrypted_proof_request'] = \
-        await crypto.auth_crypt(verifier['wallet'], verifier['key_for_prover'], verifier['prover_key_for_verifier'],
+        await crypto.auth_crypt(verifier['wallet'], verifier['prover_key'], verifier['prover_key_for_verifier'],
                                 verifier['proof_request'].encode('utf-8'))
     return verifier
 
@@ -29,7 +29,7 @@ async def create_proof_of_credential(prover, self_attested_attrs = {}, requested
     num_predicates = len(requested_preds)
     # Decrypt
     prover['verifier_key_for_prover'], prover['proof_request'], _ = \
-        await auth_decrypt(prover['wallet'], prover['key_for_verifier'], prover['authcrypted_proof_request'])
+        await auth_decrypt(prover['wallet'], prover['verifier_key'], prover['authcrypted_proof_request'])
     # Search for a proof request and get the credential attributes needed
     search_for_proof_request = \
         await anoncreds.prover_search_credentials_for_proof_req(prover['wallet'],
@@ -55,7 +55,7 @@ async def create_proof_of_credential(prover, self_attested_attrs = {}, requested
     prover['creds_for_proof'] = creds_for_proof
     # Get attributes from ledger
     prover['schemas'], prover['cred_defs'], prover['revoc_states'] = \
-        await prover_get_entities_from_ledger(prover['pool'], prover['did_for_verifier'],
+        await prover_get_entities_from_ledger(prover['pool'], prover['verifier_did'],
                                               prover['creds_for_proof'], prover['name'])
     # Create the proof, specifiying what to reveal (NOTE: all verifiable whether revealed or not)
     requested_attrs_dict = {}
@@ -78,7 +78,7 @@ async def create_proof_of_credential(prover, self_attested_attrs = {}, requested
                                             prover['schemas'], prover['cred_defs'], prover['revoc_states'])
     # Authenticate, encrypt and send
     prover['authcrypted_proof'] = \
-        await crypto.auth_crypt(prover['wallet'], prover['key_for_verifier'], prover['verifier_key_for_prover'],
+        await crypto.auth_crypt(prover['wallet'], prover['verifier_key'], prover['verifier_key_for_prover'],
                                 prover['proof'].encode('utf-8'))
     return prover
 
@@ -86,7 +86,7 @@ async def verify_proof(verifier, assertions_to_make):
     print('Verifier getting proof and verifying credential...')
     # Decrypt
     _, verifier['proof'], decrypted_proof = \
-        await auth_decrypt(verifier['wallet'], verifier['key_for_prover'], verifier['authcrypted_proof'])
+        await auth_decrypt(verifier['wallet'], verifier['prover_key'], verifier['authcrypted_proof'])
     # Get credential attribute values from ledger
     verifier['schemas'], verifier['cred_defs'], verifier['revoc_ref_defs'], verifier['revoc_regs'] = \
         await verifier_get_entities_from_ledger(verifier['pool'], verifier['did'],
