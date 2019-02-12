@@ -2,7 +2,7 @@
 Core utilities for trust anchoring and verifiable claims.
 '''
 
-import asyncio, json
+import asyncio, json, random
 from os import environ
 from pathlib import Path
 from tempfile import gettempdir
@@ -75,3 +75,7 @@ def receive_data(channel = 0):
     data = f.read()
     f.close()
     return data
+
+def generate_nonce(length):
+    nonce = ''.join(random.choice('0123456789') for i in range(length))
+    return nonce
