@@ -22,7 +22,7 @@ parser.add_argument('-s', '--creds', help='entry point for dynamic library')
 
 args = parser.parse_args()
 
-
+'''
 async def simple_onboard(pool_handle, anchor, name, id_, key):
     print('Onboarding ' + name + '...')
     anchor_name = anchor['name']
@@ -64,18 +64,25 @@ async def new_onboard(anchor, name, id_, key, pool_handle):
     onboardee, authcrypted_did_info = await onboarding_onboardee_create_did(onboardee, anchor['name'])
     anchor = await onboarding_anchor_register_onboardee_did(anchor, name, authcrypted_did_info)
     return anchor, onboardee
-
-async def existing_onboard(anchor, onboardee, id_, key, pool_handle):
+'''
+'''
+This function onboards an actor with another when both are passed as arguments.
+This demands both actors exist within the same process, i.e. same file.
+It is not helpful in real-life situations where actors exist on separate machines.
+For a real network, execute the functions below this one on the two machines in turn.
+The onboardee needs to have set_self_up() before calling this function.
+'''
+async def demo_onboard(anchor, onboardee):
     name = onboardee['name']
-    from_pool = pool_handle
     anchor, connection_request = await onboarding_anchor_send(anchor, name) # Encrypt connection request?
-    onboardee, anoncrypted_connection_reponse = await onboarding_onboardee_receive_and_send(onboardee, connection_request, from_pool, anchor['name'])
+    onboardee, anoncrypted_connection_reponse = await onboarding_onboardee_receive_and_send(onboardee, connection_request, anchor['pool'], anchor['name'])
     anchor = await onboarding_anchor_receive(anchor, anoncrypted_connection_reponse, name)
     onboardee, authcrypted_did_info = await onboarding_onboardee_create_did(onboardee, anchor['name'])
     anchor = await onboarding_anchor_register_onboardee_did(anchor, name, authcrypted_did_info)
     return anchor, onboardee
 
-# Set self up
+
+# Set self up: establish Python dict data structure, create and open wallet
 async def set_self_up(name, id_, key, pool_handle):
     actor = {
         'name': name,
@@ -92,11 +99,8 @@ async def set_self_up(name, id_, key, pool_handle):
     actor['wallet'] = await wallet.open_wallet(wallet_config("open", actor['wallet_config']), wallet_credentials("open", actor['wallet_credentials']))
     return actor
 
-# Onboarding 0
-#async def onboarding_onboardee_request_onboarding()
 
-
-# Onboarding 1
+# Onboarding 1: Anchor sends connection request
 async def onboarding_anchor_send(_from, unique_onboardee_name):
     (from_to_did, from_to_key) = await did.create_and_store_my_did(_from['wallet'], "{}")
     _from[unique_onboardee_name + '_did'] = from_to_did
@@ -109,7 +113,7 @@ async def onboarding_anchor_send(_from, unique_onboardee_name):
     }
     return _from, _from['connection_request']
 
-# Onboarding 2
+# Onboarding 2: Onboardee sends connection response
 async def onboarding_onboardee_receive_and_send(to, connection_request, from_pool, unique_anchor_name):
     #to[unique_anchor_name + '_key_for_' + to['name']] = connection_request['key']
     (to_from_did, to_from_key) = await did.create_and_store_my_did(to['wallet'], "{}")
@@ -125,7 +129,7 @@ async def onboarding_onboardee_receive_and_send(to, connection_request, from_poo
         await crypto.anon_crypt(to['from_to_verkey'], to['connection_response'].encode('utf-8'))
     return to, to['anoncrypted_connection_response'] # latter to be sent to the _from agent
 
-# Onboarding 3
+# Onboarding 3: Anchor recieves connection response, establishing a secure channel
 async def onboarding_anchor_receive(_from, anoncrypted_connection_reponse, unique_onboardee_name):
     _from['anoncrypted_connection_response'] = anoncrypted_connection_reponse
     _from['connection_response'] = \
@@ -135,7 +139,7 @@ async def onboarding_anchor_receive(_from, anoncrypted_connection_reponse, uniqu
     await send_nym(_from['pool'], _from['wallet'], _from['did'], _from['connection_response']['did'], _from['connection_response']['verkey'], None)
     return _from
 
-# Verinym 1
+# Onboarding 4: Onboardee creates their DID and sends it to the Anchor
 async def onboarding_onboardee_create_did(to, unique_anchor_name):
     (to_did, to_key) = await did.create_and_store_my_did(to['wallet'], "{}")
     to['did'] = to_did
@@ -147,9 +151,9 @@ async def onboarding_onboardee_create_did(to, unique_anchor_name):
         await crypto.auth_crypt(to['wallet'], to[unique_anchor_name + '_key'], to['from_to_verkey'], to['did_info'].encode('utf-8'))
     return to, to['authcrypted_did_info']
 
-# Verinym 2
+# Onboarding 5: Anchor registers the Onboardee as a new trust anchor on the ledger
 async def onboarding_anchor_register_onboardee_did(_from, unique_onboardee_name, authcrypted_did_info):
-    sender_verkey, authdecrypted_did_info_json, authdecrypted_did_info = \
+    sender_verkey, _, authdecrypted_did_info = \
         await auth_decrypt(_from['wallet'], _from[unique_onboardee_name + '_key'], authcrypted_did_info)
     assert sender_verkey == await did.key_for_did(_from['pool'], _from['wallet'], _from['connection_response']['did'])
     await send_nym(_from['pool'], _from['wallet'], _from['did'], authdecrypted_did_info['did'],
@@ -157,7 +161,7 @@ async def onboarding_anchor_register_onboardee_did(_from, unique_onboardee_name,
     return _from
 
 
-
+'''
 async def onboarding(_from, to):
     (from_to_did, from_to_key) = await did.create_and_store_my_did(_from['wallet'], "{}")
     await send_nym(_from['pool'], _from['wallet'], _from['did'], from_to_did, from_to_key, None)
@@ -204,7 +208,7 @@ async def get_verinym(_from, from_to_did, from_to_key, to, to_from_did, to_from_
     await send_nym(_from['pool'], _from['wallet'], _from['did'], authdecrypted_did_info['did'],
                    authdecrypted_did_info['verkey'], to['role'])
     return to_did
-
+'''
 async def send_nym(pool_handle, wallet_handle, _did, new_did, new_key, role):
     nym_request = await ledger.build_nym_request(_did, new_did, new_key, None, role)
     await ledger.sign_and_submit_request(pool_handle, wallet_handle, _did, nym_request)
