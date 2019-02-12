@@ -1,27 +1,28 @@
 '''
-Sovrin onboarding functions.
+Sovrin onboarding functions:
+
+1. *Demo* onboard taking the anchor and onboardee as arguments.
+2. Onboarding 1: Anchor sends connection request.
+3. Onboarding 2: Onboardee sends connection response.
+4. Onboarding 3: Anchor recieves connection response, establishing a secure channel.
+5. Onboarding 4: Onboardee creates their DID and sends it to the Anchor.
+6. Onboarding 5: Anchor registers the Onboardee as a new trust anchor on the ledger.
+
+
+[DEV REFERENCE]
 
 Basic steps for establishing a pairwise connection:
-1. Alice sends DID to Bob in plain.
-2. Bob uses the `anon_crypt` scheme to send their `verkey` to Alice.
-3. It is now possible to proceed with `auth_crypt`.
+
+1. Alice sends their DID to Bob in plain.
+2. Bob uses `anon_crypt()` to send their `verkey` to Alice.
+3. Proceed using `auth_crypt()`.
 '''
+
 
 import json
 from indy import ledger, wallet, did, crypto
 from indy.error import IndyError, ErrorCode
-from sovrin_utilities import generate_nonce
-
-import argparse
-
-parser = argparse.ArgumentParser(description='Run python getting-started scenario (Prover/Issuer)')
-parser.add_argument('-t', '--storage_type', help='load custom wallet storage plug-in')
-parser.add_argument('-l', '--library', help='dynamic library to load for plug-in')
-parser.add_argument('-e', '--entrypoint', help='entry point for dynamic library')
-parser.add_argument('-c', '--config', help='entry point for dynamic library')
-parser.add_argument('-s', '--creds', help='entry point for dynamic library')
-
-args = parser.parse_args()
+from utilities import generate_nonce
 
 
 '''
@@ -41,26 +42,9 @@ async def demo_onboard(anchor, onboardee):
     return anchor, onboardee
 
 
-# Set self up: establish dictionary data structure, create and open wallet
-async def set_self_up(name, id_, key, pool_handle):
-    actor = {
-        'name': name,
-        'wallet_config': json.dumps({'id': id_}),
-        'wallet_credentials': json.dumps({'key': key}),
-        'pool': pool_handle,
-        'role': 'TRUST_ANCHOR' # Do not change for individualised connections
-    }
-    try:
-        await wallet.create_wallet(wallet_config("create", actor['wallet_config']), wallet_credentials("create", actor['wallet_credentials']))
-    except IndyError as ex:
-        if ex.error_code == ErrorCode.PoolLedgerConfigAlreadyExistsError:
-            pass
-    actor['wallet'] = await wallet.open_wallet(wallet_config("open", actor['wallet_config']), wallet_credentials("open", actor['wallet_credentials']))
-    return actor
-
-
-# Onboarding 1: Anchor sends connection request
+# Onboarding 1: Anchor sends connection request.
 async def onboarding_anchor_send(_from, unique_onboardee_name):
+    print(_from['name'].capitalize() + ' sending connection request to ' + unique_onboardee_name + '...')
     (from_to_did, from_to_key) = await did.create_and_store_my_did(_from['wallet'], "{}")
     _from[unique_onboardee_name + '_did'] = from_to_did
     _from[unique_onboardee_name + '_key'] = from_to_key
@@ -73,9 +57,9 @@ async def onboarding_anchor_send(_from, unique_onboardee_name):
     return _from, _from['connection_request']
 
 
-# Onboarding 2: Onboardee sends connection response
+# Onboarding 2: Onboardee sends connection response.
 async def onboarding_onboardee_receive_and_send(to, connection_request, from_pool, unique_anchor_name):
-    #to[unique_anchor_name + '_key_for_' + to['name']] = connection_request['key']
+    print(to['name'].capitalize() + ' sending connection response to ' + unique_anchor_name + '...')
     (to_from_did, to_from_key) = await did.create_and_store_my_did(to['wallet'], "{}")
     to[unique_anchor_name + '_did'] = to_from_did
     to[unique_anchor_name + '_key'] = to_from_key
@@ -90,8 +74,9 @@ async def onboarding_onboardee_receive_and_send(to, connection_request, from_poo
     return to, to['anoncrypted_connection_response'] # latter to be sent to the _from agent
 
 
-# Onboarding 3: Anchor recieves connection response, establishing a secure channel
+# Onboarding 3: Anchor recieves connection response, establishing a secure channel.
 async def onboarding_anchor_receive(_from, anoncrypted_connection_reponse, unique_onboardee_name):
+    print(_from['name'].capitalize() + ' establishing a secure channel with ' + unique_onboardee_name + '...')
     _from['anoncrypted_connection_response'] = anoncrypted_connection_reponse
     _from['connection_response'] = \
         json.loads((await crypto.anon_decrypt(_from['wallet'], _from[unique_onboardee_name + '_key'],
@@ -101,8 +86,9 @@ async def onboarding_anchor_receive(_from, anoncrypted_connection_reponse, uniqu
     return _from
 
 
-# Onboarding 4: Onboardee creates their DID and sends it to the Anchor
+# Onboarding 4: Onboardee creates their DID and sends it to the Anchor.
 async def onboarding_onboardee_create_did(to, unique_anchor_name):
+    print(to['name'].capitalize() + ' getting their DID...')
     (to_did, to_key) = await did.create_and_store_my_did(to['wallet'], "{}")
     to['did'] = to_did
     to['did_info'] = json.dumps({
@@ -114,8 +100,9 @@ async def onboarding_onboardee_create_did(to, unique_anchor_name):
     return to, to['authcrypted_did_info']
 
 
-# Onboarding 5: Anchor registers the Onboardee as a new trust anchor on the ledger
+# Onboarding 5: Anchor registers the Onboardee as a new trust anchor on the ledger.
 async def onboarding_anchor_register_onboardee_did(_from, unique_onboardee_name, authcrypted_did_info):
+    print(_from['name'].capitalize() + ' registering ' + unique_onboardee_name + ' as a new trust anchor...')
     sender_verkey, _, authdecrypted_did_info = \
         await auth_decrypt(_from['wallet'], _from[unique_onboardee_name + '_key'], authcrypted_did_info)
     assert sender_verkey == await did.key_for_did(_from['pool'], _from['wallet'], _from['connection_response']['did'])
@@ -127,27 +114,6 @@ async def onboarding_anchor_register_onboardee_did(_from, unique_onboardee_name,
 async def send_nym(pool_handle, wallet_handle, _did, new_did, new_key, role):
     nym_request = await ledger.build_nym_request(_did, new_did, new_key, None, role)
     await ledger.sign_and_submit_request(pool_handle, wallet_handle, _did, nym_request)
-
-
-def wallet_config(operation, wallet_config_str):
-    if not args.storage_type:
-        return wallet_config_str
-    wallet_config_json = json.loads(wallet_config_str)
-    wallet_config_json['storage_type'] = args.storage_type
-    if args.config:
-        wallet_config_json['storage_config'] = json.loads(args.config)
-    #print(operation, json.dumps(wallet_config_json))
-    return json.dumps(wallet_config_json)
-
-
-def wallet_credentials(operation, wallet_credentials_str):
-    if not args.storage_type:
-        return wallet_credentials_str
-    wallet_credentials_json = json.loads(wallet_credentials_str)
-    if args.creds:
-        wallet_credentials_json['storage_credentials'] = json.loads(args.creds)
-    #print(operation, json.dumps(wallet_credentials_json))
-    return json.dumps(wallet_credentials_json)
 
 
 async def auth_decrypt(wallet_handle, key, message):
