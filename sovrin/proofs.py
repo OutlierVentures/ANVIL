@@ -1,3 +1,11 @@
+'''
+Sovrin proofs functions:
+
+1. Request proof of a credential.
+2. Create proof of a credential.
+3. Verify a proof.
+'''
+
 import json
 from indy import anoncreds, did, crypto, ledger
 
