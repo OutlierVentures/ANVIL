@@ -5,7 +5,7 @@ from ctypes import CDLL
 from sovrin_utilities import run_coroutine, send_data, receive_data
 
 from setup import setup_pool, setup_steward, teardown
-from onboarding import simple_onboard, onboard_for_proving, onboarding, new_onboard, new_pairwise_onboard
+from onboarding import simple_onboard, onboard_for_proving, onboarding, new_onboard, existing_onboard
 from credentials import create_schema, create_credential_definition
 from issue import offer_credential, receive_credential_offer, request_credential, create_and_send_credential, store_credential
 from proofs import request_proof_of_credential, create_proof_of_credential, verify_proof
@@ -14,7 +14,7 @@ from proofs import request_proof_of_credential, create_proof_of_credential, veri
 '''
 It is recommended to keep the actor names as steward, issuer, prover, & verifier (all lowercase).
 User-facing names are implemented on the Fetch side.
-Changing names means going through the modules (esp. issue.py) and dynamically naming fields
+Changing names means going through the modules (esp. issue.py & proofs.py) and dynamically naming fields
 [actor]_key or [actor]_did depending on the context.
 '''
 
@@ -117,8 +117,11 @@ async def run():
     
 
     # Prover onboarded with verifier
+    '''
     verifier['did_for_prover'], verifier['key_for_prover'], prover['did_for_verifier'], prover['key_for_verifier'], \
     verifier['prover_connection_response'] = await onboarding(verifier, prover)
+    '''
+    verifier, prover = await existing_onboard(verifier, prover, 'mocked_prover_id', 'mocked_prover_key', pool_handle)
     verifier = await request_proof_of_credential(verifier, proof_request)
     send_data(verifier['authcrypted_proof_request'])
     prover['authcrypted_proof_request'] = receive_data()
