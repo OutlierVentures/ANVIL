@@ -34,7 +34,7 @@ The onboardee needs to have set_self_up() before calling this function.
 '''
 async def demo_onboard(anchor, onboardee):
     name = onboardee['name']
-    anchor, connection_request = await onboarding_anchor_send(anchor, name) # Encrypt connection request?
+    anchor, connection_request = await onboarding_anchor_send(anchor, name)
     onboardee, anoncrypted_connection_reponse = await onboarding_onboardee_receive_and_send(onboardee, connection_request, anchor['pool'], anchor['name'])
     anchor = await onboarding_anchor_receive(anchor, anoncrypted_connection_reponse, name)
     onboardee, authcrypted_did_info = await onboarding_onboardee_create_did(onboardee, anchor['name'])
