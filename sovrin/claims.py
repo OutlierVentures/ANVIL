@@ -5,7 +5,7 @@ from ctypes import CDLL
 from sovrin_utilities import run_coroutine, send_data, receive_data
 
 from setup import setup_pool, setup_steward, teardown
-from onboarding import simple_onboard, onboard_for_proving, onboarding, new_onboard, existing_onboard
+from onboarding import set_self_up, demo_onboard
 from credentials import create_schema, create_credential_definition
 from issue import offer_credential, receive_credential_offer, request_credential, create_and_send_credential, store_credential
 from proofs import request_proof_of_credential, create_proof_of_credential, verify_proof
@@ -69,10 +69,12 @@ async def run():
                                   id_ = 'mocked_steward_id',
                                   key = 'mocked_steward_key',
                                   seed = '000000000000000000000000Steward1')
-
-    steward, issuer = await new_onboard(steward, 'issuer', 'mocked_issuer_id', 'mocked_issuer_key', pool_handle)                           
-    issuer, prover = await new_onboard(issuer, 'prover', 'mocked_prover_id', 'mocked_prover_key', pool_handle)  
-    steward, verifier = await new_onboard(steward, 'verifier', 'mocked_verifier_id', 'mocked_verifier_key', pool_handle)  
+    issuer = await set_self_up('issuer', 'mocked_issuer_id', 'mocked_issuer_key', pool_handle)
+    prover = await set_self_up('prover', 'mocked_prover_id', 'mocked_prover_key', pool_handle)
+    verifier = await set_self_up('verifier', 'mocked_verifier_id', 'mocked_verifier_key', pool_handle)
+    steward, issuer = await demo_onboard(steward, issuer)
+    issuer, prover = await demo_onboard(issuer, prover)
+    steward, verifier = await demo_onboard(steward, verifier)
     '''
     issuer, steward = await simple_onboard(pool_handle = pool_handle,
                                            anchor = steward,
@@ -121,7 +123,7 @@ async def run():
     verifier['did_for_prover'], verifier['key_for_prover'], prover['did_for_verifier'], prover['key_for_verifier'], \
     verifier['prover_connection_response'] = await onboarding(verifier, prover)
     '''
-    verifier, prover = await existing_onboard(verifier, prover, 'mocked_prover_id', 'mocked_prover_key', pool_handle)
+    verifier, prover = await demo_onboard(verifier, prover)
     verifier = await request_proof_of_credential(verifier, proof_request)
     send_data(verifier['authcrypted_proof_request'])
     prover['authcrypted_proof_request'] = receive_data()
