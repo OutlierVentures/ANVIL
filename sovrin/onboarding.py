@@ -56,6 +56,103 @@ async def onboard_for_proving(pool_handle, anchor, name, id_, key):
     return onboardee, anchor
 
 
+async def new_onboard(anchor, name, id_, key, pool_handle):
+    from_pool = pool_handle
+    onboardee = await set_self_up(name, id_, key, pool_handle)
+    anchor, connection_request = await onboarding_anchor_send(anchor, name) # Encrypt connection request?
+    onboardee, anoncrypted_connection_reponse = await onboarding_onboardee_receive_and_send(onboardee, connection_request, from_pool, anchor['name'])
+    anchor = await onboarding_anchor_receive(anchor, anoncrypted_connection_reponse, name)
+    onboardee, authcrypted_did_info = await onboarding_onboardee_create_did(onboardee, anchor['name'])
+    anchor = await onboarding_anchor_register_onboardee_did(anchor, name, authcrypted_did_info)
+    return anchor, onboardee
+
+async def new_pairwise_onboard(anchor, name, id_, key, pool_handle):
+    from_pool = pool_handle
+    onboardee = await set_self_up(name, id_, key, pool_handle)
+    anchor, connection_request = await onboarding_anchor_send(anchor, name) # Encrypt connection request?
+    onboardee, anoncrypted_connection_reponse = await onboarding_onboardee_receive_and_send(onboardee, connection_request, from_pool, anchor['name'])
+    anchor = await onboarding_anchor_receive(anchor, anoncrypted_connection_reponse, name)
+    return anchor, onboardee
+
+# Set self up
+async def set_self_up(name, id_, key, pool_handle):
+    actor = {
+        'name': name,
+        'wallet_config': json.dumps({'id': id_}),
+        'wallet_credentials': json.dumps({'key': key}),
+        'pool': pool_handle,
+        'role': 'TRUST_ANCHOR' # Do not change for individualised connections
+    }
+    try:
+        await wallet.create_wallet(wallet_config("create", actor['wallet_config']), wallet_credentials("create", actor['wallet_credentials']))
+    except IndyError as ex:
+        if ex.error_code == ErrorCode.PoolLedgerConfigAlreadyExistsError:
+            pass
+    actor['wallet'] = await wallet.open_wallet(wallet_config("open", actor['wallet_config']), wallet_credentials("open", actor['wallet_credentials']))
+    return actor
+
+# Onboarding 1
+async def onboarding_anchor_send(_from, unique_onboardee_name):
+    (from_to_did, from_to_key) = await did.create_and_store_my_did(_from['wallet'], "{}")
+    _from[unique_onboardee_name + '_did'] = from_to_did
+    _from[unique_onboardee_name + '_key'] = from_to_key
+    await send_nym(_from['pool'], _from['wallet'], _from['did'], from_to_did, from_to_key, None)
+    _from['connection_request'] = {
+        'did': from_to_did,
+        'key': from_to_key, # ##### FOR THE LOVE OF GOD ENCRYPT. #####
+        'nonce': 123456789 #NOTE TO SELF TRY REAL 9 NUMBER NONCE HERE
+    }
+    return _from, _from['connection_request']
+
+# Onboarding 2
+async def onboarding_onboardee_receive_and_send(to, connection_request, from_pool, unique_anchor_name):
+    to[unique_anchor_name + '_key_for_' + to['name']] = connection_request['key']
+    (to_from_did, to_from_key) = await did.create_and_store_my_did(to['wallet'], "{}")
+    to[unique_anchor_name + '_did'] = to_from_did
+    to[unique_anchor_name + '_key'] = to_from_key
+    from_to_verkey = await did.key_for_did(from_pool, to['wallet'], connection_request['did'])
+    to['connection_response'] = json.dumps({
+        'did': to_from_did,
+        'verkey': to_from_key,
+        'nonce': connection_request['nonce']
+    })
+    to['anoncrypted_connection_response'] = \
+        await crypto.anon_crypt(from_to_verkey, to['connection_response'].encode('utf-8'))
+    return to, to['anoncrypted_connection_response'] # latter to be sent to the _from agent
+
+# Onboarding 3
+async def onboarding_anchor_receive(_from, anoncrypted_connection_reponse, unique_onboardee_name):
+    _from['anoncrypted_connection_response'] = anoncrypted_connection_reponse
+    _from['connection_response'] = \
+        json.loads((await crypto.anon_decrypt(_from['wallet'], _from[unique_onboardee_name + '_key'],
+                                              _from['anoncrypted_connection_response'])).decode("utf-8"))
+    assert _from['connection_request']['nonce'] == _from['connection_response']['nonce']
+    await send_nym(_from['pool'], _from['wallet'], _from['did'], _from['connection_response']['did'], _from['connection_response']['verkey'], None)
+    return _from
+
+# Verinym 1
+async def onboarding_onboardee_create_did(to, unique_anchor_name):
+    (to_did, to_key) = await did.create_and_store_my_did(to['wallet'], "{}")
+    to['did'] = to_did
+    to['did_info'] = json.dumps({
+        'did': to_did,
+        'verkey': to_key
+    })
+    to['authcrypted_did_info'] = \
+        await crypto.auth_crypt(to['wallet'], to[unique_anchor_name + '_key'], to[unique_anchor_name + '_key_for_' + to['name']], to['did_info'].encode('utf-8'))
+    return to, to['authcrypted_did_info']
+
+# Verinym 2
+async def onboarding_anchor_register_onboardee_did(_from, unique_onboardee_name, authcrypted_did_info):
+    sender_verkey, authdecrypted_did_info_json, authdecrypted_did_info = \
+        await auth_decrypt(_from['wallet'], _from[unique_onboardee_name + '_key'], authcrypted_did_info)
+    assert sender_verkey == await did.key_for_did(_from['pool'], _from['wallet'], _from['connection_response']['did'])
+    await send_nym(_from['pool'], _from['wallet'], _from['did'], authdecrypted_did_info['did'],
+                   authdecrypted_did_info['verkey'], 'TRUST_ANCHOR') # Using to['role'] instead of trust anchor may fix issues
+    return _from
+
+
+
 async def onboarding(_from, to):
     (from_to_did, from_to_key) = await did.create_and_store_my_did(_from['wallet'], "{}")
     await send_nym(_from['pool'], _from['wallet'], _from['did'], from_to_did, from_to_key, None)
