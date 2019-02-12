@@ -72,6 +72,7 @@ async def run():
 
     steward, issuer = await new_onboard(steward, 'issuer', 'mocked_issuer_id', 'mocked_issuer_key', pool_handle)                           
     issuer, prover = await new_onboard(issuer, 'prover', 'mocked_prover_id', 'mocked_prover_key', pool_handle)  
+    steward, verifier = await new_onboard(steward, 'verifier', 'mocked_verifier_id', 'mocked_verifier_key', pool_handle)  
     '''
     issuer, steward = await simple_onboard(pool_handle = pool_handle,
                                            anchor = steward,
@@ -84,13 +85,13 @@ async def run():
                                                name = 'prover',
                                                id_ = 'mocked_prover_id',
                                                key = 'mocked_prover_key')
-    '''
+
     verifier, steward = await simple_onboard(pool_handle = pool_handle,
                                              anchor = steward,
                                              name = 'verifier',
                                              id_ = 'mocked_verifier_id',
                                              key = 'mocked_verifier_key')
-    
+    '''
     
     # Create schema and corresponding definition
     unique_schema_name, schema_id, issuer = await create_schema(schema, issuer)
