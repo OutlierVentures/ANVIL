@@ -1,11 +1,10 @@
 '''
 Sovrin onboarding functions.
 
-A common problem here is referencing attributes of actors using their name as part of the
-string, for ex. 'did_for_verifier' or 'prover_connection_response' in code elsewhere.
-
-A general fix is to go through code assigning the actor name to a variable, for ex.
-'did_for_' + name or name + '_connection_response'.
+Basic steps for establishing a pairwise connection:
+1. Alice sends DID to Bob in plain.
+2. Bob uses the `anon_crypt` scheme to send their `verkey` to Alice.
+3. It is now possible to proceed with `auth_crypt`.
 '''
 
 import json
@@ -93,6 +92,10 @@ async def set_self_up(name, id_, key, pool_handle):
     actor['wallet'] = await wallet.open_wallet(wallet_config("open", actor['wallet_config']), wallet_credentials("open", actor['wallet_credentials']))
     return actor
 
+# Onboarding 0
+#async def onboarding_onboardee_request_onboarding()
+
+
 # Onboarding 1
 async def onboarding_anchor_send(_from, unique_onboardee_name):
     (from_to_did, from_to_key) = await did.create_and_store_my_did(_from['wallet'], "{}")
@@ -101,25 +104,25 @@ async def onboarding_anchor_send(_from, unique_onboardee_name):
     await send_nym(_from['pool'], _from['wallet'], _from['did'], from_to_did, from_to_key, None)
     _from['connection_request'] = {
         'did': from_to_did,
-        'key': from_to_key, # ##### FOR THE LOVE OF GOD ENCRYPT. #####
+        #'key': from_to_key, # ##### FOR THE LOVE OF GOD ENCRYPT. #####
         'nonce': 123456789 #NOTE TO SELF TRY REAL 9 NUMBER NONCE HERE
     }
     return _from, _from['connection_request']
 
 # Onboarding 2
 async def onboarding_onboardee_receive_and_send(to, connection_request, from_pool, unique_anchor_name):
-    to[unique_anchor_name + '_key_for_' + to['name']] = connection_request['key']
+    #to[unique_anchor_name + '_key_for_' + to['name']] = connection_request['key']
     (to_from_did, to_from_key) = await did.create_and_store_my_did(to['wallet'], "{}")
     to[unique_anchor_name + '_did'] = to_from_did
     to[unique_anchor_name + '_key'] = to_from_key
-    from_to_verkey = await did.key_for_did(from_pool, to['wallet'], connection_request['did'])
+    to['from_to_verkey'] = await did.key_for_did(from_pool, to['wallet'], connection_request['did'])
     to['connection_response'] = json.dumps({
         'did': to_from_did,
         'verkey': to_from_key,
         'nonce': connection_request['nonce']
     })
     to['anoncrypted_connection_response'] = \
-        await crypto.anon_crypt(from_to_verkey, to['connection_response'].encode('utf-8'))
+        await crypto.anon_crypt(to['from_to_verkey'], to['connection_response'].encode('utf-8'))
     return to, to['anoncrypted_connection_response'] # latter to be sent to the _from agent
 
 # Onboarding 3
@@ -141,7 +144,7 @@ async def onboarding_onboardee_create_did(to, unique_anchor_name):
         'verkey': to_key
     })
     to['authcrypted_did_info'] = \
-        await crypto.auth_crypt(to['wallet'], to[unique_anchor_name + '_key'], to[unique_anchor_name + '_key_for_' + to['name']], to['did_info'].encode('utf-8'))
+        await crypto.auth_crypt(to['wallet'], to[unique_anchor_name + '_key'], to['from_to_verkey'], to['did_info'].encode('utf-8'))
     return to, to['authcrypted_did_info']
 
 # Verinym 2
