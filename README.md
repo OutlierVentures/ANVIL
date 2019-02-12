@@ -60,6 +60,7 @@ python3 claims.py
 
 Encoding used is personal preference. For Sophos, octal has been chosen.
 
+
 ### Network simulator
 
 Import `send_data` and `receive_data`.
@@ -74,21 +75,23 @@ Receiving:
 receive_data(channel)
 ```
 
+
 ## Debugging
 
 Error: `indy.error.IndyError: ErrorCode.CommonInvalidStructure` or `indy.error.IndyError: ErrorCode.DidAlreadyExistsError`
 
 Fix:`rm ~/.indy_client` and re-run.
 
-Nonces should be fully numeric for Hyperledger Indy. This is a common cause of the `CommonInvalidStructure` error (code 113).
+Nonces should be fully numeric for Hyperledger Indy. This is a common cause of the `CommonInvalidStructure` error (code 113). There is an Indy-compatible nonce generator in the `sovrin/utilities` module.
 
-Indy failures may be due to missing environment variables, see install.sh for variables. These may need to be set in `.bashrc` (non-login interactive shells) instead of `.bash_profile`.
+Indy failures may be due to missing environment variables, see install.sh for which ones have been modified. These may need to be set in `.bashrc` (non-login interactive shells) instead of `.bash_profile`.
 
 Both the Prover and Verifier should have `data_model.json`. *ASK FETCH!! VERIFIER-SIDE: WHY DO I NEED THE DATA MODEL OF THE SERVICES I AM SEARCHING FOR (USED TO STRUCTURE QUERY)? I CAN'T POSSIBLY KNOW THE DATA MODEL BEFORE I HAVE PURCHASED THE SERVICE.*
 
 On a proof reply (creating a proof), the requested attributes field is what will be revealed.
 
 Schema versions must be floats to be compatible with Sovrin.
+
 
 
 
