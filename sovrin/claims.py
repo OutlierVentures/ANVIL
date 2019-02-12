@@ -2,7 +2,7 @@ import logging, argparse, sys, json, time, os, random
 
 from ctypes import CDLL
 
-from sovrin_utilities import run_coroutine, send_data, receive_data
+from sovrin_utilities import run_coroutine, send_data, receive_data, generate_nonce
 
 from setup import setup_pool, setup_steward, teardown
 from onboarding import set_self_up, demo_onboard
@@ -55,7 +55,7 @@ async def run():
     = load_example_data('../example_data/service_example/')
 
     # Add a nonce to the proof request and stringify
-    proof_request['nonce'] = ''.join(random.choice('0123456789') for i in range(25))
+    proof_request['nonce'] = generate_nonce(25)
 
     # Requests need to be json formatted
     proof_request = json.dumps(proof_request)
