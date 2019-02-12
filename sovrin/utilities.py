@@ -1,5 +1,5 @@
 '''
-Core utilities for trust anchoring and verifiable claims.
+Sovrin core utilities.
 '''
 
 import asyncio, json, random
@@ -8,9 +8,6 @@ from pathlib import Path
 from tempfile import gettempdir
 
 
-'''
-MAY NOT NEED
-'''
 def path_home() -> Path:
     return Path.home().joinpath(".indy_client")
 
@@ -22,9 +19,6 @@ def get_pool_genesis_txn_path(pool_name):
     return path
 
 
-'''
-MAY NOT NEED
-'''
 def pool_genesis_txn_data():
     pool_ip = environ.get("TEST_POOL_IP", "127.0.0.1")
 
@@ -54,14 +48,17 @@ def run_coroutine(coroutine, loop=None):
         loop = asyncio.get_event_loop()
     loop.run_until_complete(coroutine())
 
+
 def write_json(data, filename):
     with open(filename + '.json', 'w') as outfile:
         json.dump(data, outfile)
+
 
 def read_json(filename):
     with open(filename + '.json', 'r') as infile:
         data = json.loads(infile.read())
     return data
+
 
 # Send data to another actor. Currently saves to a network simulation temp file.
 def send_data(data, channel = 0):
@@ -69,12 +66,14 @@ def send_data(data, channel = 0):
     f.write(data)
     f.close()
 
+
 # Receive data from another actor. Currently loads data from a network simulation file.
 def receive_data(channel = 0):
     f = open('net_sim_' + str(channel), 'rb')
     data = f.read()
     f.close()
     return data
+
 
 def generate_nonce(length):
     nonce = ''.join(random.choice('0123456789') for i in range(length))
