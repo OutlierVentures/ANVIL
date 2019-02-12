@@ -1,6 +1,6 @@
 import json
 from indy import anoncreds, did, crypto, ledger
-from onboarding import onboarding
+
 
 async def request_proof_of_credential(verifier, proof_request = {}):
     print('Verifier requesting proof of credential...')
