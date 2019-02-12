@@ -66,12 +66,14 @@ async def new_onboard(anchor, name, id_, key, pool_handle):
     anchor = await onboarding_anchor_register_onboardee_did(anchor, name, authcrypted_did_info)
     return anchor, onboardee
 
-async def new_pairwise_onboard(anchor, name, id_, key, pool_handle):
+async def existing_onboard(anchor, onboardee, id_, key, pool_handle):
+    name = onboardee['name']
     from_pool = pool_handle
-    onboardee = await set_self_up(name, id_, key, pool_handle)
     anchor, connection_request = await onboarding_anchor_send(anchor, name) # Encrypt connection request?
     onboardee, anoncrypted_connection_reponse = await onboarding_onboardee_receive_and_send(onboardee, connection_request, from_pool, anchor['name'])
     anchor = await onboarding_anchor_receive(anchor, anoncrypted_connection_reponse, name)
+    onboardee, authcrypted_did_info = await onboarding_onboardee_create_did(onboardee, anchor['name'])
+    anchor = await onboarding_anchor_register_onboardee_did(anchor, name, authcrypted_did_info)
     return anchor, onboardee
 
 # Set self up
