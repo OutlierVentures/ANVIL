@@ -1,24 +1,22 @@
-import logging, argparse, sys, json, time, os, random
-
-from ctypes import CDLL
-
-from sovrin_utilities import run_coroutine, send_data, receive_data, generate_nonce
-
-from setup import setup_pool, setup_steward, teardown
-from onboarding import set_self_up, demo_onboard
-from credentials import create_schema, create_credential_definition
-from issue import offer_credential, receive_credential_offer, request_credential, create_and_send_credential, store_credential
-from proofs import request_proof_of_credential, create_proof_of_credential, verify_proof
-
-
 '''
+Full claims runner for demo purposes.
+
 It is recommended to keep the actor names as steward, issuer, prover, & verifier (all lowercase).
 User-facing names are implemented on the Fetch side.
 Changing names means going through the modules (esp. issue.py & proofs.py) and dynamically naming fields
 [actor]_key or [actor]_did depending on the context.
 '''
 
+import logging, argparse, sys, json, time, os
 
+from ctypes import CDLL
+
+from utilities import run_coroutine, send_data, receive_data, generate_nonce
+from setup import setup_pool, set_self_up, teardown
+from onboarding import demo_onboard
+from schema import create_schema, create_credential_definition
+from credentials import offer_credential, receive_credential_offer, request_credential, create_and_send_credential, store_credential
+from proofs import request_proof_of_credential, create_proof_of_credential, verify_proof
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.WARN)
@@ -29,7 +27,6 @@ parser.add_argument('-l', '--library', help='dynamic library to load for plug-in
 parser.add_argument('-e', '--entrypoint', help='entry point for dynamic library')
 parser.add_argument('-c', '--config', help='entry point for dynamic library')
 parser.add_argument('-s', '--creds', help='entry point for dynamic library')
-
 args = parser.parse_args()
 
 
@@ -64,36 +61,15 @@ async def run():
     # Set up actors - LOAD KEYS AS ENVIRONMENT VARIABLES
     pool_name, pool_handle = await setup_pool('ANVIL')
 
-    steward = await setup_steward(pool_handle = pool_handle,
-                                  name = 'steward',
-                                  id_ = 'mocked_steward_id',
-                                  key = 'mocked_steward_key',
-                                  seed = '000000000000000000000000Steward1')
+    # Generally only seed-initialise existing Steward Anchors
+    steward = await set_self_up('steward', 'mocked_steward_id', 'mocked_steward_key', pool_handle,
+                                seed = '000000000000000000000000Steward1')
     issuer = await set_self_up('issuer', 'mocked_issuer_id', 'mocked_issuer_key', pool_handle)
     prover = await set_self_up('prover', 'mocked_prover_id', 'mocked_prover_key', pool_handle)
     verifier = await set_self_up('verifier', 'mocked_verifier_id', 'mocked_verifier_key', pool_handle)
     steward, issuer = await demo_onboard(steward, issuer)
     issuer, prover = await demo_onboard(issuer, prover)
     steward, verifier = await demo_onboard(steward, verifier)
-    '''
-    issuer, steward = await simple_onboard(pool_handle = pool_handle,
-                                           anchor = steward,
-                                           name = 'issuer',
-                                           id_ = 'mocked_issuer_id',
-                                           key = 'mocked_issuer_key')
-
-    prover, issuer = await onboard_for_proving(pool_handle = pool_handle,
-                                               anchor = issuer,
-                                               name = 'prover',
-                                               id_ = 'mocked_prover_id',
-                                               key = 'mocked_prover_key')
-
-    verifier, steward = await simple_onboard(pool_handle = pool_handle,
-                                             anchor = steward,
-                                             name = 'verifier',
-                                             id_ = 'mocked_verifier_id',
-                                             key = 'mocked_verifier_key')
-    '''
     
     # Create schema and corresponding definition
     unique_schema_name, schema_id, issuer = await create_schema(schema, issuer)
@@ -119,10 +95,6 @@ async def run():
     
 
     # Prover onboarded with verifier
-    '''
-    verifier['did_for_prover'], verifier['key_for_prover'], prover['did_for_verifier'], prover['key_for_verifier'], \
-    verifier['prover_connection_response'] = await onboarding(verifier, prover)
-    '''
     verifier, prover = await demo_onboard(verifier, prover)
     verifier = await request_proof_of_credential(verifier, proof_request)
     send_data(verifier['authcrypted_proof_request'])
