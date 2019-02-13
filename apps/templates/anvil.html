@@ -2,8 +2,9 @@
 <title>ANVIL {{ actor }}</title>
 {% if actor %}
     <h1>Hello {{ actor }}!</h1>
-    <form action="/hello" method="post">
-        <button name="forwardBtn" type="submit">Forward</button>
+    <form action="/connection_request" method="post">
+        <input>
+        <button name="forwardBtn" type="submit">Connection request</button>
     </form>
 {% else %}
     <h1>Hello, World!</h1>
