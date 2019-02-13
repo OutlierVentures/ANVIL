@@ -3,7 +3,6 @@
 oefcore
 oefpy
 indy
-log.txt
+**/log.txt
+**/net_sim_*
 .vscode
-/sovrin/net_sim_*
-/sovrin/*_config.json
