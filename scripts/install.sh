@@ -68,7 +68,7 @@ pip3 install -r requirements.txt
 python3 scripts/setup_test.py
 
 # Tox environment fix for Python 3.7
-cp ../tox-fix.ini tox.ini # REMOVE ONCE ISSUE CLOSED
+cp ../scripts/tox-fix.ini tox.ini # REMOVE ONCE ISSUE CLOSED
 
 # Build docs
 cd docs
@@ -124,8 +124,8 @@ export LD_LIBRARY_PATH='$LIBRARY_PATH >> ~/.bash_profile
     cd ../..
 fi
 
-# Install Python wrapper for Hyperledger Indy and Flask
-pip3 install python3-indy flask
+# Install Python wrapper for Hyperledger Indy and Quart
+pip3 install python3-indy quart
 
 # Testing Sovrin is done once connected to a node pool
 # Hence Sovrin tests are in a separate file
