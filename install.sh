@@ -124,8 +124,8 @@ export LD_LIBRARY_PATH='$LIBRARY_PATH >> ~/.bash_profile
     cd ../..
 fi
 
-# Install Python wrapper for Hyperledger Indy
-pip3 install python3-indy
+# Install Python wrapper for Hyperledger Indy and Flask
+pip3 install python3-indy flask
 
 # Testing Sovrin is done once connected to a node pool
 # Hence Sovrin tests are in a separate file
