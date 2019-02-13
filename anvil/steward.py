@@ -14,12 +14,14 @@ port = 5000
 def index():
     return render_template('anvil.html', actor = 'anchor')
 
+
 @app.route('/setup', methods = ['GET', 'POST'])
 async def setupl():
     session['pool_name'], session['pool_handle'] = await setup_pool('ANVIL')
     pool_handle = session.get('pool_handle')
     print(pool_handle)
     return redirect(url_for('index'))
+
 
 @app.route('/connection_request', methods = ['GET', 'POST'])
 async def connection_request():
@@ -33,5 +35,5 @@ async def connection_request():
 
 
 if __name__ == '__main__':
-    app.secret_key = 'super secret key'
-    app.run(host, port, debug=True)
+    app.secret_key = generate_base58(64)
+    app.run(host, port, debug)
