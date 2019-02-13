@@ -15,23 +15,38 @@ Bridges Fetch.AI and Sovrin, mitigating risk in AEA FIPA negotiations with verif
 
 ## Basics
 
-Install: `./install.sh`
+The installer and install tester should be run from the root directory (the one containg this readme).
 
-Start Fetch node: `./start_fetch_node.sh`
+Install: `./scripts/install.sh`
 
-Spin up Sovrin node pool: `./start_sovrin_pool.sh`
+Start Fetch node: `./scripts/start_fetch.sh`
 
-Test install (requires a running Sovrin pool): `./test_install.sh`
+Spin up Sovrin node pool: `./scripts/start_sovrin.sh`
 
-Stop Fetch node: `./stop_fetch_node.sh`
+Test install (requires a running Sovrin pool): `./scripts/test.sh`
 
-Stop Sovrin node pool: `./stop_sovrin_pool.sh`
+Stop Fetch node: `./scripts/stop_fetch.sh`
+
+Stop Sovrin node pool: `./scripts/stop_sovrin.sh`
 
 Nodes are currently local.
 
 The Fetch node sits on port 3333.
 
 The Sovrin node pool sits on ports 9701 through 9708.
+
+### Using apps
+
+Default mocked testing accounts are alredy set up for use without the Sovrin mainnet. If just testing, there's no need to set up the below.
+
+For real accounts, set up your address and key as environment variables *on the relevant machine and in the same session (terminal) as running the app for each actor*. You only need to set up the components you are using, e.g. in the case where actor are already Sovrin-onboarded, where there is no need for a Steward.
+
+```
+ANVIL_ID=
+ANVIL_KEY=
+```
+
+Optionally, also set `ANVIL_SEED=` when initialising an acortr from a seed (generally only for Steward setup).
 
 ### Run Fetch AEAs
 
