@@ -1,0 +1,15 @@
+<!doctype html>
+<title>ANVIL {{ actor }}</title>
+{% if actor %}
+    <h1>Hello {{ actor }}!</h1>
+    <form action="/setup" method="post">
+        <input>
+        <button name="setup" type="submit">Setup</button>
+    </form>
+    <form action="/connection_request" method="post">
+        <input>
+        <button name="connection_request" type="submit">Connection request</button>
+    </form>
+{% else %}
+    <h1>Hello, World!</h1>
+{% endif %}
