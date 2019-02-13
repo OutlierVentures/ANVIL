@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 app = Flask(__name__)
 
 debug = True # Do not enable in production
@@ -10,10 +10,10 @@ port = 5000
 def index():
     return render_template('anvil.html', actor = 'anchor')
 
-@app.route('/hello', methods = ['GET', 'POST'])
+@app.route('/connection_request', methods = ['GET', 'POST'])
 def hello():
     print('ya boi')
-    return 'BROOO'
+    return redirect(url_for('index'))
 
 
 if __name__ == '__main__':
