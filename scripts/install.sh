@@ -33,8 +33,6 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     yes | sudo apt-get install build-essential \
                                git \
                                cmake \
-                               python3-dev \
-                               python3-pip \
                                python3-pytest
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     xcode-select --version || xcode-select --install
