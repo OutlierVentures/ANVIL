@@ -11,7 +11,7 @@ import logging, argparse, sys, json, time, os
 
 from ctypes import CDLL
 
-from utilities import run_coroutine, send_data, receive_data, generate_nonce
+from utilities import run_coroutine, send_data, receive_data, generate_nonce, generate_base58
 from setup import setup_pool, set_self_up, teardown
 from onboarding import demo_onboard
 from schema import create_schema, create_credential_definition
@@ -61,12 +61,13 @@ async def run():
     # Set up actors - LOAD KEYS AS ENVIRONMENT VARIABLES
     pool_name, pool_handle = await setup_pool('ANVIL')
 
+    # For demo purposes, parameters ID, KEY are just random base58 strings here
     # Generally only seed-initialise existing Steward Anchors
-    steward = await set_self_up('steward', 'mocked_steward_id', 'mocked_steward_key', pool_handle,
+    steward = await set_self_up('steward', generate_base58(64), generate_base58(64), pool_handle,
                                 seed = '000000000000000000000000Steward1')
-    issuer = await set_self_up('issuer', 'mocked_issuer_id', 'mocked_issuer_key', pool_handle)
-    prover = await set_self_up('prover', 'mocked_prover_id', 'mocked_prover_key', pool_handle)
-    verifier = await set_self_up('verifier', 'mocked_verifier_id', 'mocked_verifier_key', pool_handle)
+    issuer = await set_self_up('issuer', generate_base58(64), generate_base58(64), pool_handle)
+    prover = await set_self_up('prover', generate_base58(64), generate_base58(64), pool_handle)
+    verifier = await set_self_up('verifier', generate_base58(64), generate_base58(64), pool_handle)
     steward, issuer = await demo_onboard(steward, issuer)
     issuer, prover = await demo_onboard(issuer, prover)
     steward, verifier = await demo_onboard(steward, verifier)

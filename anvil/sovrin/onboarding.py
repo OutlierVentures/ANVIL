@@ -19,10 +19,9 @@ Basic steps for establishing a pairwise connection:
 '''
 
 
-import json
+import json, random
 from indy import ledger, wallet, did, crypto
 from indy.error import IndyError, ErrorCode
-from utilities import generate_nonce
 
 
 '''
@@ -49,7 +48,7 @@ async def onboarding_anchor_send(_from, unique_onboardee_name):
     _from[unique_onboardee_name + '_did'] = from_to_did
     _from[unique_onboardee_name + '_key'] = from_to_key
     await send_nym(_from['pool'], _from['wallet'], _from['did'], from_to_did, from_to_key, None)
-    nonce = generate_nonce(9)
+    nonce = ''.join(random.choice('0123456789') for i in range(9))
     _from['connection_request'] = {
         'did': from_to_did,
         'nonce': nonce
@@ -121,3 +120,4 @@ async def auth_decrypt(wallet_handle, key, message):
     decrypted_message_json = decrypted_message_json.decode("utf-8")
     decrypted_message = json.loads(decrypted_message_json)
     return from_verkey, decrypted_message_json, decrypted_message
+    
