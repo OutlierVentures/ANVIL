@@ -1,9 +1,8 @@
 import os, requests
 from quart import Quart, render_template, redirect, url_for, session, request, jsonify
 from sovrin.utilities import generate_base58
-from sovrin.setup import setup_pool, set_self_up
+from sovrin.setup import setup_pool, set_self_up, teardown
 from sovrin.onboarding import onboarding_anchor_send
-#from sovrin.utilities import generate_base58
 app = Quart(__name__)
 
 debug = True # Do not enable in production
@@ -21,12 +20,10 @@ def index():
 @app.route('/setup', methods = ['GET', 'POST'])
 async def setup():
     session['pool_name'], session['pool_handle'] = await setup_pool('ANVIL')
-    pool_handle = session.get('pool_handle')
-    id_ = os.getenv('ANVIL_ID', generate_base58(64))
-    key = os.getenv('ANVIL_KEY', generate_base58(64))
-    seed = os.getenv('ANVIL_SEED', '000000000000000000000000Steward1')
+    id_ = os.getenv('WALLET_ID', generate_base58(64))
+    key = os.getenv('WALLET_KEY', generate_base58(64))
+    seed = os.getenv('SOVRIN_SEED', '000000000000000000000000Steward1')
     session['steward'] = await set_self_up('steward', id_, key, session['pool_handle'], seed = seed)
-    print(pool_handle, session['steward'])
     return redirect(url_for('index'))
 
 
@@ -39,10 +36,16 @@ async def connection_request():
     name = ''.join(e for e in name if e.isalnum())
     steward, connection_request = await onboarding_anchor_send(steward, name)
     print(ip, name, steward, connection_request)
-    requests.post('http://' + ip + '/onboarding', connection_request)
+    requests.post('http://' + ip + '/data', json = connection_request)
     return redirect(url_for('index'))
 
+@app.route('/reset')
+def reset():
+    #teardown(session.get('pool_name'), session.get('pool_handle'), [session.get('steward')])
+    session.clear()
+    return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.secret_key = generate_base58(64)
+    app.secret_key = os.getenv('ANVIL_KEY', 'MUST_BE_STATIC')
     app.run(host, port, debug)
+    
