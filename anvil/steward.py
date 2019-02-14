@@ -1,5 +1,5 @@
-import os, asyncio
-from quart import Quart, render_template, redirect, url_for, session
+import os, requests
+from quart import Quart, render_template, redirect, url_for, session, request, jsonify
 from sovrin.utilities import generate_base58
 from sovrin.setup import setup_pool, set_self_up
 from sovrin.onboarding import onboarding_anchor_send
@@ -33,10 +33,13 @@ async def setup():
 @app.route('/connection_request', methods = ['GET', 'POST'])
 async def connection_request():
     steward = session.get('steward')
-    unique_onboardee_name = 'abc' # get from input
-    unique_onboardee_name = ''.join(e for e in unique_onboardee_name if e.isalnum())
-    steward, connection_request = onboarding_anchor_send(steward, unique_onboardee_name)
-    print(steward)
+    form = await request.form
+    ip = form['ip_address']
+    name = form['name']
+    name = ''.join(e for e in name if e.isalnum())
+    steward, connection_request = await onboarding_anchor_send(steward, name)
+    print(ip, name, steward, connection_request)
+    requests.post('http://' + ip + '/onboarding', connection_request)
     return redirect(url_for('index'))
 
 
