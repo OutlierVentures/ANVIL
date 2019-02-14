@@ -7,11 +7,16 @@
             <button name="setup" type="submit">Setup</button>
         </form>
     {% endif %}
+    {% if setup %}
     <form action="/connection_request" method="post">
         <input name ="name" placeholder="Name">
         <input name="ip_address" placeholder="I.P. address">
         <button name="connection_request" type="submit">Connection request</button>
     </form>
+    {% endif %}
+    <form action="/reset">
+        <button name="">Reset</button>
+    </form>
 {% else %}
-    <h1>Hello, World!</h1>
+    <h1>Failed to load render_template() parameters.</h1>
 {% endif %}
