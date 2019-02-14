@@ -1,7 +1,7 @@
 import os, requests, json
 from quart import Quart, render_template, redirect, url_for, session, request, jsonify
 from sovrin.utilities import generate_base58
-from sovrin.setup import setup_pool, set_self_up
+from sovrin.setup import setup_pool, set_self_up, teardown
 from sovrin.onboarding import onboarding_anchor_send
 app = Quart(__name__)
 
