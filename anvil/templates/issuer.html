@@ -7,9 +7,14 @@
             <button name="setup" type="submit">Setup</button>
         </form>
     {% endif %}
-    <form action="/onboarding">
-        <button name="setup">Get onboarded</button>
+    {% if setup %}
+    <form action="">
+        <button name="">Next meme</button>
+    </form>
+    {% endif %}
+    <form action="/reset">
+        <button name="">Reset</button>
     </form>
 {% else %}
-    <h1>Hello, World!</h1>
+    <h1>Failed to load render_template() parameters.</h1>
 {% endif %}
