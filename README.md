@@ -10,10 +10,10 @@ Bridges Fetch.AI and Sovrin, mitigating risk in AEA FIPA negotiations with verif
 ## Requirements
 
 - MacOS
- - Docker.
+  - Docker.
 - Linux
- - Docker.
- - Python 3.7+ with your `python3` and `pip3` commands linked to this version.
+  - Docker.
+  - Python 3.7+ with your `python3` and `pip3` commands linked to this version.
 
 
 ## Basics
