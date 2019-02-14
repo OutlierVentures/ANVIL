@@ -2,10 +2,10 @@
 
 Agent Negotiation Verifiable Interaction Layer – an app in the Convergence Stack.
 
-Bridges Fetch.AI and Sovrin, mitigating risk in AEA FIPA negotiations with verifiable claims.
+ANVIL bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework. In short, ANVIL mitigates risk in AEA FIPA negotiations with verifiable claims.
 
 
-#### NOTE DURING DEV OF INDVIDUAL ACTOR FILES: CLEAR .indy_client AND RUN 1_, 2_, ... IN ORDER EVERY TIME
+#### NOTE DURING DEV OF INDVIDUAL ACTOR FILES: CLEAR .indy_client AND RUN 1_, 2_, ... IN ORDER EACH TIME
 
 ## Requirements
 
@@ -13,7 +13,15 @@ Bridges Fetch.AI and Sovrin, mitigating risk in AEA FIPA negotiations with verif
   - Docker.
 - Linux
   - Docker.
-  - Python 3.7+ with your `python3` and `pip3` commands linked to this version.
+  - Python 3.7+ with your `python3` command linked to this version.
+
+## Actors
+
+There are four key parties involved in an ANVIL interaction:
+1. Steward: an exisiting trust anchor on the Sovrin ledger used to onboard the other parties to Sovrin.
+2. Issuer: the issuer of the credential used by:
+3. Prover: the seller in a FIPA negotiation, proving they have the credential to make them trustworthy.
+4. Verifier: the buyer in a FIPA negotiation, verifying the Prover's credential.
 
 
 ## Basics
