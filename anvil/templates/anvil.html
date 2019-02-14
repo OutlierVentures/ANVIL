@@ -2,12 +2,14 @@
 <title>ANVIL {{ actor }}</title>
 {% if actor %}
     <h1>Hello {{ actor }}!</h1>
-    <form action="/setup" method="post">
-        <input>
-        <button name="setup" type="submit">Setup</button>
-    </form>
+    {% if not setup %}
+        <form action="/setup" method="post">
+            <button name="setup" type="submit">Setup</button>
+        </form>
+    {% endif %}
     <form action="/connection_request" method="post">
-        <input>
+        <input placeholder="Name">
+        <input placeholder="I.P. address">
         <button name="connection_request" type="submit">Connection request</button>
     </form>
 {% else %}
