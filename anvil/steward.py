@@ -15,7 +15,7 @@ port = 5000
 def index():
     steward = session.get('steward')
     setup = True if steward else False
-    return render_template('anvil.html', actor = 'steward', setup = setup)
+    return render_template('steward.html', actor = 'steward', setup = setup)
 
 
 @app.route('/setup', methods = ['GET', 'POST'])
