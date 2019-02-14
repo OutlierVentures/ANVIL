@@ -4,6 +4,7 @@ Agent Negotiation Verifiable Interaction Layer – an app in the Convergence Sta
 
 ANVIL bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework. In short, ANVIL mitigates risk in AEA FIPA negotiations with verifiable claims.
 
+Encrypt your ANVIL connections with the `ANVIL_KEY` environment variable.
 
 #### NOTE DURING DEV OF INDVIDUAL ACTOR FILES: CLEAR .indy_client AND RUN 1_, 2_, ... IN ORDER EACH TIME
 
@@ -48,16 +49,22 @@ The Sovrin node pool sits on ports 9701 through 9708.
 
 ### Using apps
 
+
+ANVIL sessions are encrypted in addition to the security of Sovrin and Fetch. As any actor using ANVIL, you must set an encryption key / password as an environment variable:
+```
+ANVIL_KEY=
+```
+
 Default mocked testing accounts are alredy set up for use without the Sovrin mainnet. If just testing, there's no need to set up the below.
 
 For real accounts, set up your address and key as environment variables *on the relevant machine and in the same session (terminal) as running the app for each actor*. You only need to set up the components you are using, e.g. in the case where actor are already Sovrin-onboarded, where there is no need for a Steward.
 
 ```
-ANVIL_ID=
-ANVIL_KEY=
+WALLET_ID=
+WALLET_KEY=
 ```
 
-Optionally, also set `ANVIL_SEED=` when initialising an acortr from a seed (generally only for Steward setup).
+Optionally, also set `SOVRIN_SEED=` when initialising an acotor from a seed (generally only for Steward setup).
 
 ### Run Fetch AEAs
 
