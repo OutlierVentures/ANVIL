@@ -2,10 +2,6 @@
 <title>ANVIL {{ actor }}</title>
 {% if actor %}
     <h1>Hello {{ actor }}!</h1>
-    <form action="/reset">
-        Before any new connection:
-        <button name="">Reset</button>
-    </form>
     {% if not setup %}
         <form action="/setup" method="post">
             <button name="setup" type="submit">Setup</button>
@@ -18,6 +14,9 @@
         <button name="connection_request" type="submit">Connection request</button>
     </form>
     {% endif %}
+    <form action="/reset">
+        <button name="reset" type="submit">Reset</button>
+    </form>
 {% else %}
     <h1>Failed to load render_template() parameters.</h1>
 {% endif %}
