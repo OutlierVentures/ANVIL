@@ -1,6 +1,6 @@
-import os, requests
+import os, requests, time
 from quart import Quart, render_template, redirect, url_for, session, request, jsonify
-from sovrin.utilities import generate_base58
+from sovrin.utilities import generate_base58, run_coroutine
 from sovrin.setup import setup_pool, set_self_up, teardown
 from sovrin.onboarding import onboarding_anchor_send
 app = Quart(__name__)
@@ -24,20 +24,32 @@ async def setup():
     key = os.getenv('WALLET_KEY', generate_base58(64))
     seed = os.getenv('SOVRIN_SEED', '000000000000000000000000Steward1')
     session['steward'] = await set_self_up('steward', id_, key, session['pool_handle'], seed = seed)
+    print(session['steward'])
     return redirect(url_for('index'))
 
 
 @app.route('/connection_request', methods = ['GET', 'POST'])
 async def connection_request():
-    steward = session.get('steward')
-    form = await request.form
+    form = await request.form  
     ip = form['ip_address']
-    name = form['name']
-    name = ''.join(e for e in name if e.isalnum())
-    steward, connection_request = await onboarding_anchor_send(steward, name)
-    print(ip, name, steward, connection_request)
-    requests.post('http://' + ip + '/data', json = connection_request)
+    name = ''.join(e for e in form['name'] if e.isalnum())
+    steward = session.get('steward')
+    while not isinstance(steward, dict):
+        steward = session.get('steward')
+        time.sleep(0.1)
+    else:
+        session['steward'], connection_request = await onboarding_anchor_send(steward, name)
+        print(type(connection_request))
+        while not isinstance(connection_request, dict):
+            session['steward'], connection_request = await onboarding_anchor_send(steward, name)
+            time.sleep(0.1)
+        else:
+            requests.post('http://' + ip + '/data', json = connection_request)
     return redirect(url_for('index'))
+    
+
+
+
 
 @app.route('/reset')
 def reset():
