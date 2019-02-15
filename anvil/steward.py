@@ -9,52 +9,52 @@ debug = True # Do not enable in production
 host = '0.0.0.0'
 port = 5000
 
+steward = {}
+pool_handle = 1
+
 
 @app.route('/')
 def index():
-    steward = session.get('steward')
-    setup = True if steward else False
+    global steward
+    setup = True if steward != {} else False
     return render_template('steward.html', actor = 'steward', setup = setup)
 
 
 @app.route('/setup', methods = ['GET', 'POST'])
 async def setup():
-    session['pool_name'], session['pool_handle'] = await setup_pool('ANVIL')
+    global steward, pool_handle
+    _, pool_handle = await setup_pool('ANVIL')
     id_ = os.getenv('WALLET_ID', generate_base58(64))
     key = os.getenv('WALLET_KEY', generate_base58(64))
     seed = os.getenv('SOVRIN_SEED', '000000000000000000000000Steward1')
-    session['steward'] = await set_self_up('steward', id_, key, session['pool_handle'], seed = seed)
-    print(session['steward'])
+    steward = await set_self_up('steward', id_, key, pool_handle, seed = seed)
     return redirect(url_for('index'))
 
 
 @app.route('/connection_request', methods = ['GET', 'POST'])
 async def connection_request():
+    global steward
     form = await request.form  
     ip = form['ip_address']
     name = ''.join(e for e in form['name'] if e.isalnum())
-    steward = session.get('steward')
-    while not isinstance(steward, dict):
-        steward = session.get('steward')
-        time.sleep(0.1)
-    else:
-        session['steward'], connection_request = await onboarding_anchor_send(steward, name)
-        print(type(connection_request))
-        while not isinstance(connection_request, dict):
-            session['steward'], connection_request = await onboarding_anchor_send(steward, name)
-            time.sleep(0.1)
-        else:
-            requests.post('http://' + ip + '/data', json = connection_request)
+    print(steward)
+    steward, connection_request = await onboarding_anchor_send(steward, name)
+    requests.post('http://' + ip + '/receive', json = connection_request)
     return redirect(url_for('index'))
     
-
+@app.route('/establish_channel', methods = ['GET', 'POST'])
+async def establish_channel():
+    print('bruh')
+    return '200'
 
 
 
 @app.route('/reset')
 def reset():
-    #teardown(session.get('pool_name'), session.get('pool_handle'), [session.get('steward')])
-    session.clear()
+    global steward
+    teardown('ANVIL', pool_handle, [steward])
+    steward = {}
+    session.clear() # Possibly unnecessary
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
