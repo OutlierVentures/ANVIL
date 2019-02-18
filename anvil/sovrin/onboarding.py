@@ -106,7 +106,7 @@ async def onboarding_anchor_register_onboardee_did(_from, unique_onboardee_name,
         await auth_decrypt(_from['wallet'], _from[unique_onboardee_name + '_key'], authcrypted_did_info)
     assert sender_verkey == await did.key_for_did(_from['pool'], _from['wallet'], _from['connection_response']['did'])
     await send_nym(_from['pool'], _from['wallet'], _from['did'], authdecrypted_did_info['did'],
-                   authdecrypted_did_info['verkey'], 'TRUST_ANCHOR') # Using to['role'] instead of trust anchor may fix issues
+                   authdecrypted_did_info['verkey'], 'TRUST_ANCHOR') # Using to['role'] instead of trust anchor may alleviate issues
     return _from
 
 
