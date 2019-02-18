@@ -3,7 +3,7 @@
 {% if actor %}
     <h1>Hello {{ actor }}!</h1>
     <form action="/reload">
-        <button name="reset" type="submit">Check for messages</button>
+        <button name="reload" type="submit">Check for messages</button>
     </form>
     </form>
     {% if not setup %}
@@ -12,9 +12,9 @@
         </form>
     {% endif %}
     {% if have_data %}
-    <form action="/respond" method="post">
-        <button name="respond" type="submit">Ya boi got data</button>
-    </form>
+        <form action="/respond" method="post">
+            <button name="respond" type="submit">Send response</button>
+        </form>
     {% endif %}
     <form action="/reset">
         <button name="reset" type="submit">Reset</button>
