@@ -1,23 +1,27 @@
-import os, requests, time
+import os, requests, time, json
 from quart import Quart, render_template, redirect, url_for, session, request, jsonify
 from sovrin.utilities import generate_base58, run_coroutine
 from sovrin.setup import setup_pool, set_self_up, teardown
-from sovrin.onboarding import onboarding_anchor_send
+from sovrin.onboarding import onboarding_anchor_send, onboarding_anchor_receive
 app = Quart(__name__)
 
 debug = True # Do not enable in production
 host = '0.0.0.0'
 port = 5000
 
+# Globals approach will be dropped once session persistence in Python is fixed.
 steward = {}
 pool_handle = 1
+received_data = ''
 
 
 @app.route('/')
 def index():
     global steward
     setup = True if steward != {} else False
-    return render_template('steward.html', actor = 'steward', setup = setup)
+    have_data = True if received_data != '' else False
+    channel_established = True if 'connection_response' in steward else False
+    return render_template('steward.html', actor = 'steward', setup = setup, have_data = have_data, channel_established = channel_established)
 
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -37,16 +41,26 @@ async def connection_request():
     form = await request.form  
     ip = form['ip_address']
     name = ''.join(e for e in form['name'] if e.isalnum())
-    print(steward)
+    #print(steward)
     steward, connection_request = await onboarding_anchor_send(steward, name)
     requests.post('http://' + ip + '/receive', json = connection_request)
     return redirect(url_for('index'))
-    
+
+
 @app.route('/establish_channel', methods = ['GET', 'POST'])
 async def establish_channel():
-    print('bruh')
-    return '200'
+    global steward, received_data
+    steward = await onboarding_anchor_receive(steward, received_data, 'issuer')
+    print(steward.keys())
+    return redirect(url_for('index'))
 
+
+@app.route('/receive', methods = ['GET', 'POST'])
+async def data():
+    global received_data
+    received_data = await request.data
+    print(received_data)
+    return '200'
 
 
 @app.route('/reset')
@@ -56,6 +70,12 @@ def reset():
     steward = {}
     session.clear() # Possibly unnecessary
     return redirect(url_for('index'))
+
+
+@app.route('/reload')
+def reload():
+    return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     app.secret_key = os.getenv('ANVIL_KEY', 'MUST_BE_STATIC')
