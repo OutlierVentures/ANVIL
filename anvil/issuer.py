@@ -15,7 +15,7 @@ receiver_port = 5000
 issuer = {}
 pool_handle = 1
 received_data = ''
-steward_ip = ''
+anchor_ip = ''
 
 
 @app.route('/')
@@ -23,6 +23,7 @@ def index():
     global issuer, received_data
     setup = True if issuer != {} else False
     have_data = True if received_data != '' else False
+    responded = True if 'connection_response' in issuer else False
     '''
     The onboardee depends on the anchor to finish establishing the secure channel.
     However the request-reponse messaging means the onboardee cannot proceed until it is:
@@ -30,8 +31,9 @@ def index():
     relevant response from the anchor is returned, which is only possible if the channel
     is set up on the anchor end.
     '''
-    channel_established = True if steward_ip != '' else False
-    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, channel_established = channel_established)
+    channel_established = True if anchor_ip != '' else False
+    have_verinym = True if 'did_info' in issuer else False
+    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, responded = responded, channel_established = channel_established, have_verinym = have_verinym)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -54,19 +56,19 @@ async def data():
 
 @app.route('/respond', methods = ['GET', 'POST'])
 async def respond():
-    global issuer, received_data, steward_ip
-    steward_ip = request.remote_addr
+    global issuer, received_data, anchor_ip
+    anchor_ip = request.remote_addr
     data = json.loads(received_data)
     issuer, anoncrypted_connection_response = await onboarding_onboardee_receive_and_send(issuer, data, pool_handle, 'steward')
-    requests.post('http://' + steward_ip + ':' + str(receiver_port) + '/establish_channel', anoncrypted_connection_response)
+    requests.post('http://' + anchor_ip + ':' + str(receiver_port) + '/establish_channel', anoncrypted_connection_response)
     return redirect(url_for('index'))
 
 
 @app.route('/get_verinym', methods = ['GET', 'POST'])
 async def get_verinym():
-    global issuer, steward_ip
+    global issuer, anchor_ip
     issuer, authcrypted_did_info = await onboarding_onboardee_create_did(issuer, 'steward')
-    requests.post('http://' + steward_ip + ':' + str(receiver_port) + '/verinym_request', authcrypted_did_info)
+    requests.post('http://' + anchor_ip + ':' + str(receiver_port) + '/verinym_request', authcrypted_did_info)
     return redirect(url_for('index'))
 
 
