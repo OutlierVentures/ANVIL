@@ -1,9 +1,8 @@
 import os, requests, json, time
-from quart import Quart, render_template, redirect, url_for, session, request, jsonify
-from sovrin.utilities import generate_base58, run_coroutine
-from sovrin.setup import setup_pool, set_self_up, teardown
-from sovrin.onboarding import onboarding_onboardee_receive_and_send, onboarding_onboardee_create_did
+from quart import Quart, render_template, redirect, url_for, request
 from common import common_setup, common_respond, common_get_verinym, common_reset
+from sovrin.schema import create_schema, create_credential_definition
+from sovrin.credentials import offer_credential
 app = Quart(__name__)
 
 debug = True # Do not enable in production
@@ -18,6 +17,7 @@ pool_handle = 1
 received_data = ''
 anchor_name = ''
 anchor_ip = ''
+created_schema = []
 
 
 @app.route('/')
@@ -35,7 +35,7 @@ def index():
     '''
     channel_established = True if anchor_ip != '' else False
     have_verinym = True if 'did_info' in issuer else False
-    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, responded = responded, channel_established = channel_established, have_verinym = have_verinym)
+    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -65,6 +65,42 @@ async def get_verinym():
     global issuer
     issuer = await common_get_verinym(issuer, anchor_ip, receiver_port)
     return redirect(url_for('index'))
+
+
+'''
+Set revocation support here if needed.
+'''
+@app.route('/create_credential', methods = ['GET', 'POST'])
+async def create_credential():
+    global issuer, created_schema
+    form = await request.form
+    schema = json.loads(form['schema'])
+    print(schema)
+    unique_schema_name, schema_id, issuer = await create_schema(schema, issuer)
+    issuer = await create_credential_definition(issuer, schema_id, unique_schema_name, revocable = False)
+    created_schema.append(unique_schema_name)
+    return redirect(url_for('index'))
+
+
+@app.route('/offer_credential', methods = ['GET', 'POST'])
+async def offer_credential_to_ip():
+    global issuer
+    form = await request.form
+    schema_name = form['schema_name']
+    if schema_name in created_schema:
+        issuer = await offer_credential(issuer, schema_name)
+        '''
+        NEED TO SEND TO IP HERE
+        '''
+        return redirect(url_for('index'))
+    else:
+        return 'Schema does not exist. Check name input.'
+
+
+
+
+
+
 
 
 @app.route('/reset')
