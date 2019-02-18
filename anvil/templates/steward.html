@@ -2,17 +2,14 @@
 <title>ANVIL {{ actor }}</title>
 {% if actor %}
     <h1>Hello {{ actor }}!</h1>
-    <form action="/reload">
-        <button name="reload" type="submit">Check for messages</button>
-    </form>
     {% if not setup %}
         <form action="/setup" method="post">
-            <button name="setup" type="submit">Setup</button>
+            <button name="setup" type="submit">Connect to Sovrin</button>
         </form>
     {% endif %}
     {% if setup %}
         <form action="/connection_request" method="post">
-            <input name ="name" placeholder="Name">
+            <input name="name" placeholder="Name">
             <input name="ip_address" placeholder="I.P. address">
             <button name="connection_request" type="submit">Connection request</button>
         </form>
