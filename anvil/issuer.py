@@ -77,7 +77,6 @@ def reset():
     global issuer
     teardown('ANVIL', pool_handle, [issuer])
     issuer = {}
-    session.clear() # Possibly unnecessary
     return redirect(url_for('index'))
 
 
