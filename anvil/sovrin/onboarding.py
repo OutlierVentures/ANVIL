@@ -34,9 +34,9 @@ The onboardee needs to have set_self_up() before calling this function.
 async def demo_onboard(anchor, onboardee):
     name = onboardee['name']
     anchor, connection_request = await onboarding_anchor_send(anchor, name)
-    onboardee, anoncrypted_connection_reponse = await onboarding_onboardee_receive_and_send(onboardee, connection_request, anchor['pool'], anchor['name'])
+    onboardee, anoncrypted_connection_reponse = await onboarding_onboardee_receive_and_send(onboardee, connection_request, anchor['pool'])
     anchor = await onboarding_anchor_receive(anchor, anoncrypted_connection_reponse, name)
-    onboardee, authcrypted_did_info = await onboarding_onboardee_create_did(onboardee, anchor['name'])
+    onboardee, authcrypted_did_info = await onboarding_onboardee_create_did(onboardee)
     anchor = await onboarding_anchor_register_onboardee_did(anchor, name, authcrypted_did_info)
     return anchor, onboardee
 
@@ -50,6 +50,7 @@ async def onboarding_anchor_send(_from, unique_onboardee_name):
     await send_nym(_from['pool'], _from['wallet'], _from['did'], from_to_did, from_to_key, None)
     nonce = ''.join(random.choice('0123456789') for i in range(9))
     _from['connection_request'] = {
+        'name': _from['name'],
         'did': from_to_did,
         'nonce': nonce
     }
@@ -57,11 +58,12 @@ async def onboarding_anchor_send(_from, unique_onboardee_name):
 
 
 # Onboarding 2: Onboardee sends connection response.
-async def onboarding_onboardee_receive_and_send(to, connection_request, from_pool, unique_anchor_name):
-    print(to['name'].capitalize() + ' sending connection response to ' + unique_anchor_name + '...')
+async def onboarding_onboardee_receive_and_send(to, connection_request, from_pool):
+    to['unique_anchor_name'] = connection_request['name']
+    print(to['name'].capitalize() + ' sending connection response to ' + to['unique_anchor_name'] + '...')
     (to_from_did, to_from_key) = await did.create_and_store_my_did(to['wallet'], "{}")
-    to[unique_anchor_name + '_did'] = to_from_did
-    to[unique_anchor_name + '_key'] = to_from_key
+    to[to['unique_anchor_name'] + '_did'] = to_from_did
+    to[to['unique_anchor_name'] + '_key'] = to_from_key
     to['from_to_verkey'] = await did.key_for_did(from_pool, to['wallet'], connection_request['did'])
     to['connection_response'] = json.dumps({
         'did': to_from_did,
@@ -86,7 +88,7 @@ async def onboarding_anchor_receive(_from, anoncrypted_connection_reponse, uniqu
 
 
 # Onboarding 4: Onboardee creates their DID and sends it to the Anchor.
-async def onboarding_onboardee_create_did(to, unique_anchor_name):
+async def onboarding_onboardee_create_did(to):
     print(to['name'].capitalize() + ' getting their DID...')
     (to_did, to_key) = await did.create_and_store_my_did(to['wallet'], "{}")
     to['did'] = to_did
@@ -95,7 +97,7 @@ async def onboarding_onboardee_create_did(to, unique_anchor_name):
         'verkey': to_key
     })
     to['authcrypted_did_info'] = \
-        await crypto.auth_crypt(to['wallet'], to[unique_anchor_name + '_key'], to['from_to_verkey'], to['did_info'].encode('utf-8'))
+        await crypto.auth_crypt(to['wallet'], to[to['unique_anchor_name'] + '_key'], to['from_to_verkey'], to['did_info'].encode('utf-8'))
     return to, to['authcrypted_did_info']
 
 
