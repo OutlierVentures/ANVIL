@@ -2,13 +2,13 @@
 <title>ANVIL {{ actor }}</title>
 {% if actor %}
     <h1>Hello {{ actor }}!</h1>
-    <form action="/reload">
-        <button name="reload" type="submit">Check for messages</button>
-    </form>
-    </form>
     {% if not setup %}
         <form action="/setup" method="post">
-            <button name="setup" type="submit">Setup</button>
+            <button name="setup" type="submit">Connect to Sovrin</button>
+        </form>
+    {% else %}
+        <form action="/reload">
+            <button name="reload" type="submit">Check for messages</button>
         </form>
     {% endif %}
     {% if have_data and not responded %}
@@ -24,6 +24,19 @@
     <form action="/reset">
         <button name="reset" type="submit">Reset</button>
     </form>
+    {% if have_verinym %}
+        <form action="/create_credential" method="post">
+            <textarea name="schema" rows="10" cols="100" placeholder="Schema JSON"></textarea>
+            <button name="create_credential" type="submit">Create credential</button>
+        </form>
+        Created schema: {{ created_schema }}
+        You may offer any of the above to anyone at your chosen IP.
+        <form action="/offer_credential" method="post">
+            <input name="schema_name" placeholder="Schema name as above">
+            <input name="ip_address" placeholder="I.P. address">
+            <button name="connection_request" type="submit">Offer schema</button>
+        </form>
+    {% endif %}
 {% else %}
     <h1>Failed to load render_template() parameters.</h1>
 {% endif %}
