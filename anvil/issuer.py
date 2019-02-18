@@ -91,16 +91,11 @@ async def offer_credential_to_ip():
         issuer = await offer_credential(issuer, schema_name)
         '''
         NEED TO SEND TO IP HERE
+        NOTE CREDENTIALS GO TO PROVERS, SO PROVER MUST BE ONBOARDED WITH ISSUER FIRST.
         '''
         return redirect(url_for('index'))
     else:
         return 'Schema does not exist. Check name input.'
-
-
-
-
-
-
 
 
 @app.route('/reset')
