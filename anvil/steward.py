@@ -2,7 +2,7 @@ import os, requests, time, json
 from quart import Quart, render_template, redirect, url_for, session, request, jsonify
 from sovrin.utilities import generate_base58, run_coroutine
 from sovrin.setup import setup_pool, set_self_up, teardown
-from sovrin.onboarding import onboarding_anchor_send, onboarding_anchor_receive
+from sovrin.onboarding import onboarding_anchor_send, onboarding_anchor_receive, onboarding_anchor_register_onboardee_did
 app = Quart(__name__)
 
 debug = True # Do not enable in production
@@ -12,16 +12,14 @@ port = 5000
 # Globals approach will be dropped once session persistence in Python is fixed.
 steward = {}
 pool_handle = 1
-received_data = ''
 
 
 @app.route('/')
 def index():
     global steward
     setup = True if steward != {} else False
-    have_data = True if received_data != '' else False
     channel_established = True if 'connection_response' in steward else False
-    return render_template('steward.html', actor = 'steward', setup = setup, have_data = have_data, channel_established = channel_established)
+    return render_template('steward.html', actor = 'steward', setup = setup, channel_established = channel_established)
 
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -49,17 +47,25 @@ async def connection_request():
 
 @app.route('/establish_channel', methods = ['GET', 'POST'])
 async def establish_channel():
-    global steward, received_data
+    global steward
+    received_data = await request.data
     steward = await onboarding_anchor_receive(steward, received_data, 'issuer')
     print(steward.keys())
-    return redirect(url_for('index'))
+    print('CHANNEL ESTABLISHED ========')
+    return '200'#redirect(url_for('index'))
 
 
-@app.route('/receive', methods = ['GET', 'POST'])
+'''
+Creates a Verinym for onboardees with which a secure channel has been established,
+throws an error otherwise. Establishes the onboardee as a new trust anchor on the ledger.
+'''
+@app.route('/verinym_request', methods = ['GET', 'POST'])
 async def data():
-    global received_data
-    received_data = await request.data
-    print(received_data)
+    global steward
+    verinym_request = await request.data
+    steward = await onboarding_anchor_register_onboardee_did(steward, 'issuer', verinym_request)
+    print(verinym_request)
+    print('REGISTERED NEW TRUST ANCHOR ========')
     return '200'
 
 
