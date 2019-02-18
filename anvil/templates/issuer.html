@@ -16,6 +16,11 @@
             <button name="respond" type="submit">Send response</button>
         </form>
     {% endif %}
+    {% if channel_established %}
+        <form action="/get_verinym" method="post">
+            <button name="get_verinym" type="submit">Get Verinym</button>
+        </form>
+    {% endif %}
     <form action="/reset">
         <button name="reset" type="submit">Reset</button>
     </form>
