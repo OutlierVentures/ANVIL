@@ -3,6 +3,7 @@ from quart import Quart, render_template, redirect, url_for, session, request, j
 from sovrin.utilities import generate_base58, run_coroutine
 from sovrin.setup import setup_pool, set_self_up, teardown
 from sovrin.onboarding import onboarding_onboardee_receive_and_send, onboarding_onboardee_create_did
+from common import common_setup, common_respond, common_get_verinym, common_reset
 app = Quart(__name__)
 
 debug = True # Do not enable in production
@@ -15,6 +16,7 @@ receiver_port = 5000
 issuer = {}
 pool_handle = 1
 received_data = ''
+anchor_name = ''
 anchor_ip = ''
 
 
@@ -38,11 +40,8 @@ def index():
 
 @app.route('/setup', methods = ['GET', 'POST'])
 async def setup():
-    global issuer
-    _, pool_handle = await setup_pool('ANVIL')
-    id_ = os.getenv('WALLET_ID', generate_base58(64))
-    key = os.getenv('WALLET_KEY', generate_base58(64))
-    issuer = await set_self_up('issuer', id_, key, pool_handle)
+    global issuer, pool_handle
+    issuer, pool_handle = await common_setup(issuer, pool_handle, 'issuer')
     return redirect(url_for('index'))
 
 
@@ -56,27 +55,24 @@ async def data():
 
 @app.route('/respond', methods = ['GET', 'POST'])
 async def respond():
-    global issuer, received_data, anchor_ip
-    anchor_ip = request.remote_addr
-    data = json.loads(received_data)
-    issuer, anoncrypted_connection_response = await onboarding_onboardee_receive_and_send(issuer, data, pool_handle, 'steward')
-    requests.post('http://' + anchor_ip + ':' + str(receiver_port) + '/establish_channel', anoncrypted_connection_response)
+    global issuer, anchor_ip
+    issuer, anchor_ip = await common_respond(issuer, received_data, pool_handle, receiver_port)
     return redirect(url_for('index'))
 
 
 @app.route('/get_verinym', methods = ['GET', 'POST'])
 async def get_verinym():
-    global issuer, anchor_ip
-    issuer, authcrypted_did_info = await onboarding_onboardee_create_did(issuer, 'steward')
-    requests.post('http://' + anchor_ip + ':' + str(receiver_port) + '/verinym_request', authcrypted_did_info)
+    global issuer
+    issuer = await common_get_verinym(issuer, anchor_ip, receiver_port)
     return redirect(url_for('index'))
 
 
 @app.route('/reset')
 def reset():
-    global issuer
-    teardown('ANVIL', pool_handle, [issuer])
-    issuer = {}
+    global issuer, pool_handle, received_data, anchor_ip
+    issuer, pool_handle = common_reset([issuer], pool_handle)
+    received_data = ''
+    anchor_ip = ''
     return redirect(url_for('index'))
 
 
