@@ -17,11 +17,13 @@
             <button name="connection_request" type="submit">Connection request</button>
         </form>
     {% endif %}
-    {% if have_data and not channel_established %}
+    <!--
+    {% if not channel_established %}
         <form action="/establish_channel" method="post">
             <button name="establish_channel" type="submit">Establish secure channel</button>
         </form>
     {% endif %}
+    -->
         <form action="/reset">
             <button name="reset" type="submit">Reset</button>
         </form>
