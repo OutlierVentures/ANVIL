@@ -47,7 +47,7 @@ async def respond():
     global issuer, received_data
     data = json.loads(received_data)
     issuer, anoncrypted_connection_response = await onboarding_onboardee_receive_and_send(issuer, data, pool_handle, 'steward')
-    requests.post('http://' + request.remote_addr + ':' + str(receiver_port) + '/establish_channel', anoncrypted_connection_response)
+    requests.post('http://' + request.remote_addr + ':' + str(receiver_port) + '/receive', anoncrypted_connection_response)
     return redirect(url_for('index'))
 
 
@@ -58,6 +58,7 @@ def reset():
     issuer = {}
     session.clear() # Possibly unnecessary
     return redirect(url_for('index'))
+
 
 @app.route('/reload')
 def reload():
