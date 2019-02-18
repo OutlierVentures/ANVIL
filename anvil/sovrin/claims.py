@@ -68,9 +68,17 @@ async def run():
     issuer = await set_self_up('issuer', generate_base58(64), generate_base58(64), pool_handle)
     prover = await set_self_up('prover', generate_base58(64), generate_base58(64), pool_handle)
     verifier = await set_self_up('verifier', generate_base58(64), generate_base58(64), pool_handle)
+    
+    '''
+    Onboard each actor with the parties they will interact with.
+    Assuming no pre-existing relationships:
+    1. Onboard the issuer and verifier with a steward.
+    2. Onboard the prover with the issuer and verifier.
+    '''
     steward, issuer = await demo_onboard(steward, issuer)
-    issuer, prover = await demo_onboard(issuer, prover)
     steward, verifier = await demo_onboard(steward, verifier)
+    issuer, prover = await demo_onboard(issuer, prover)
+    verifier, prover = await demo_onboard(verifier, prover)
     
     # Create schema and corresponding definition
     unique_schema_name, schema_id, issuer = await create_schema(schema, issuer)
@@ -95,8 +103,7 @@ async def run():
     prover = await store_credential(prover, unique_schema_name)
     
 
-    # Prover onboarded with verifier
-    verifier, prover = await demo_onboard(verifier, prover)
+    
     verifier = await request_proof_of_credential(verifier, proof_request)
     send_data(verifier['authcrypted_proof_request'])
     prover['authcrypted_proof_request'] = receive_data()
