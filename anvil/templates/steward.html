@@ -17,16 +17,9 @@
             <button name="connection_request" type="submit">Connection request</button>
         </form>
     {% endif %}
-    <!--
-    {% if not channel_established %}
-        <form action="/establish_channel" method="post">
-            <button name="establish_channel" type="submit">Establish secure channel</button>
-        </form>
-    {% endif %}
-    -->
-        <form action="/reset">
-            <button name="reset" type="submit">Reset</button>
-        </form>
+    <form action="/reset">
+        <button name="reset" type="submit">Reset</button>
+    </form>
 {% else %}
     <h1>Failed to load render_template() parameters.</h1>
 {% endif %}
