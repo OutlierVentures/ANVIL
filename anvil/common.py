@@ -44,7 +44,7 @@ throws an error otherwise. Establishes the onboardee as a new trust anchor on th
 async def common_verinym_request(anchor, counterparty_name):
     verinym_request = await request.data
     anchor = await onboarding_anchor_register_onboardee_did(anchor, counterparty_name, verinym_request)
-    print('========== REGISTERED NEW TRUST ANCHOR ========')
+    print('========== REGISTERED NEW TRUST ANCHOR ==========')
     return anchor
 
 
@@ -53,6 +53,7 @@ async def common_respond(onboardee, received_data, pool_handle, receiver_port):
     anchor_ip = request.remote_addr
     data = json.loads(received_data)
     onboardee, anoncrypted_connection_response = await onboarding_onboardee_receive_and_send(onboardee, data, pool_handle)
+    onboardee['connection_response'] = json.loads(onboardee['connection_response'])
     requests.post('http://' + anchor_ip + ':' + str(receiver_port) + '/establish_channel', anoncrypted_connection_response)
     return onboardee, anchor_ip
 
