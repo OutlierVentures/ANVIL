@@ -13,6 +13,7 @@ port = 5000
 # Globals approach will be dropped once session persistence in Python is fixed.
 anchor = {}
 pool_handle = 1
+counterparty_name = ''
 
 
 @app.route('/')
@@ -26,36 +27,39 @@ def index():
 @app.route('/setup', methods = ['GET', 'POST'])
 async def setup():
     global anchor, pool_handle
-    anchor, pool_handle = await common_setup(anchor, pool_handle)
+    _, pool_handle = await setup_pool('ANVIL')
+    id_ = os.getenv('WALLET_ID', generate_base58(64))
+    key = os.getenv('WALLET_KEY', generate_base58(64))
+    seed = os.getenv('SOVRIN_SEED', '000000000000000000000000Steward1')
+    anchor = await set_self_up('steward', id_, key, pool_handle, seed = seed)
     return redirect(url_for('index'))
 
 
 @app.route('/connection_request', methods = ['GET', 'POST'])
 async def connection_request():
-    global anchor
-    form = await request.form 
-    anchor = await common_connection_request(anchor, form)
+    global anchor, counterparty_name
+    anchor, counterparty_name = await common_connection_request(anchor)
     return redirect(url_for('index'))
 
 
 @app.route('/establish_channel', methods = ['GET', 'POST'])
 async def establish_channel():
     global anchor
-    anchor = await common_establish_channel(anchor)
+    anchor = await common_establish_channel(anchor, counterparty_name)
     return '200'
 
 
 @app.route('/verinym_request', methods = ['GET', 'POST'])
 async def verinym_request():
     global anchor
-    anchor = await common_verinym_request(anchor)
+    anchor = await common_verinym_request(anchor, counterparty_name)
     return '200'
 
 
 @app.route('/reset')
 def reset():
-    global anchor
-    anchor = common_reset(anchor, pool_handle)
+    global anchor, pool_handle
+    anchor, pool_handle = common_reset([anchor], pool_handle)
     return redirect(url_for('index'))
 
 
