@@ -14,9 +14,7 @@ receiver_port = 5000
 # Globals approach will be dropped once session persistence in Python is fixed.
 issuer = {}
 pool_handle = 1
-received_data = ''
-anchor_name = ''
-anchor_ip = ''
+request_ip = anchor_ip = received_data = ''
 created_schema = []
 
 
@@ -35,7 +33,7 @@ def index():
     '''
     channel_established = True if anchor_ip != '' else False
     have_verinym = True if 'did_info' in issuer else False
-    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, anchor_name = anchor_name, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema)
+    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -47,8 +45,9 @@ async def setup():
 
 @app.route('/receive', methods = ['GET', 'POST'])
 async def data():
-    global received_data
+    global received_data, request_ip
     received_data = await request.data
+    request_ip = request.remote_addr
     print(received_data)
     return '200'
 
