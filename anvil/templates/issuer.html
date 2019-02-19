@@ -29,17 +29,25 @@
             <input name="ip_address" placeholder="I.P. address">
             <button name="connection_request" type="submit">Connection request</button>
         </form>
-        <form action="/create_credential" method="post">
-            <textarea name="schema" rows="10" cols="100" placeholder="Schema JSON"></textarea>
-            <button name="create_credential" type="submit">Create credential</button>
+        {% if prover_registered %}
+            <form action="/create_credential" method="post">
+                <textarea name="schema" rows="10" cols="100" placeholder="Schema JSON"></textarea>
+                <button name="create_credential" type="submit">Create credential</button>
+            </form>
+            Created schema: {{ created_schema }}
+            You may offer any of the above to anyone at your chosen IP.
+            <form action="/offer_credential" method="post">
+                <input name="schema_name" placeholder="Schema name as above">
+                <input name="ip_address" placeholder="I.P. address">
+                <button name="connection_request" type="submit">Offer schema</button>
+            </form>
+        {% endif %}
+        {% if credential_requested %}
+        Credential requested by {{ counterparty_name }}.
+        <form action="/send_credential" method="post">
+            <button name="send_credential" type="submit">Send credential</button>
         </form>
-        Created schema: {{ created_schema }}
-        You may offer any of the above to anyone at your chosen IP.
-        <form action="/offer_credential" method="post">
-            <input name="schema_name" placeholder="Schema name as above">
-            <input name="ip_address" placeholder="I.P. address">
-            <button name="connection_request" type="submit">Offer schema</button>
-        </form>
+        {% endif %}
     {% endif %}
     <form action="/reset">
         <button name="reset" type="submit">Reset</button>
