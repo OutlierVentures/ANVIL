@@ -1,0 +1,44 @@
+<!doctype html>
+<title>ANVIL {{ actor }}</title>
+{% if actor %}
+    <h1>Hello {{ actor }}!</h1>
+    {% if not setup %}
+        <form action="/setup" method="post">
+            <button name="setup" type="submit">Connect to Sovrin</button>
+        </form>
+    {% else %}
+        <form action="/reload">
+            <button name="reload" type="submit">Check for messages</button>
+        </form>
+    {% endif %}
+    {% if have_data and not responded %}
+        Connection request from {{ request_ip }}
+        <form action="/respond" method="post">
+            <button name="respond" type="submit">Send response</button>
+        </form>
+    {% endif %}
+    {% if channel_established and not have_verinym %}
+        <form action="/get_verinym" method="post">
+            <button name="get_verinym" type="submit">Get Verinym</button>
+        </form>
+    {% endif %}
+    {% if have_verinym %}
+        Onboard a prover whose credentials you can verify:
+        <form action="/connection_request" method="post">
+            <input name="name" placeholder="Name">
+            <input name="ip_address" placeholder="I.P. address">
+            <button name="connection_request" type="submit">Connection request</button>
+        </form>
+        {% if prover_registered %}
+            <form action="/request_proof" method="post">
+                <textarea name="proofrequest" rows="10" cols="100" placeholder="Proof request JSON"></textarea>
+                <button name="create_credential" type="submit">Create credential</button>
+            </form>
+        {% endif %}
+    {% endif %}
+    <form action="/reset">
+        <button name="reset" type="submit">Reset</button>
+    </form>
+{% else %}
+    <h1>Failed to load render_template() parameters.</h1>
+{% endif %}
