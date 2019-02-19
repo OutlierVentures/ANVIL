@@ -1,6 +1,6 @@
 import os, requests, json, time
 from quart import Quart, render_template, redirect, url_for, request
-from common import common_setup, common_respond, common_get_verinym, common_reset
+from common import common_setup, common_respond, common_get_verinym, common_reset, common_connection_request, common_establish_channel, common_verinym_request
 from sovrin.schema import create_schema, create_credential_definition
 from sovrin.credentials import offer_credential
 app = Quart(__name__)
@@ -65,6 +65,27 @@ async def get_verinym():
     global issuer
     issuer = await common_get_verinym(issuer, anchor_ip, receiver_port)
     return redirect(url_for('index'))
+
+
+@app.route('/connection_request', methods = ['GET', 'POST'])
+async def connection_request():
+    global issuer, counterparty_name
+    issuer, counterparty_name = await common_connection_request(issuer)
+    return redirect(url_for('index'))
+
+
+@app.route('/establish_channel', methods = ['GET', 'POST'])
+async def establish_channel():
+    global issuer
+    issuer = await common_establish_channel(issuer, counterparty_name)
+    return '200'
+
+
+@app.route('/verinym_request', methods = ['GET', 'POST'])
+async def verinym_request():
+    global issuer
+    issuer = await common_verinym_request(issuer, counterparty_name)
+    return '200'
 
 
 '''
