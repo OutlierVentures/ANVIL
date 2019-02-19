@@ -22,9 +22,14 @@
             <button name="get_verinym" type="submit">Get Verinym</button>
         </form>
     {% endif %}
-    <form action="/reset">
-        <button name="reset" type="submit">Reset</button>
-    </form>
+    {% if setup %}
+        Register a prover who can receive your credentials:
+        <form action="/connection_request" method="post">
+            <input name="name" placeholder="Name">
+            <input name="ip_address" placeholder="I.P. address">
+            <button name="connection_request" type="submit">Connection request</button>
+        </form>
+    {% endif %}
     {% if have_verinym %}
         <form action="/create_credential" method="post">
             <textarea name="schema" rows="10" cols="100" placeholder="Schema JSON"></textarea>
@@ -38,6 +43,9 @@
             <button name="connection_request" type="submit">Offer schema</button>
         </form>
     {% endif %}
+    <form action="/reset">
+        <button name="reset" type="submit">Reset</button>
+    </form>
 {% else %}
     <h1>Failed to load render_template() parameters.</h1>
 {% endif %}
