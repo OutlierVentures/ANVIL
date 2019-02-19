@@ -94,7 +94,6 @@ async def create_credential():
     global issuer, created_schema
     form = await request.form
     schema = json.loads(form['schema'])
-    print(schema)
     unique_schema_name, schema_id, issuer = await create_schema(schema, issuer)
     issuer = await create_credential_definition(issuer, schema_id, unique_schema_name, revocable = False)
     created_schema.append(unique_schema_name)
@@ -108,10 +107,17 @@ async def offer_credential_to_ip():
     schema_name = form['schema_name']
     if schema_name in created_schema:
         issuer = await offer_credential(issuer, schema_name)
-        requests.post('http://' + form['ip_address'] + '/credential_inbox', issuer['authcrypted_certificate_cred_offer'])
+        requests.post('http://' + form['ip_address'] + '/credential_inbox', issuer['authcrypted_cred_offer'])
         return redirect(url_for('index'))
     else:
         return 'Schema does not exist. Check name input.'
+
+
+@app.route('/credential_request', methods = ['GET', 'POST'])
+async def credential_request():
+    global issuer
+    issuer['authcrypted_cred_request'] = await request.data
+
 
 
 @app.route('/reset')
