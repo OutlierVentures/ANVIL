@@ -19,7 +19,7 @@
     {% endif %}
     {% if channel_established and not have_verinym %}
         <form action="/get_verinym" method="post">
-            <button name="get_verinym" type="submit">Get Verinym</button>
+            <button name="get_verinym" type="submit">Open secure channel</button>
         </form>
     {% endif %}
     {% if have_verinym %}
@@ -35,6 +35,7 @@
                 <button name="create_credential" type="submit">Create credential</button>
             </form>
             Created schema: {{ created_schema }}
+            <br>
             You may offer any of the above to anyone at your chosen IP.
             <form action="/offer_credential" method="post">
                 <input name="schema_name" placeholder="Schema name as above">
@@ -43,7 +44,7 @@
             </form>
         {% endif %}
         {% if credential_requested %}
-        Credential requested by {{ counterparty_name }}.
+        Credential requested by {{ request_ip }}.
         <form action="/send_credential" method="post">
             <button name="send_credential" type="submit">Send credential</button>
         </form>
