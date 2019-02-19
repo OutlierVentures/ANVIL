@@ -9,7 +9,7 @@ debug = True # Do not enable in production
 host = '0.0.0.0'
 # In production everyone runs on same port, use 2 here for same-machine testing 
 port = 5001
-receiver_port = 5000
+anchor_port = 5000
 prover_port = 5002
 
 # Globals approach will be dropped once session persistence in Python is fixed.
@@ -32,10 +32,10 @@ def index():
     is set up on the anchor end.
     '''
     channel_established = True if anchor_ip else False
-    prover_registered = True if 'prover_registered' in issuer else False
+    prover_registered = True if 'prover_ip' in issuer else False
     have_verinym = True if 'did_info' in issuer else False
     credential_requested = True if 'authcrypted_cred_request' in issuer else False
-    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema, prover_registered = prover_registered, credential_requested = credential_requested, counterparty_name = counterparty_name)
+    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema, prover_registered = prover_registered, credential_requested = credential_requested)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -57,14 +57,14 @@ async def data():
 @app.route('/respond', methods = ['GET', 'POST'])
 async def respond():
     global issuer, anchor_ip
-    issuer, anchor_ip = await common_respond(issuer, received_data, pool_handle, receiver_port)
+    issuer, anchor_ip = await common_respond(issuer, received_data, pool_handle, anchor_port)
     return redirect(url_for('index'))
 
 
 @app.route('/get_verinym', methods = ['GET', 'POST'])
 async def get_verinym():
     global issuer
-    issuer = await common_get_verinym(issuer, anchor_ip, receiver_port)
+    issuer = await common_get_verinym(issuer, anchor_ip, anchor_port)
     return redirect(url_for('index'))
 
 
@@ -80,7 +80,7 @@ async def establish_channel():
     global issuer
     issuer = await common_establish_channel(issuer, counterparty_name)
     # Connection with multiple actor types (e.g. steward + prover) demands registering this at the app level
-    issuer['prover_registered'] = 'yes'
+    issuer['prover_ip'] = request.remote_addr
     return '200'
 
 
@@ -124,8 +124,10 @@ async def offer_credential_to_ip():
 
 @app.route('/credential_request', methods = ['GET', 'POST'])
 async def credential_request():
-    global issuer
+    global issuer, request_ip
     issuer['authcrypted_cred_request'] = await request.data
+    # Old request IP now has name anchor IP so can safely overwrite
+    request_ip = request.remote_addr
     return '200'
 
 
@@ -133,7 +135,9 @@ async def credential_request():
 async def send_credential():
     global issuer
     issuer = await create_and_send_credential(issuer)
-    requests.post('http://' + request.remote_addr + ':' + str(prover_port) + '/credential_store', issuer['authcrypted_cred'])
+    requests.post('http://' + request_ip + ':' + str(prover_port) + '/credential_store', issuer['authcrypted_cred'])
+    # Hides send credential function until next credential request
+    issuer.pop('authcrypted_cred_request', None)
     return redirect(url_for('index'))
 
 
@@ -141,8 +145,8 @@ async def send_credential():
 def reset():
     global issuer, pool_handle, received_data, anchor_ip
     issuer, pool_handle = common_reset([issuer], pool_handle)
-    received_data = ''
-    anchor_ip = ''
+    received_data = False
+    anchor_ip = False
     return redirect(url_for('index'))
 
 
