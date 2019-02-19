@@ -35,7 +35,7 @@ def index():
     '''
     channel_established = True if anchor_ip != '' else False
     have_verinym = True if 'did_info' in issuer else False
-    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema)
+    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, anchor_name = anchor_name, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -89,10 +89,7 @@ async def offer_credential_to_ip():
     schema_name = form['schema_name']
     if schema_name in created_schema:
         issuer = await offer_credential(issuer, schema_name)
-        '''
-        NEED TO SEND TO IP HERE
-        NOTE CREDENTIALS GO TO PROVERS, SO PROVER MUST BE ONBOARDED WITH ISSUER FIRST.
-        '''
+        requests.post('http://' + form['ip_address'] + '/credential_inbox', issuer['authcrypted_certificate_cred_offer'])
         return redirect(url_for('index'))
     else:
         return 'Schema does not exist. Check name input.'

@@ -12,6 +12,7 @@
         </form>
     {% endif %}
     {% if have_data and not responded %}
+        Connection request from {{ anchor_name }}
         <form action="/respond" method="post">
             <button name="respond" type="submit">Send response</button>
         </form>
