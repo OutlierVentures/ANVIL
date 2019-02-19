@@ -12,7 +12,7 @@
         </form>
     {% endif %}
     {% if have_data and not responded %}
-        Connection request from {{ anchor_name }}
+        Connection request from {{ request_ip }}
         <form action="/respond" method="post">
             <button name="respond" type="submit">Send response</button>
         </form>
@@ -25,10 +25,11 @@
     {% if have_verinym %}
         {% if unique_schema_name %}
         Credential offer: {{ unique_schema_name }}
-        <form action="/request_credential">
-            <textarea name="credential_request" rows="10" cols="100" placeholder="Credential request JSON"></textarea>
+        <form action="/request_credential" method="post">
+            <textarea name="credrequest" rows="10" cols="100" placeholder="Credential request JSON"></textarea>
             <button name="request_credential" type="submit">Request credential</button>
         </form>
+        Stored credentials: {{ stored_credentials }}
         {% endif %}
         <!--Credential requests and storage-->
     {% endif %}
