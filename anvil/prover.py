@@ -1,7 +1,7 @@
 import os, requests, json, time
 from quart import Quart, render_template, redirect, url_for, request
 from common import common_setup, common_respond, common_get_verinym, common_reset
-from sovrin.credentials import receive_credential_offer
+from sovrin.credentials import receive_credential_offer, request_credential
 app = Quart(__name__)
 
 debug = True # Do not enable in production
@@ -49,14 +49,6 @@ async def data():
     print(received_data)
     return '200'
 
-@app.route('/credential_inbox', methods = ['GET', 'POST'])
-async def credential_inbox():
-    global prover
-    prover['authcrypted_certificate_cred_offer'] = await request.data
-    prover = await receive_credential_offer(prover)
-    print(prover['authcrypted_certificate_cred_offer'])
-    return '200'
-
 
 @app.route('/respond', methods = ['GET', 'POST'])
 async def respond():
@@ -69,6 +61,24 @@ async def respond():
 async def get_verinym():
     global prover
     prover = await common_get_verinym(prover, anchor_ip, receiver_port)
+    return redirect(url_for('index'))
+
+
+@app.route('/credential_inbox', methods = ['GET', 'POST'])
+async def credential_inbox():
+    global prover
+    prover['authcrypted_cred_offer'] = await request.data
+    prover = await receive_credential_offer(prover)
+    print(prover['authcrypted_cred_offer'])
+    return '200'
+
+
+@app.route('/request_credential', methods = ['GET', 'POST'])
+async def request_credential_from_issuer():
+    global prover
+    form = await request.form
+    prover = await request_credential(prover, form['credential_request'])
+    requests.post('http://' + anchor_ip + ':' + str(receiver_port) + '/credential_inbox', prover['authcrypted_cred_request'])
     return redirect(url_for('index'))
 
 
