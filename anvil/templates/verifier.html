@@ -19,7 +19,7 @@
     {% endif %}
     {% if channel_established and not have_verinym %}
         <form action="/get_verinym" method="post">
-            <button name="get_verinym" type="submit">Get Verinym</button>
+            <button name="get_verinym" type="submit">Open secure channel</button>
         </form>
     {% endif %}
     {% if have_verinym %}
@@ -32,7 +32,13 @@
         {% if prover_registered %}
             <form action="/request_proof" method="post">
                 <textarea name="proofrequest" rows="10" cols="100" placeholder="Proof request JSON"></textarea>
-                <button name="create_credential" type="submit">Create credential</button>
+                <button name="request_proof" type="submit">Request proof</button>
+            </form>
+        {% endif %}
+        {% if have_proof %}
+            Proof received.
+            <form action="/verify" method="post">
+                <button name="verify" type="submit">Verify</button>
             </form>
         {% endif %}
     {% endif %}
