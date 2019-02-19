@@ -1,8 +1,7 @@
 import os, requests, json, time
 from quart import Quart, render_template, redirect, url_for, request
 from common import common_setup, common_respond, common_get_verinym, common_reset
-from sovrin.schema import create_schema, create_credential_definition
-from sovrin.credentials import offer_credential
+from sovrin.credentials import receive_credential_offer
 app = Quart(__name__)
 
 debug = True # Do not enable in production
@@ -54,8 +53,9 @@ async def data():
 
 @app.route('/credential_inbox', methods = ['GET', 'POST'])
 async def credential_inbox():
+    global prover
     prover['authcrypted_certificate_cred_offer'] = await request.data
-    print(received_data)
+    prover = await receive_credential_offer(prover)
     return '200'
 
 
