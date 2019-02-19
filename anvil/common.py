@@ -49,18 +49,18 @@ async def common_verinym_request(anchor, counterparty_name):
 
 
 
-async def common_respond(onboardee, received_data, pool_handle, receiver_port):
+async def common_respond(onboardee, received_data, pool_handle, anchor_port):
     anchor_ip = request.remote_addr
     data = json.loads(received_data)
     onboardee, anoncrypted_connection_response = await onboarding_onboardee_receive_and_send(onboardee, data, pool_handle)
     onboardee['connection_response'] = json.loads(onboardee['connection_response'])
-    requests.post('http://' + anchor_ip + ':' + str(receiver_port) + '/establish_channel', anoncrypted_connection_response)
+    requests.post('http://' + anchor_ip + ':' + str(anchor_port) + '/establish_channel', anoncrypted_connection_response)
     return onboardee, anchor_ip
 
 
-async def common_get_verinym(onboardee, anchor_ip, receiver_port):
+async def common_get_verinym(onboardee, anchor_ip, anchor_port):
     onboardee, authcrypted_did_info = await onboarding_onboardee_create_did(onboardee)
-    requests.post('http://' + anchor_ip + ':' + str(receiver_port) + '/verinym_request', authcrypted_did_info)
+    requests.post('http://' + anchor_ip + ':' + str(anchor_port) + '/verinym_request', authcrypted_did_info)
     return onboardee
 
 
