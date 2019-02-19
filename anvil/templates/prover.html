@@ -1,0 +1,33 @@
+<!doctype html>
+<title>ANVIL {{ actor }}</title>
+{% if actor %}
+    <h1>Hello {{ actor }}!</h1>
+    {% if not setup %}
+        <form action="/setup" method="post">
+            <button name="setup" type="submit">Connect to Sovrin</button>
+        </form>
+    {% else %}
+        <form action="/reload">
+            <button name="reload" type="submit">Check for messages</button>
+        </form>
+    {% endif %}
+    {% if have_data and not responded %}
+        Connection request from {{ anchor_name }}
+        <form action="/respond" method="post">
+            <button name="respond" type="submit">Send response</button>
+        </form>
+    {% endif %}
+    {% if channel_established and not have_verinym %}
+        <form action="/get_verinym" method="post">
+            <button name="get_verinym" type="submit">Get Verinym</button>
+        </form>
+    {% endif %}
+    {% if have_verinym %}
+        <!--Credential requests and storage-->
+    {% endif %}
+    <form action="/reset">
+        <button name="reset" type="submit">Reset</button>
+    </form>
+{% else %}
+    <h1>Failed to load render_template() parameters.</h1>
+{% endif %}
