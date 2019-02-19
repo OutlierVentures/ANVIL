@@ -2,26 +2,27 @@ import os, requests, json, time
 from quart import Quart, render_template, redirect, url_for, request
 from common import common_setup, common_respond, common_get_verinym, common_reset, common_connection_request, common_establish_channel, common_verinym_request
 from sovrin.schema import create_schema, create_credential_definition
-from sovrin.credentials import offer_credential
+from sovrin.credentials import offer_credential, create_and_send_credential
 app = Quart(__name__)
 
 debug = True # Do not enable in production
 host = '0.0.0.0'
 # In production everyone runs on same port, use 2 here for same-machine testing 
 port = 5001
-receiver_port = 5000 
+receiver_port = 5000
+prover_port = 5002
 
 # Globals approach will be dropped once session persistence in Python is fixed.
 issuer = {}
+request_ip = anchor_ip = received_data = counterparty_name = False
 pool_handle = 1
-request_ip = anchor_ip = received_data = False
 created_schema = []
 
 
 @app.route('/')
 def index():
-    setup = True if issuer != {} else False
-    have_data = True if received_data != False else False
+    setup = True if issuer else False
+    have_data = True if received_data else False
     responded = True if 'connection_response' in issuer else False
     '''
     The onboardee depends on the anchor to finish establishing the secure channel.
@@ -30,9 +31,11 @@ def index():
     relevant response from the anchor is returned, which is only possible if the channel
     is set up on the anchor end.
     '''
-    channel_established = True if anchor_ip != '' else False
+    channel_established = True if anchor_ip else False
+    prover_registered = True if 'prover_registered' in issuer else False
     have_verinym = True if 'did_info' in issuer else False
-    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema)
+    credential_requested = True if 'authcrypted_cred_request' in issuer else False
+    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema, prover_registered = prover_registered, credential_requested = credential_requested, counterparty_name = counterparty_name)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -76,6 +79,8 @@ async def connection_request():
 async def establish_channel():
     global issuer
     issuer = await common_establish_channel(issuer, counterparty_name)
+    # Connection with multiple actor types (e.g. steward + prover) demands registering this at the app level
+    issuer['prover_registered'] = 'yes'
     return '200'
 
 
@@ -92,12 +97,16 @@ Set revocation support here if needed.
 @app.route('/create_credential', methods = ['GET', 'POST'])
 async def create_credential():
     global issuer, created_schema
-    form = await request.form
-    schema = json.loads(form['schema'])
-    unique_schema_name, schema_id, issuer = await create_schema(schema, issuer)
-    issuer = await create_credential_definition(issuer, schema_id, unique_schema_name, revocable = False)
-    created_schema.append(unique_schema_name)
-    return redirect(url_for('index'))
+    try:
+        form = await request.form
+        schema = json.loads(form['schema'])
+        unique_schema_name, schema_id, issuer = await create_schema(schema, issuer)
+        issuer = await create_credential_definition(issuer, schema_id, unique_schema_name, revocable = False)
+        created_schema.append(unique_schema_name)
+        return redirect(url_for('index'))
+    except:
+        return 'Invalid schema. Check formatting.'
+
 
 
 @app.route('/offer_credential', methods = ['GET', 'POST'])
@@ -117,7 +126,15 @@ async def offer_credential_to_ip():
 async def credential_request():
     global issuer
     issuer['authcrypted_cred_request'] = await request.data
+    return '200'
 
+
+@app.route('/send_credential', methods = ['GET', 'POST'])
+async def send_credential():
+    global issuer
+    issuer = await create_and_send_credential(issuer)
+    requests.post('http://' + request.remote_addr + ':' + str(prover_port) + '/credential_store', issuer['authcrypted_cred'])
+    return redirect(url_for('index'))
 
 
 @app.route('/reset')
