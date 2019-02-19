@@ -77,11 +77,14 @@ async def credential_inbox():
 @app.route('/request_credential', methods = ['GET', 'POST'])
 async def request_credential_from_issuer():
     global prover
-    form = await request.form
-    credential_request = form['credrequest'] # Request credential demands a string-formatted JSON
-    prover = await request_credential(prover, credential_request)
-    requests.post('http://' + anchor_ip + ':' + str(receiver_port) + '/credential_request', prover['authcrypted_cred_request'])
-    return redirect(url_for('index'))
+    try:
+        form = await request.form
+        credential_request = form['credrequest'] # Request credential demands a string-formatted JSON
+        prover = await request_credential(prover, credential_request)
+        requests.post('http://' + anchor_ip + ':' + str(receiver_port) + '/credential_request', prover['authcrypted_cred_request'])
+        return redirect(url_for('index'))
+    except:
+        return 'Invalid credential request. Check formatting.'
 
 
 @app.route('/credential_store', methods = ['GET', 'POST'])
