@@ -17,21 +17,33 @@
             <button name="respond" type="submit">Send response</button>
         </form>
     {% endif %}
-    {% if channel_established and not have_verinym %}
+    <!-- May prove useful
+    Channel established: {{ channel_established }}
+    Have Verinym: {{ have_verinym }}
+    Multiple onboard: {{ multiple_onboard }}
+    -->
+    {% if channel_established and (not have_verinym or multiple_onboard) %}
         <form action="/get_verinym" method="post">
-            <button name="get_verinym" type="submit">Get Verinym</button>
+            <button name="get_verinym" type="submit">Open secure channel</button>
         </form>
     {% endif %}
     {% if have_verinym %}
         {% if unique_schema_name %}
-        Credential offer: {{ unique_schema_name }}
-        <form action="/request_credential" method="post">
-            <textarea name="credrequest" rows="10" cols="100" placeholder="Credential request JSON"></textarea>
-            <button name="request_credential" type="submit">Request credential</button>
-        </form>
-        Stored credentials: {{ stored_credentials }}
+            Credential offer: {{ unique_schema_name }}
+            <form action="/request_credential" method="post">
+                <textarea name="credrequest" rows="10" cols="100" placeholder="Credential request JSON"></textarea>
+                <button name="request_credential" type="submit">Request credential</button>
+            </form>
+            Stored credentials: {{ stored_credentials }}
         {% endif %}
-        <!--Credential requests and storage-->
+        {% if have_proof_request %}
+            <br>
+            Proof request from {{ request_ip }}
+            <form action="/create_and_send_proof" method="post">
+                <textarea name="proof" rows="10" cols="100" placeholder="Proof JSON"></textarea>
+                <button name="create_and_send_proof" type="submit">Send proof</button>
+            </form>
+        {% endif %}
     {% endif %}
     <form action="/reset">
         <button name="reset" type="submit">Reset</button>
