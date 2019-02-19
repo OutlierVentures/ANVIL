@@ -7,15 +7,13 @@ app = Quart(__name__)
 debug = True # Do not enable in production
 host = '0.0.0.0'
 # In production everyone runs on same port, use 2 here for same-machine testing 
-port = 5001
-receiver_port = 5000 
+port = 5002
+receiver_port = 5001
 
 # Globals approach will be dropped once session persistence in Python is fixed.
 prover = {}
 pool_handle = 1
-received_data = ''
-anchor_name = ''
-anchor_ip = ''
+request_ip = anchor_ip = received_data = ''
 created_schema = []
 
 
@@ -34,7 +32,7 @@ def index():
     '''
     channel_established = True if anchor_ip != '' else False
     have_verinym = True if 'did_info' in prover else False
-    return render_template('prover.html', actor = 'prover', setup = setup, have_data = have_data, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema)
+    return render_template('prover.html', actor = 'prover', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -56,6 +54,7 @@ async def credential_inbox():
     global prover
     prover['authcrypted_certificate_cred_offer'] = await request.data
     prover = await receive_credential_offer(prover)
+    print(prover['authcrypted_certificate_cred_offer'])
     return '200'
 
 
@@ -71,3 +70,22 @@ async def get_verinym():
     global prover
     prover = await common_get_verinym(prover, anchor_ip, receiver_port)
     return redirect(url_for('index'))
+
+
+@app.route('/reset')
+def reset():
+    global prover, pool_handle, received_data, anchor_ip
+    prover, pool_handle = common_reset([prover], pool_handle)
+    received_data = ''
+    anchor_ip = ''
+    return redirect(url_for('index'))
+
+
+@app.route('/reload')
+def reload():
+    return redirect(url_for('index'))
+
+
+if __name__ == '__main__':
+    app.secret_key = os.getenv('ANVIL_KEY', 'MUST_BE_STATIC')
+    app.run(host, port, debug)
