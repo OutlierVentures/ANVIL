@@ -14,15 +14,14 @@ receiver_port = 5000
 # Globals approach will be dropped once session persistence in Python is fixed.
 issuer = {}
 pool_handle = 1
-request_ip = anchor_ip = received_data = ''
+request_ip = anchor_ip = received_data = False
 created_schema = []
 
 
 @app.route('/')
 def index():
-    global issuer, received_data
     setup = True if issuer != {} else False
-    have_data = True if received_data != '' else False
+    have_data = True if received_data != False else False
     responded = True if 'connection_response' in issuer else False
     '''
     The onboardee depends on the anchor to finish establishing the secure channel.
