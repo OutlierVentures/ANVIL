@@ -23,6 +23,12 @@
         </form>
     {% endif %}
     {% if have_verinym %}
+        {% if unique_schema_name %}
+        Credential offer: {{ unique_schema_name }}
+        <form action="/request_credential">
+            <button name="request_credential" type="submit">Request credential</button>
+        </form>
+        {% endif %}
         <!--Credential requests and storage-->
     {% endif %}
     <form action="/reset">

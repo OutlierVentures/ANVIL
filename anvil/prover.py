@@ -13,15 +13,14 @@ receiver_port = 5001
 # Globals approach will be dropped once session persistence in Python is fixed.
 prover = {}
 pool_handle = 1
-request_ip = anchor_ip = received_data = ''
+request_ip = anchor_ip = received_data = False
 created_schema = []
 
 
 @app.route('/')
 def index():
-    global prover, received_data
     setup = True if prover != {} else False
-    have_data = True if received_data != '' else False
+    have_data = True if received_data != False else False
     responded = True if 'connection_response' in prover else False
     '''
     The onboardee depends on the anchor to finish establishing the secure channel.
@@ -32,7 +31,8 @@ def index():
     '''
     channel_established = True if anchor_ip != '' else False
     have_verinym = True if 'did_info' in prover else False
-    return render_template('prover.html', actor = 'prover', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema)
+    unique_schema_name = prover['unique_schema_name'] if 'unique_schema_name' in prover else False
+    return render_template('prover.html', actor = 'prover', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema, unique_schema_name = unique_schema_name)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
