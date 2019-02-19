@@ -11,14 +11,14 @@ port = 5000
 
 # Globals approach will be dropped once session persistence in Python is fixed.
 steward = {}
+counterparty_name = False
 pool_handle = 1
-counterparty_name = ''
 
 
 @app.route('/')
 def index():
     global steward
-    setup = True if steward != {} else False
+    setup = True if steward else False
     channel_established = True if 'connection_response' in steward else False
     return render_template('steward.html', actor = 'steward', setup = setup, channel_established = channel_established)
 
