@@ -1,5 +1,14 @@
 ![ANVIL](./docs/img/anvil-transparent.png)
 
+<p>
+    <a href="https://github.com/fetchai" alt="Fetch.AI version">
+        <img src="./docs/img/fetch-pr2.svg" />
+    </a>
+    <a href="https://github.com/hyperledger/indy-sdk" alt="Hyperledger Indy version">
+        <img src="./docs/img/indy-1.8.svg" />
+    </a>
+</p>
+
 Agent Negotiation Verifiable Interaction Layer – an app in the Convergence Stack.
 
 ANVIL bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework. In short, ANVIL mitigates risk in AEA [FIPA](https://en.wikipedia.org/wiki/Foundation_for_Intelligent_Physical_Agents) negotiations with verifiable claims.
@@ -35,7 +44,7 @@ Start Fetch node: `./scripts/start_fetch.sh`
 
 Spin up Sovrin node pool: `./scripts/start_sovrin.sh`
 
-Test install (requires a running Sovrin pool): `./scripts/test.sh`
+Test install (requires a running Fetch node and Sovrin pool): `./scripts/test.sh`
 
 Stop Fetch node: `./scripts/stop_fetch.sh`
 

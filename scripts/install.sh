@@ -38,7 +38,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
     xcode-select --version || xcode-select --install
     brew --version || yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     python3.7 --version || brew install python
-    cmake --version || brew install  cmake
+    cmake --version || brew install cmake
 fi
 
 pip3 install --upgrade setuptools
