@@ -1,10 +1,10 @@
 '''
-JSON to Fetch data model functions.
+Fetch utilities.
 '''
 
 import json
-
 from oef.schema import AttributeSchema, DataModel, Description
+
 
 def modlify(data):
     attributes = data['attributes']
