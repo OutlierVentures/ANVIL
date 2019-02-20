@@ -8,14 +8,16 @@ from oef.agents import OEFAgent
 from oef.schema import AttributeSchema
 from oef.messages import PROPOSE_TYPES
 from oef.query import Query, Constraint, Eq
-from aea_config import agent_ip, agent_port
-from modlifier import modlify, load_json_file
+from utilities import modlify, load_json_file
+
 
 class Verifier(OEFAgent):
+
 
     def __init__(self, public_key, oef_addr, oef_port, price_threshold_for_accept):
         OEFAgent.__init__(self, public_key, oef_addr, oef_port)
         self.price_threshold = price_threshold_for_accept
+
 
     # For every agent returned in the service search, send a CFP to obtain resources from them.
     def on_search_result(self, search_id: int, agents: List[str]):
@@ -30,10 +32,8 @@ class Verifier(OEFAgent):
             query = None
             self.send_cfp(1, 0, agent, 0, query)
 
-    '''
-    DANGER: DEFAULT ACCEPTING ALL.
+
     # Accept Proposals that this agent sent a CFP for.
-    '''
     def on_propose(self, msg_id: int, dialogue_id: int, origin: str, target: int, proposals: PROPOSE_TYPES):
         print('[{0}]: Received propose from agent {1}'.format(self.public_key, origin))
         for i, p in enumerate(proposals):
@@ -47,6 +47,7 @@ class Verifier(OEFAgent):
         self.send_accept(msg_id, dialogue_id, origin, msg_id + 1)
         self.stop()
 
+
     # Get data from incoming messages from the prover.
     def on_message(self, msg_id: int, dialogue_id: int, origin: str, content: bytes):
         data = json.loads(content.decode('utf-8'))
@@ -55,7 +56,7 @@ class Verifier(OEFAgent):
 
 
 if __name__ == '__main__':
-    agent = Verifier('Verifier', oef_addr = agent_ip, oef_port = agent_port, price_threshold_for_accept = 99)
+    agent = Verifier('Verifier', oef_addr = '127.0.0.1', oef_port = 3333, price_threshold_for_accept = 99)
     agent.connect()
     data_model = modlify(load_json_file('../example_data/data_model.json'))
     query = Query([Constraint(AttributeSchema('license', bool, False, 'value').name, Eq(True)),
