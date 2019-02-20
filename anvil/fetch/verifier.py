@@ -5,10 +5,9 @@ Verifier: AEA sending the CFP.
 import json
 from typing import List
 from oef.agents import OEFAgent
-from oef.schema import AttributeSchema
+from oef.schema import AttributeSchema, DataModel
 from oef.messages import PROPOSE_TYPES
 from oef.query import Query, Constraint, Eq
-from utilities import modlify, load_json_file
 
 
 class Verifier(OEFAgent):
@@ -55,19 +54,34 @@ class Verifier(OEFAgent):
         self.stop()
 
 
+def modlify(data):
+    attributes = data['attributes']
+    # This is the least restrictive apporach.
+    # To make attributes required override the specific one with True as the third argument.
+    attribute_list = []
+    for key, value in attributes.items():
+        attribute_list.append(AttributeSchema(key, bool, False, value))
+    data_model = DataModel(data['name'], attribute_list, data['description'])
+    return data_model
+
+
+def load_json_file(path):
+    with open(path) as file_:
+        data = json.load(file_)
+    return data
+
+
 if __name__ == '__main__':
     agent = Verifier('Verifier', oef_addr = '127.0.0.1', oef_port = 3333, price_threshold_for_accept = 99)
     agent.connect()
     data_model = modlify(load_json_file('../example_data/data_model.json'))
-    query = Query([Constraint(AttributeSchema('license', bool, False, 'value').name, Eq(True)),
-                Constraint(AttributeSchema('fetch', bool, False, 'value').name, Eq(True)),
-                Constraint(AttributeSchema('iota', bool, False, 'value').name, Eq(True)),
-                Constraint(AttributeSchema('ocean', bool, False, 'value').name, Eq(True))],
-                data_model)
+    query = Query([Constraint('license', Eq(True)),
+                   Constraint('fetch', Eq(True)),
+                   Constraint('iota', Eq(True)),
+                   Constraint('ocean', Eq(True))])
     agent.search_services(0, query)
     try:
         agent.run()
     finally:
         agent.stop()
         agent.disconnect()
-    
