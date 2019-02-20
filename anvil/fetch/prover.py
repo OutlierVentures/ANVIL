@@ -4,9 +4,8 @@ Prover: AEA receiving the CFP.
 
 import json
 from oef.agents import OEFAgent
-from oef.schema import Description
+from oef.schema import AttributeSchema, DataModel, Description
 from oef.messages import CFP_TYPES
-from utilities import modlify, load_json_file
 
 
 class Prover(OEFAgent):
@@ -41,6 +40,23 @@ class Prover(OEFAgent):
     def on_decline(self, msg_id: int, dialogue_id: int, origin: str, target: int):
         print("[{0}]: Received decline from {1}.".format(self.public_key, origin))
         self.stop()
+
+
+def modlify(data):
+    attributes = data['attributes']
+    # This is the least restrictive apporach.
+    # To make attributes required override the specific one with True as the third argument.
+    attribute_list = []
+    for key, value in attributes.items():
+        attribute_list.append(AttributeSchema(key, bool, False, value))
+    data_model = DataModel(data['name'], attribute_list, data['description'])
+    return data_model
+
+
+def load_json_file(path):
+    with open(path) as file_:
+        data = json.load(file_)
+    return data
 
 
 if __name__ == '__main__':
