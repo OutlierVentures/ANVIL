@@ -6,7 +6,7 @@ endcolor="\033[0m"
 
 echo -e "${onyellow}Testing Fetch install...$endcolor"
 cd oefpy
-sudo tox
+sudo tox -e py37
 cd ..
 
 echo -e "${onyellow}Testing Sovrin install...$endcolor"
