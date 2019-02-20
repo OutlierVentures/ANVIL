@@ -37,7 +37,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     xcode-select --version || xcode-select --install
     brew --version || yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    brew install python cmake
+    python3.7 --version || brew install python
+    cmake --version || brew install  cmake
 fi
 
 pip3 install --upgrade setuptools
@@ -54,7 +55,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
                                libprotobuf-dev \
                                tox
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    brew install protobuf
+    brew install protobuf # Compiler only so no error if already installed
 fi
 
 # Install OEFPython
@@ -62,11 +63,7 @@ get_latest fetchai oef-sdk-python
 mv oef-sdk-python oefpy
 cd oefpy
 sudo python3 setup.py install
-pip3 install -r requirements.txt
 python3 scripts/setup_test.py
-
-# Tox environment fix for Python 3.7
-cp ../scripts/tox-fix.ini tox.ini # REMOVE ONCE ISSUE CLOSED
 
 # Build docs
 cd docs
