@@ -6,11 +6,11 @@ import json
 from oef.agents import OEFAgent
 from oef.schema import Description
 from oef.messages import CFP_TYPES
-from aea_config import agent_ip, agent_port
-from modlifier import modlify, load_json_file
+from utilities import modlify, load_json_file
 
 
 class Prover(OEFAgent):
+
 
     def __init__(self, public_key, oef_addr, oef_port, data_model_json, service_description_json, data_to_send_json, price):
         OEFAgent.__init__(self, public_key, oef_addr, oef_port)
@@ -19,12 +19,14 @@ class Prover(OEFAgent):
         self.data = data_to_send_json
         self.price = price
 
+
     # Send a Propose to the sender of the CFP.
     def on_cfp(self, msg_id: int, dialogue_id: int, origin: str, target: int, query: CFP_TYPES):
         print("[{0}]: Received CFP from {1}".format(self.public_key, origin))
         proposal = Description({"price": self.price})
         print("[{}]: Sending propose at price: {}".format(self.public_key, self.price))
         self.send_propose(msg_id + 1, dialogue_id, origin, target + 1, [proposal])
+
 
     # Send data if Proposal accepted
     def on_accept(self, msg_id: int, dialogue_id: int, origin: str, target: int):
@@ -33,7 +35,8 @@ class Prover(OEFAgent):
         print("[{0}]: Sending data to {1}: {2}".format(self.public_key, origin, self.data))
         self.send_message(0, dialogue_id, origin, encoded_data)
         self.stop()
-    
+
+
     # Send data if Proposal accepted
     def on_decline(self, msg_id: int, dialogue_id: int, origin: str, target: int):
         print("[{0}]: Received decline from {1}.".format(self.public_key, origin))
@@ -44,7 +47,7 @@ if __name__ == '__main__':
     data_model_json = load_json_file('../example_data/data_model.json')
     service_description_json = load_json_file('../example_data/service_description.json')
     data_to_send_json = load_json_file('../example_data/data_to_send.json')
-    agent = Prover('Prover', oef_addr = agent_ip, oef_port = agent_port, data_model_json = data_model_json, service_description_json = service_description_json, data_to_send_json = data_to_send_json, price = 100)
+    agent = Prover('Prover', oef_addr = '127.0.0.1', oef_port = 3333, data_model_json = data_model_json, service_description_json = service_description_json, data_to_send_json = data_to_send_json, price = 100)
     agent.connect()
     agent.register_service(0, agent.service)
     print('Waiting for verifier...')
