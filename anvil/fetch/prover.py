@@ -2,45 +2,54 @@
 Prover: AEA receiving the CFP.
 '''
 
+import json
 from oef.agents import OEFAgent
 from oef.schema import Description
-from modlifier import modlify, descriptionify
-
+from oef.messages import CFP_TYPES
 from aea_config import agent_ip, agent_port
+from modlifier import modlify, load_json_file
+
 
 class Prover(OEFAgent):
 
-    data_model = modlify('../example_data/data_model.json')
-    service = descriptionify(data_model, '../example_data/service_description.json')
+    def __init__(self, public_key, oef_addr, oef_port, data_model_json, service_description_json, data_to_send_json, price):
+        OEFAgent.__init__(self, public_key, oef_addr, oef_port)
+        self.data_model = modlify(data_model_json)
+        self.service = Description(service_description_json, self.data_model)
+        self.data = data_to_send_json
+        self.price = price
 
     # Send a Propose to the sender of the CFP.
-    def on_cfp(self, origin: str,
-               dialogue_id: int,
-               msg_id: int,
-               target: int,
-               # Not documented. Marked CFP_TYPES so assuming bool means binary yes/no.
-               query: bool):
-        print('Received CFP from {0} with Query: {1}'
-              .format(origin, query))
-        proposal = Description({'price': 50})
-        self.send_propose(dialogue_id, origin, [proposal], msg_id + 1, target + 1)
+    def on_cfp(self, msg_id: int, dialogue_id: int, origin: str, target: int, query: CFP_TYPES):
+        print("[{0}]: Received CFP from {1}".format(self.public_key, origin))
+        proposal = Description({"price": self.price})
+        print("[{}]: Sending propose at price: {}".format(self.public_key, self.price))
+        self.send_propose(msg_id + 1, dialogue_id, origin, target + 1, [proposal])
 
     # Send data if Proposal accepted
-    def on_accept(self, origin: str,
-                  dialogue_id: int,
-                  msg_id: int,
-                  target: int):
-        print('Received accept from {0} cif {1} msgId {2} target {3}'
-              .format(origin, dialogue_id, msg_id, target))
+    def on_accept(self, msg_id: int, dialogue_id: int, origin: str, target: int):
+        print("[{0}]: Received accept from {1}.".format(self.public_key, origin))
+        encoded_data = json.dumps(self.data).encode("utf-8")
+        print("[{0}]: Sending data to {1}: {2}".format(self.public_key, origin, self.data))
+        self.send_message(0, dialogue_id, origin, encoded_data)
+        self.stop()
+    
+    # Send data if Proposal accepted
+    def on_decline(self, msg_id: int, dialogue_id: int, origin: str, target: int):
+        print("[{0}]: Received decline from {1}.".format(self.public_key, origin))
+        self.stop()
 
-        '''
-        # ACTUALLY SEND DATA, e.g.
-        self.send_message(dialogue_id, origin, b'sovrin_tx_vel:0.82')
-        '''
-        
+
 if __name__ == '__main__':
-      agent = Prover('Prover', oef_addr = agent_ip, oef_port = agent_port)
-      agent.connect()
-      agent.register_service(agent.service)
-      print('Waiting for verifier...')
-      agent.run()
+    data_model_json = load_json_file('../example_data/data_model.json')
+    service_description_json = load_json_file('../example_data/service_description.json')
+    data_to_send_json = load_json_file('../example_data/data_to_send.json')
+    agent = Prover('Prover', oef_addr = agent_ip, oef_port = agent_port, data_model_json = data_model_json, service_description_json = service_description_json, data_to_send_json = data_to_send_json, price = 100)
+    agent.connect()
+    agent.register_service(0, agent.service)
+    print('Waiting for verifier...')
+    try:
+        agent.run()
+    finally:
+        agent.stop()
+        agent.disconnect()
