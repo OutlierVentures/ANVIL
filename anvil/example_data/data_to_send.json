@@ -1,0 +1,22 @@
+{
+    "fetch": {
+        "net_type": "testnet",
+        "hashrate": 34.10,
+        "daily_tx": 6080.22,
+        "reward_frequency": 0.12,
+        "avg_tx_value": 230.10
+    },
+    "iota": {
+        "net_type": "mainnet",
+        "daily_tx": 13980.14,
+        "reward_frequency": 0.04,
+        "avg_tx_value": 45.00
+    },
+    "ocean": {
+        "net_type": "testnet",
+        "staked": 50000,
+        "daily_tx": 893.51,
+        "reward_frequency": 0.40,
+        "avg_tx_value": 602.94
+    }
+}
