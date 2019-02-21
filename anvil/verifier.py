@@ -1,21 +1,23 @@
-import os, requests, json, time
+import os, requests, json, time, asyncio, subprocess
 from quart import Quart, render_template, redirect, url_for, request
 from common import common_setup, common_respond, common_get_verinym, common_reset, common_connection_request, common_establish_channel, common_verinym_request
 from sovrin.schema import create_schema, create_credential_definition
 from sovrin.credentials import offer_credential, create_and_send_credential
 from sovrin.proofs import request_proof_of_credential, verify_proof
+from fetch.verifier import Verifier
+from oef.query import Query, Constraint, Eq
 app = Quart(__name__)
 
 debug = True # Do not enable in production
 host = '0.0.0.0'
-# In production everyone runs on same port, use 2 here for same-machine testing 
+# In production everyone runs on same port, use multiple here for same-machine testing 
 port = 5003
 anchor_port = 5000
 prover_port = 5002
 
 # Globals approach will be dropped once session persistence in Python is fixed.
 verifier = {}
-request_ip = anchor_ip = received_data = counterparty_name = False
+request_ip = anchor_ip = received_data = counterparty_name = search = False
 pool_handle = 1
 created_schema = []
 
@@ -37,7 +39,9 @@ def index():
     have_verinym = True if 'did_info' in verifier else False
     credential_requested = True if 'authcrypted_cred_request' in verifier else False
     have_proof = True if 'authcrypted_proof' in verifier else False
-    return render_template('verifier.html', actor = 'verifier', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema, prover_registered = prover_registered, credential_requested = credential_requested, have_proof = have_proof)
+    have_search = True if search else False
+    search_results = verifier['search_results'] if 'search_results' in verifier else False
+    return render_template('verifier.html', actor = 'verifier', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema, prover_registered = prover_registered, credential_requested = credential_requested, have_proof = have_proof, have_search = have_search, search_results = search_results)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -45,6 +49,24 @@ async def setup():
     global verifier, pool_handle
     verifier, pool_handle = await common_setup(verifier, pool_handle, 'verifier')
     return redirect(url_for('index'))
+
+
+'''
+Rudimentary Fetch search engine.
+Fairly easy to flesh out given the rich query sub-language – see Fetch SDK docs.
+'''
+@app.route('/search_for_services', methods = ['GET', 'POST'])
+async def search_for_services():
+    global verifier
+    form = await request.form
+    search_terms = form['searchterms'].replace(' ', '_').replace(',', '_')
+    verifier['search_terms'] = search_terms
+    subprocess.run('python3 ./fetch/searcher.py ' + search_terms, shell = True)
+    if os.path.isfile('search_results.json'):
+        with open('search_results.json') as file_:
+            verifier['search_results'] = json.load(file_)
+    return redirect(url_for('index'))
+
 
 
 @app.route('/receive', methods = ['GET', 'POST'])
@@ -130,6 +152,15 @@ async def verify():
         return redirect(url_for('index'))
     except:
         return 'Proof invalid. Potentially check your own assertions on the values.'
+
+
+@app.route('/purchase_service', methods = ['GET', 'POST'])
+async def purchase_service():
+    form = await request.form
+    max_price = form['maxprice']
+    search_terms = verifier['search_terms']
+    subprocess.run('python3 ./fetch/verifier.py ' + search_terms + ' ' + max_price, shell = True)
+    return redirect(url_for('index'))
 
 
 @app.route('/reset')
