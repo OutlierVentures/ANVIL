@@ -6,3 +6,4 @@ indy
 **/log.txt
 **/net_sim_*
 .vscode
+/anvil/search_results.json
