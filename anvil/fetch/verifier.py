@@ -2,7 +2,7 @@
 Verifier: AEA sending the CFP.
 '''
 
-import json
+import json, sys
 from typing import List
 from oef.agents import OEFAgent
 from oef.schema import AttributeSchema, DataModel
@@ -13,9 +13,9 @@ from oef.query import Query, Constraint, Eq
 class Verifier(OEFAgent):
 
 
-    def __init__(self, public_key, oef_addr, oef_port, price_threshold_for_accept):
+    def __init__(self, public_key, oef_addr, oef_port, max_price):
         OEFAgent.__init__(self, public_key, oef_addr, oef_port)
-        self.price_threshold = price_threshold_for_accept
+        self.price_threshold = max_price
 
 
     # For every agent returned in the service search, send a CFP to obtain resources from them.
@@ -37,7 +37,7 @@ class Verifier(OEFAgent):
         print('[{0}]: Received propose from agent {1}'.format(self.public_key, origin))
         for i, p in enumerate(proposals):
             print('[{0}]: Proposal {1}: {2}'.format(self.public_key, i, p.values))
-            if p.values['price'] < self.price_threshold:
+            if p.values['price'] > self.price_threshold:
                 print('[{0}]: Declining Propose.'.format(self.public_key))
                 self.send_decline(msg_id, dialogue_id, origin, msg_id + 1)
                 self.stop()
@@ -71,14 +71,16 @@ def load_json_file(path):
     return data
 
 
+
 if __name__ == '__main__':
-    agent = Verifier('Verifier', oef_addr = '127.0.0.1', oef_port = 3333, price_threshold_for_accept = 99)
+    search_terms = sys.argv[1].split('_')
+    max_price = float(sys.argv[2])
+    query_array = []
+    for term in search_terms:
+        query_array.append(Constraint(term, Eq(True)))
+    query = Query(query_array)
+    agent = Verifier('Verifier', oef_addr = '127.0.0.1', oef_port = 3333, max_price = max_price)
     agent.connect()
-    data_model = modlify(load_json_file('../example_data/data_model.json'))
-    query = Query([Constraint('license', Eq(True)),
-                   Constraint('fetch', Eq(True)),
-                   Constraint('iota', Eq(True)),
-                   Constraint('ocean', Eq(True))])
     agent.search_services(0, query)
     try:
         agent.run()
