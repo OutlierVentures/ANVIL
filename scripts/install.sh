@@ -33,7 +33,13 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     yes | sudo apt-get install build-essential \
                                git \
                                cmake \
+                               python3 \
+                               python3-pip \
                                python3-pytest
+    # Python 3.7 for Quart
+    yes | sudo apt install software-properties-common
+    yes | sudo add-apt-repository ppa:deadsnakes/ppa
+    yes | sudo apt install python3.7
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     xcode-select --version || xcode-select --install
     brew --version || yes | /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -122,7 +128,8 @@ fi
 # Install Python wrapper for Hyperledger Indy and Quart
 pip3 install python3-indy quart
 
-# Testing Sovrin is done once connected to a node pool
-# Hence Sovrin tests are in a separate file
+# OEF doesn't auto-inflate
+cd /usr/local/lib/python3.7/site-packages || cd /usr/local/lib/python3.6/site-packages
+yes | unzip oef-0.2.0-py3.7.egg
 
 echo -e "${ongreen}ANVIL installed successfully.$endcolor"
