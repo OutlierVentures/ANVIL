@@ -13,17 +13,10 @@ Agent Negotiation Verifiable Interaction Layer – an app in the Convergence Sta
 
 ANVIL bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework. In short, ANVIL mitigates risk in AEA [FIPA](https://en.wikipedia.org/wiki/Foundation_for_Intelligent_Physical_Agents) negotiations with verifiable claims.
 
-Encrypt your ANVIL connections with the `ANVIL_KEY` environment variable.
-
-#### NOTE DURING DEV OF INDVIDUAL ACTOR FILES: CLEAR .indy_client AND RUN 1_, 2_, ... IN ORDER EACH TIME
 
 ## Requirements
 
-- MacOS
-  - Docker.
-- Linux
-  - Docker.
-  - Python 3.7+ with your `python3` command linked to this version.
+- Linux/MacOS and Docker.
 
 ## Actors
 
@@ -50,21 +43,17 @@ Stop Fetch node: `./scripts/stop_fetch.sh`
 
 Stop Sovrin node pool: `./scripts/stop_sovrin.sh`
 
-Nodes are currently local.
-
 The Fetch node sits on port 3333.
 
 The Sovrin node pool sits on ports 9701 through 9708.
 
+ANVIL apps sit on ports 5000 through 5003.
+
 ### Using apps
 
+Default mocked testing accounts are already set up for use without the Sovrin mainnet. If just testing, there's no need to set up the wallets section below.
 
-ANVIL sessions are encrypted in addition to the security of Sovrin and Fetch. As any actor using ANVIL, you must set an encryption key / password as an environment variable:
-```
-ANVIL_KEY=
-```
-
-Default mocked testing accounts are alredy set up for use without the Sovrin mainnet. If just testing, there's no need to set up the below.
+#### Wallets
 
 For real accounts, set up your address and key as environment variables *on the relevant machine and in the same session (terminal) as running the app for each actor*. You only need to set up the components you are using, e.g. in the case where actor are already Sovrin-onboarded, where there is no need for a Steward.
 
@@ -75,21 +64,24 @@ WALLET_KEY=
 
 Optionally, also set `SOVRIN_SEED=` when initialising an acotor from a seed (generally only for Steward setup).
 
-### Run Fetch AEAs
+### Run actor apps
 
-Go to the `fetch` folder.
+Go to the `anvil` subfolder. Run the agent(s) of choice:
 
-In one terminal window, run the AEA providing the service:
+```
+python3 steward.py
+```
+```
+python3 issuer.py
+```
 ```
 python3 verifier.py
 ```
-
-In another, run the AEA purchasing it:
 ```
-python3 prover.py
+./prover.sh # Prover is started with shell script
 ```
 
-### Run Sovrin verifiable claims
+### Run Sovrin verifiable claims demo
 
 Go to the `sovrin` folder.
 
@@ -98,12 +90,12 @@ Run:
 python3 claims.py
 ```
 
-### Example data
+#### Example data
 
 Encoding used is personal preference. For Sophos, octal has been chosen.
 
 
-### Network simulator
+#### Network simulator
 
 Import `send_data` and `receive_data`.
 
@@ -125,8 +117,6 @@ Error: `indy.error.IndyError: ErrorCode.CommonInvalidStructure` or `indy.error.I
 Fix:`rm ~/.indy_client` and re-run.
 
 Indy failures may be due to missing environment variables, see install.sh for which ones have been modified. These may need to be set in `.bashrc` (non-login interactive shells) instead of `.bash_profile`.
-
-Both the Prover and Verifier should have `data_model.json`. *ASK FETCH!! VERIFIER-SIDE: WHY DO I NEED THE DATA MODEL OF THE SERVICES I AM SEARCHING FOR (USED TO STRUCTURE QUERY)? I CAN'T POSSIBLY KNOW THE DATA MODEL BEFORE I HAVE PURCHASED THE SERVICE.*
 
 On a proof reply (creating a proof), the requested attributes field is what will be revealed.
 
