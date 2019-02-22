@@ -9,14 +9,6 @@ body {
 h1 {
     font-weight: 100;
 }
-button {
-    background-color: transparent;
-    color: #ffffff;
-}
-input, textarea {
-    background-color: #ffffff;
-    color: #5A89F9;
-}
 button, input, textarea {
     font-family: 'Lato', sans-serif;
     box-shadow: none;
@@ -27,6 +19,14 @@ button, input, textarea {
     user-select: none;
     outline: none;
     transition: all .1s ease-in;
+}
+input, textarea {
+    background-color: #ffffff;
+    color: #5A89F9;
+}
+button {
+    background-color: transparent;
+    color: #ffffff;
 }
 button:hover {
     border: 1px solid #6CFDCC;

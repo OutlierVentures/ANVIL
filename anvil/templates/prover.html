@@ -46,7 +46,7 @@
             <br>
             Credential offer: {{ unique_schema_name }}
             <form action="/request_credential" method="post">
-                <textarea name="credrequest" rows="10" cols="100" placeholder="Credential request JSON"></textarea><br>
+                <textarea name="credrequest" rows="10" cols="60" placeholder="Credential request JSON"></textarea><br>
                 <button name="request_credential" type="submit">Request credential</button>
             </form>
             Stored credentials: {{ stored_credentials }}
@@ -55,7 +55,7 @@
             <br><br>
             Proof request from {{ request_ip }}
             <form action="/create_and_send_proof" method="post">
-                <textarea name="proof" rows="10" cols="100" placeholder="Proof JSON"></textarea><br>
+                <textarea name="proof" rows="10" cols="60" placeholder="Proof JSON"></textarea><br>
                 <button name="create_and_send_proof" type="submit">Send proof</button>
             </form>
         {% endif %}
