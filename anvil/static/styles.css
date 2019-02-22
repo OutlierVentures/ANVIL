@@ -1,12 +1,47 @@
 body {
-    height: 100vh; /* Use min-height to overflow screen size */
+    min-height: 100vh;
     background: linear-gradient(135deg, #6CFDCC, #5A89F9);
     color: #ffffff;
     font-family: 'Lato', sans-serif;
+    text-align: center;
+    padding-top: 4em
 }
 h1 {
     font-weight: 100;
 }
 button {
+    background-color: transparent;
+    color: #ffffff;
+}
+input, textarea {
+    background-color: #ffffff;
+    color: #5A89F9;
+}
+button, input, textarea {
     font-family: 'Lato', sans-serif;
+    box-shadow: none;
+    border: 1px solid #ffffff;
+    border-radius: 0.5em;
+    padding: 1em;
+    margin: 1em;
+    user-select: none;
+    outline: none;
+    transition: all .1s ease-in;
+}
+button:hover {
+    border: 1px solid #6CFDCC;
+}
+button:focus {
+    animation-name: pulse;
+    animation-duration: 800ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+::placeholder {
+    color: #5A89F9;
+}
+@keyframes pulse {
+    0%   { border-color: rgba(108, 253, 204, 1); }
+    50%  { border-color: rgba(108, 253, 204, 0); }
+    100% { border-color: rgba(108, 253, 204, 1); }
 }

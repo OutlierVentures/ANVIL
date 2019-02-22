@@ -20,7 +20,7 @@ def index():
     global steward
     setup = True if steward else False
     channel_established = True if 'connection_response' in steward else False
-    return render_template('steward.html', actor = 'steward', setup = setup, channel_established = channel_established)
+    return render_template('steward.html', actor = 'STEWARD', setup = setup, channel_established = channel_established)
 
 
 @app.route('/setup', methods = ['GET', 'POST'])

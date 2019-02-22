@@ -5,63 +5,66 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-{% if actor %}
-    <h1>Hello {{ actor }}!</h1>
-    {% if not setup %}
+{# {% if actor %} #}
+    <h1>{{ actor }}</h1>
+    {# {% if not setup %} #}
         <form action="/setup" method="post">
             <button name="setup" type="submit">Connect to Sovrin</button>
         </form>
-    {% else %}
+    {# {% else %} #}
         <form action="/reload">
             <button name="reload" type="submit">Check for messages</button>
         </form>
-    {% endif %}
-    {% if have_data and not responded %}
+    {# {% endif %} #}
+    {# {% if have_data and not responded %} #}
         Connection request from {{ request_ip }}
         <form action="/respond" method="post">
             <button name="respond" type="submit">Send response</button>
         </form>
-    {% endif %}
-    {% if not service_published %}
-        Publish Fetch service:
-        <form action="/publish_service" method="post">
-            <input name="servicepath" placeholder="Path to service data"></textarea>
-            <input name="price" placeholder="Price"></textarea>
-            <button name="publish_service" type="submit">Publish service</button>
-        </form>
-    {% endif %}
+    {# {% endif %} #}
     <!-- May prove useful
     Channel established: {{ channel_established }}
     Have Verinym: {{ have_verinym }}
     Multiple onboard: {{ multiple_onboard }}
     -->
-    {% if channel_established and (not have_verinym or multiple_onboard) %}
+    {# {% if channel_established and (not have_verinym or multiple_onboard) %} #}
         <form action="/get_verinym" method="post">
             <button name="get_verinym" type="submit">Open secure channel</button>
         </form>
-    {% endif %}
-    {% if have_verinym %}
-        {% if unique_schema_name %}
+    {# {% endif %} #}
+    {# {% if not service_published %} #}
+        <br>
+        Publish Fetch service:
+        <form action="/publish_service" method="post">
+            <input name="servicepath" placeholder="Path to service data"></textarea><br>
+            <input name="price" placeholder="Price"></textarea><br>
+            <button name="publish_service" type="submit">Publish service</button>
+        </form>
+    {# {% endif %} #}
+    {# {% if have_verinym %} #}
+        {# {% if unique_schema_name %} #}
+            <br>
             Credential offer: {{ unique_schema_name }}
             <form action="/request_credential" method="post">
-                <textarea name="credrequest" rows="10" cols="100" placeholder="Credential request JSON"></textarea>
+                <textarea name="credrequest" rows="10" cols="100" placeholder="Credential request JSON"></textarea><br>
                 <button name="request_credential" type="submit">Request credential</button>
             </form>
             Stored credentials: {{ stored_credentials }}
-        {% endif %}
-        {% if have_proof_request %}
-            <br>
+        {# {% endif %} #}
+        {# {% if have_proof_request %} #}
+            <br><br>
             Proof request from {{ request_ip }}
             <form action="/create_and_send_proof" method="post">
-                <textarea name="proof" rows="10" cols="100" placeholder="Proof JSON"></textarea>
+                <textarea name="proof" rows="10" cols="100" placeholder="Proof JSON"></textarea><br>
                 <button name="create_and_send_proof" type="submit">Send proof</button>
             </form>
-        {% endif %}
-    {% endif %}
+        {# {% endif %} #}
+    {# {% endif %} #}
+    <br>
     <form action="/reset">
         <button name="reset" type="submit">Reset</button>
     </form>
-{% else %}
+{# {% else %} #}
     <h1>Failed to load render_template() parameters.</h1>
-{% endif %}
+{# {% endif %} #}
 </body>

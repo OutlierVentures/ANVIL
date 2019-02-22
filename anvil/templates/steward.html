@@ -5,24 +5,25 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-{% if actor %}
-    <h1>Hello {{ actor }}!</h1>
-    {% if not setup %}
+{# {% if actor %} #}
+    <h1>{{ actor }}</h1>
+    {# {% if not setup %} #}
         <form action="/setup" method="post">
             <button name="setup" type="submit">Connect to Sovrin</button>
         </form>
-    {% endif %}
-    {% if setup %}
+    {# {% endif %} #}
+    {# {% if setup %} #}
         <form action="/connection_request" method="post">
             <input name="name" placeholder="Name">
             <input name="ip_address" placeholder="I.P. address">
             <button name="connection_request" type="submit">Connection request</button>
         </form>
-    {% endif %}
+    {# {% endif %} #}
+    <br>
     <form action="/reset">
         <button name="reset" type="submit">Reset</button>
     </form>
-{% else %}
+{# {% else %} #}
     <h1>Failed to load render_template() parameters.</h1>
-{% endif %}
+{# {% endif %} #}
 </body>
