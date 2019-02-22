@@ -39,9 +39,8 @@ def index():
     have_verinym = True if 'did_info' in verifier else False
     credential_requested = True if 'authcrypted_cred_request' in verifier else False
     have_proof = True if 'authcrypted_proof' in verifier else False
-    have_search = True if search else False
     search_results = verifier['search_results'] if 'search_results' in verifier else False
-    return render_template('verifier.html', actor = 'verifier', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema, prover_registered = prover_registered, credential_requested = credential_requested, have_proof = have_proof, have_search = have_search, search_results = search_results)
+    return render_template('verifier.html', actor = 'verifier', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema, prover_registered = prover_registered, credential_requested = credential_requested, have_proof = have_proof, search_results = search_results)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
