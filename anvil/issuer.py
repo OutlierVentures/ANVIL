@@ -35,7 +35,8 @@ def index():
     prover_registered = True if 'prover_ip' in issuer else False
     have_verinym = True if 'did_info' in issuer else False
     credential_requested = True if 'authcrypted_cred_request' in issuer else False
-    return render_template('issuer.html', actor = 'issuer', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema, prover_registered = prover_registered, credential_requested = credential_requested)
+    created_schema_string = ', '.join(schema for schema in created_schema)
+    return render_template('issuer.html', actor = 'ISSUER', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, created_schema = created_schema_string, prover_registered = prover_registered, credential_requested = credential_requested)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
