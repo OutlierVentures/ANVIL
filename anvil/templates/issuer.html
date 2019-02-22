@@ -1,5 +1,10 @@
 <!doctype html>
-<title>ANVIL {{ actor }}</title>
+<head>
+    <title>ANVIL {{ actor }}</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,300" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
 {% if actor %}
     <h1>Hello {{ actor }}!</h1>
     {% if not setup %}
@@ -44,10 +49,10 @@
             </form>
         {% endif %}
         {% if credential_requested %}
-        Credential requested by {{ request_ip }}.
-        <form action="/send_credential" method="post">
-            <button name="send_credential" type="submit">Send credential</button>
-        </form>
+            Credential requested by {{ request_ip }}.
+            <form action="/send_credential" method="post">
+                <button name="send_credential" type="submit">Send credential</button>
+            </form>
         {% endif %}
     {% endif %}
     <form action="/reset">
@@ -56,3 +61,4 @@
 {% else %}
     <h1>Failed to load render_template() parameters.</h1>
 {% endif %}
+</body>

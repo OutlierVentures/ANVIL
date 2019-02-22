@@ -1,5 +1,10 @@
 <!doctype html>
-<title>ANVIL {{ actor }}</title>
+<head>
+    <title>ANVIL {{ actor }}</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato:100,300" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
 {% if actor %}
     <h1>Hello {{ actor }}!</h1>
     {% if not setup %}
@@ -10,19 +15,19 @@
         <form action="/reload">
             <button name="reload" type="submit">Check for messages</button>
         </form>
-        {% if not service_published %}
-            Publish Fetch service:
-            <form action="/publish_service" method="post">
-                <input name="servicepath" placeholder="Path to service data"></textarea>
-                <input name="price" placeholder="Price"></textarea>
-                <button name="publish_service" type="submit">Publish service</button>
-            </form>
-        {% endif %}
     {% endif %}
     {% if have_data and not responded %}
         Connection request from {{ request_ip }}
         <form action="/respond" method="post">
             <button name="respond" type="submit">Send response</button>
+        </form>
+    {% endif %}
+    {% if not service_published %}
+        Publish Fetch service:
+        <form action="/publish_service" method="post">
+            <input name="servicepath" placeholder="Path to service data"></textarea>
+            <input name="price" placeholder="Price"></textarea>
+            <button name="publish_service" type="submit">Publish service</button>
         </form>
     {% endif %}
     <!-- May prove useful
@@ -59,3 +64,4 @@
 {% else %}
     <h1>Failed to load render_template() parameters.</h1>
 {% endif %}
+</body>
