@@ -1,0 +1,12 @@
+body {
+    height: 100vh; /* Use min-height to overflow screen size */
+    background: linear-gradient(135deg, #6CFDCC, #5A89F9);
+    color: #ffffff;
+    font-family: 'Lato', sans-serif;
+}
+h1 {
+    font-weight: 100;
+}
+button {
+    font-family: 'Lato', sans-serif;
+}
