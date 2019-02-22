@@ -12,7 +12,9 @@
     <br>
     <i>An app in the Convergence Stack</i>
     <br><br>
-    ANVIL bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework. In short, ANVIL mitigates risk in AEA <a href="https://en.wikipedia.org/wiki/Foundation_for_Intelligent_Physical_Agents">FIPA</a> negotiations with verifiable claims.
+    ANVIL bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework.
+    <br>
+    In short, ANVIL mitigates risk in AEA <a href="https://en.wikipedia.org/wiki/Foundation_for_Intelligent_Physical_Agents">FIPA</a> negotiations with verifiable claims.
 </p>
 
 ## Requirements
@@ -51,6 +53,8 @@ The Sovrin node pool sits on ports 9701 through 9708.
 ANVIL apps sit on ports 5000 through 5003.
 
 ### Using apps
+
+![ANVIL](./docs/img/issuer_app.png)
 
 Default mocked testing accounts are already set up for use without the Sovrin mainnet. If just testing, there's no need to set up the wallets section below.
 
