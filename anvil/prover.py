@@ -1,4 +1,4 @@
-import os, requests, json, time
+import os, requests, json, time, subprocess
 from quart import Quart, render_template, redirect, url_for, request
 from common import common_setup, common_respond, common_get_verinym, common_reset
 from sovrin.credentials import receive_credential_offer, request_credential, store_credential
@@ -14,7 +14,7 @@ verifier_port = 5003
 
 # Globals approach will be dropped once session persistence in Python is fixed.
 prover = {}
-request_ip = anchor_ip = received_data = have_verinym = multiple_onboard = False
+request_ip = anchor_ip = received_data = multiple_onboard = service_published = False
 pool_handle = 1
 stored_credentials = []
 
@@ -35,7 +35,7 @@ def index():
     have_verinym = True if 'did_info' in prover else False
     unique_schema_name = prover['unique_schema_name'] if 'unique_schema_name' in prover else False
     have_proof_request = True if 'authcrypted_proof_request' in prover else False
-    return render_template('prover.html', actor = 'prover', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, stored_credentials = stored_credentials, unique_schema_name = unique_schema_name, have_proof_request = have_proof_request, multiple_onboard = multiple_onboard)
+    return render_template('prover.html', actor = 'prover', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, stored_credentials = stored_credentials, unique_schema_name = unique_schema_name, have_proof_request = have_proof_request, multiple_onboard = multiple_onboard, service_published = service_published)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
@@ -45,9 +45,20 @@ async def setup():
     return redirect(url_for('index'))
 
 
+@app.route('/publish_service', methods = ['GET', 'POST'])
+async def publish_service():
+    global service_published
+    form = await request.form
+    service_path = form['servicepath']
+    price = form['price']
+    subprocess.Popen('python3 ./fetch/prover.py ' + service_path + ' ' + price, shell = True)
+    service_published = True
+    return redirect(url_for('index'))
+
+
 @app.route('/receive', methods = ['GET', 'POST'])
 async def data():
-    global prover, received_data, request_ip, anchor_ip, have_verinym
+    global prover, received_data, request_ip, anchor_ip
     received_data = await request.data
     request_ip = request.remote_addr
     # Drop any old connections
@@ -141,10 +152,11 @@ async def create_and_send_proof():
 
 @app.route('/reset')
 def reset():
-    global prover, pool_handle, received_data, anchor_ip
+    global prover, pool_handle, received_data, anchor_ip, service_published
     prover, pool_handle = common_reset([prover], pool_handle)
     received_data = False
     anchor_ip = False
+    service_published = False
     return redirect(url_for('index'))
 
 
