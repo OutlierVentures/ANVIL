@@ -10,6 +10,14 @@
         <form action="/reload">
             <button name="reload" type="submit">Check for messages</button>
         </form>
+        {% if not service_published %}
+            Publish Fetch service:
+            <form action="/publish_service" method="post">
+                <input name="servicepath" placeholder="Path to service data"></textarea>
+                <input name="price" placeholder="Price"></textarea>
+                <button name="publish_service" type="submit">Publish service</button>
+            </form>
+        {% endif %}
     {% endif %}
     {% if have_data and not responded %}
         Connection request from {{ request_ip }}
