@@ -7,12 +7,13 @@
     <a href="https://github.com/hyperledger/indy-sdk" alt="Hyperledger Indy version">
         <img src="./docs/img/indy_1.8.svg" />
     </a>
+    <br>
+    Agent Negotiation Verifiable Interaction Layer.
+    <br>
+    An app in the Convergence Stack.
+    <br><br>
+    ANVIL bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework. In short, ANVIL mitigates risk in AEA [FIPA](https://en.wikipedia.org/wiki/Foundation_for_Intelligent_Physical_Agents) negotiations with verifiable claims.
 </p>
-
-Agent Negotiation Verifiable Interaction Layer: an app in the Convergence Stack.
-
-ANVIL bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework. In short, ANVIL mitigates risk in AEA [FIPA](https://en.wikipedia.org/wiki/Foundation_for_Intelligent_Physical_Agents) negotiations with verifiable claims.
-
 
 ## Requirements
 
