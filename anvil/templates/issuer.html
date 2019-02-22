@@ -5,29 +5,29 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-{# {% if actor %} #}
+{% if actor %}
     <h1>{{ actor }}</h1>
-    {# {% if not setup %} #}
+    {% if not setup %}
         <form action="/setup" method="post">
             <button name="setup" type="submit">Connect to Sovrin</button>
         </form>
-    {# {% else %} #}
+    {% else %}
         <form action="/reload">
             <button name="reload" type="submit">Check for messages</button>
         </form>
-    {# {% endif %} #}
-    {# {% if have_data and not responded %} #}
+    {% endif %}
+    {% if have_data and not responded %}
         Connection request from {{ request_ip }}
         <form action="/respond" method="post">
             <button name="respond" type="submit">Send response</button>
         </form>
-    {# {% endif %} #}
-    {# {% if channel_established and not have_verinym %} #}
+    {% endif %}
+    {% if channel_established and not have_verinym %}
         <form action="/get_verinym" method="post">
             <button name="get_verinym" type="submit">Open secure channel</button>
         </form>
-    {# {% endif %} #}
-    {# {% if have_verinym %} #}
+    {% endif %}
+    {% if have_verinym %}
         <br>
         Register a prover who can receive your credentials:
         <form action="/connection_request" method="post">
@@ -35,7 +35,7 @@
             <input name="ip_address" placeholder="I.P. address">
             <button name="connection_request" type="submit">Connection request</button>
         </form>
-        {# {% if prover_registered %} #}
+        {% if prover_registered %}
             <br>
             Create a credential:
             <form action="/create_credential" method="post">
@@ -50,20 +50,20 @@
                 <input name="ip_address" placeholder="I.P. address">
                 <button name="connection_request" type="submit">Offer credential</button>
             </form>
-        {# {% endif %} #}
-        {# {% if credential_requested %} #}
+        {% endif %}
+        {% if credential_requested %}
             <br>
             Credential requested by {{ request_ip }}.
             <form action="/send_credential" method="post">
                 <button name="send_credential" type="submit">Send credential</button>
             </form>
-        {# {% endif %} #}
-    {# {% endif %} #}
+        {% endif %}
+    {% endif %}
     <br>
     <form action="/reset">
         <button name="reset" type="submit">Reset</button>
     </form>
-{# {% else %} #}
+{% else %}
     <h1>Failed to load render_template() parameters.</h1>
-{# {% endif %} #}
+{% endif %}
 </body>
