@@ -35,7 +35,8 @@ def index():
     have_verinym = True if 'did_info' in prover else False
     unique_schema_name = prover['unique_schema_name'] if 'unique_schema_name' in prover else False
     have_proof_request = True if 'authcrypted_proof_request' in prover else False
-    return render_template('prover.html', actor = 'prover', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, stored_credentials = stored_credentials, unique_schema_name = unique_schema_name, have_proof_request = have_proof_request, multiple_onboard = multiple_onboard, service_published = service_published)
+    stored_credentials_string = ', '.join(credential for credential in stored_credentials)
+    return render_template('prover.html', actor = 'PROVER', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, stored_credentials = stored_credentials_string, unique_schema_name = unique_schema_name, have_proof_request = have_proof_request, multiple_onboard = multiple_onboard, service_published = service_published)
  
 
 @app.route('/setup', methods = ['GET', 'POST'])
