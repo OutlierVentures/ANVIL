@@ -2,7 +2,7 @@
 Prover: AEA receiving the CFP.
 '''
 
-import json
+import json, sys
 from oef.agents import OEFAgent
 from oef.schema import AttributeSchema, DataModel, Description
 from oef.messages import CFP_TYPES
@@ -60,13 +60,15 @@ def load_json_file(path):
 
 
 if __name__ == '__main__':
-    data_model_json = load_json_file('../example_data/data_model.json')
-    service_description_json = load_json_file('../example_data/service_description.json')
-    data_to_send_json = load_json_file('../example_data/data_to_send.json')
-    agent = Prover('Prover', oef_addr = '127.0.0.1', oef_port = 3333, data_model_json = data_model_json, service_description_json = service_description_json, data_to_send_json = data_to_send_json, price = 100)
+    service_path = sys.argv[1]
+    price = float(sys.argv[2])
+    data_model_json = load_json_file(service_path + '/data_model.json')
+    service_description_json = load_json_file(service_path + '/service_description.json')
+    data_to_send_json = load_json_file(service_path + '/data_to_send.json')
+    agent = Prover('Prover', oef_addr = '127.0.0.1', oef_port = 3333, data_model_json = data_model_json, service_description_json = service_description_json, data_to_send_json = data_to_send_json, price = price)
     agent.connect()
     agent.register_service(0, agent.service)
-    print('Waiting for verifier...')
+    print('Fetch service offered...')
     try:
         agent.run()
     finally:
