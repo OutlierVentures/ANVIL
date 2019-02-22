@@ -75,10 +75,10 @@ python3 steward.py
 python3 issuer.py
 ```
 ```
+python3 prover.py
+```
+```
 python3 verifier.py
-```
-```
-./prover.sh # Prover is started with shell script
 ```
 
 ### Run Sovrin verifiable claims demo
