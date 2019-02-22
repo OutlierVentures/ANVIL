@@ -7,12 +7,12 @@
     <a href="https://github.com/hyperledger/indy-sdk" alt="Hyperledger Indy version">
         <img src="./docs/img/indy_1.8.svg" />
     </a>
-    <br>
-    Agent Negotiation Verifiable Interaction Layer.
-    <br>
-    An app in the Convergence Stack.
     <br><br>
-    ANVIL bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework. In short, ANVIL mitigates risk in AEA [FIPA](https://en.wikipedia.org/wiki/Foundation_for_Intelligent_Physical_Agents) negotiations with verifiable claims.
+    Agent Negotiation Verifiable Interaction Layer
+    <br>
+    <i>An app in the Convergence Stack</i>
+    <br><br>
+    ANVIL bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework. In short, ANVIL mitigates risk in AEA <a href="https://en.wikipedia.org/wiki/Foundation_for_Intelligent_Physical_Agents">FIPA</a> negotiations with verifiable claims.
 </p>
 
 ## Requirements
@@ -82,32 +82,21 @@ python3 prover.py
 python3 verifier.py
 ```
 
-### Run Sovrin verifiable claims demo
+### Example data
 
-Go to the `sovrin` folder.
+Example data is given in the `anvil/example_data` folder. This includes 2 sets of credentials and their associated proofs: an authenticated data sharing bot (_Sophos_) and a degree certificate. These can be pasted into the front-end apps.
+
+Encoding used is personal preference. For Sophos, octal was chosen.
+
+Fetch services are loaded in the front-end app using a path to the service data. An example service data struture can be found in the `anvil/example_data` folder.
+
+### Sovrin verifiable claims demo
+
+`claims.py` in the `sovrin` folder demoes the ANVIL abstractions for Hyperledger Indy. This includes a network simulator for sending data and may serve as a base for building Sovrin into various interactions.
 
 Run:
 ```
 python3 claims.py
-```
-
-#### Example data
-
-Encoding used is personal preference. For Sophos, octal has been chosen.
-
-
-#### Network simulator
-
-Import `send_data` and `receive_data`.
-
-Sending:
-```
-send_data(data, channel)
-```
-
-Receiving:
-```
-receive_data(channel)
 ```
 
 
