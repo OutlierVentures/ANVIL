@@ -71,7 +71,7 @@ Optionally, also set `SOVRIN_SEED=` when initialising an acotor from a seed (gen
 
 ### Run actor apps
 
-Go to the `anvil` subfolder. Run the agent(s) of choice:
+Go to the `anvil` subfolder. Run the agent(s) of choice in a Pythgon `venv`:
 
 ```
 python3 steward.py
