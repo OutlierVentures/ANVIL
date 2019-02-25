@@ -67,7 +67,7 @@ WALLET_ID=
 WALLET_KEY=
 ```
 
-Optionally, also set `SOVRIN_SEED=` when initialising an acotor from a seed (generally only for Steward setup).
+Optionally, also set `SOVRIN_SEED=` when initialising an actor from a seed (generally only for Steward setup).
 
 ### Run actor apps
 
@@ -103,6 +103,11 @@ Run:
 python3 claims.py
 ```
 
+### Secure channel setup key exchange
+
+<p align="center">
+    <img src="./docs/img/secure_channel.png" style="width: 50%" />
+</p>
 
 ## Debugging
 
