@@ -106,7 +106,7 @@ python3 claims.py
 ### Secure channel setup key exchange
 
 <p align="center">
-    <img src="./docs/img/secure_channel.png" style="width: 50%" />
+        <img src="./docs/img/secure_channel.png" width="300" />
 </p>
 
 ## Debugging
