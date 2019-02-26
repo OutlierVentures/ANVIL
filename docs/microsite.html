@@ -28,14 +28,46 @@
         #title {
             display: block;
             max-width: 50vw;
+            margin-top: -1em
         }
         .tone {
             width: 100vw;
             text-align: center;
             font-weight: 100;
-            font-size: 2.5vw;
+            font-size: 4vh;
             letter-spacing: 0.5vw;
             min-height: 2vh;
+        }
+        .box {
+            padding: 5vw;
+        }
+        .minor {
+            font-size: 4vh
+        }
+        .inline {
+            max-height: 3vh;
+        }
+        .scroll-down {
+            position: absolute;
+            margin-left: 48.5vw;
+            margin-right: 48.5vw;
+            bottom: 1em;
+            width: 2.12vw;
+            height: 2.12vw;
+            border-bottom: 2px solid #fff;
+            border-right: 2px solid #fff;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) rotate(45deg);
+            }
+            40% {
+                transform: translateY(-1em) rotate(45deg);
+            }
+            60% {
+                transform: translateY(-0.5em) rotate(45deg);
+            }
         }
     </style>
 </head>
@@ -45,10 +77,16 @@
             <img id="title" src="./img/anvil_logo_white.png" />
             <div class="tone"></div>
             <div class="tone">BRIDGING FETCH.AI AND SOVRIN</div>
-            
+        </div>
+        <a class="scroll-down" href="#start"></a>
+    </div>
+    <div class="page ptwo" id="start" >
+        <div class="box">
+            <div class="minor">
+                An &nbsp;<img class="inline" src="./img/ov_logo_white.png" /> project.
+            </div>
         </div>
     </div>
-    <div class="page ptwo">TWO</div>
     <div class="page pone">THREE</div>
     <div class="page ptwo">FOUR</div>
 </body>
