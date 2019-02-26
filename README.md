@@ -1,4 +1,4 @@
-![ANVIL](./docs/img/anvil_logo_colour.svg)
+![ANVIL](./docs/img/anvil_logo_colour.png)
 
 <p align="center">
     <a href="https://github.com/fetchai" alt="Fetch.AI version">
@@ -21,16 +21,7 @@
 
 - Linux/MacOS and Docker.
 
-## Actors
-
-There are four key parties involved in an ANVIL interaction:
-1. Steward: an exisiting trust anchor on the Sovrin ledger used to onboard the other parties to Sovrin.
-2. Issuer: the issuer of the credential used by:
-3. Prover: the seller in a FIPA negotiation, proving they have the credential to make them trustworthy.
-4. Verifier: the buyer in a FIPA negotiation, verifying the Prover's credential.
-
-
-## Basics
+## Setup
 
 The installer and install tester should be run from the root directory (the one containg this readme).
 
@@ -52,6 +43,20 @@ The Sovrin node pool sits on ports 9701 through 9708.
 
 ANVIL apps sit on ports 5000 through 5003.
 
+## Actors
+
+There are four key parties involved in an ANVIL interaction:
+1. Steward: an exisiting trust anchor on the Sovrin ledger used to onboard the other parties to Sovrin.
+2. Issuer: the issuer of the credential used by:
+3. Prover: the seller in a FIPA negotiation, proving they have the credential to make them trustworthy.
+4. Verifier: the buyer in a FIPA negotiation, verifying the Prover's credential.
+
+The negotiation itself only takes place between the prover and verifier. Assuming the prover already has a credential in their wallet:
+
+<p align="center">
+    <img src="./docs/img/anvil_basics.png" width="300" />
+</p>
+
 ### Using apps
 
 ![ANVIL](./docs/img/issuer_app.png)
@@ -71,7 +76,7 @@ Optionally, also set `SOVRIN_SEED=` when initialising an actor from a seed (gene
 
 ### Run actor apps
 
-Go to the `anvil` subfolder. Run the agent(s) of choice in a Pythgon `venv`:
+Go to the `anvil` subfolder. Run the agent(s) of choice in a Python `venv`:
 
 ```
 python3 steward.py
@@ -106,7 +111,7 @@ python3 claims.py
 ### Secure channel setup key exchange
 
 <p align="center">
-        <img src="./docs/img/secure_channel.png" width="300" />
+    <img src="./docs/img/secure_channel.png" width="300" />
 </p>
 
 ## Debugging
