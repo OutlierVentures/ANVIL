@@ -54,12 +54,10 @@ There are four key parties involved in an ANVIL interaction:
 The negotiation itself only takes place between the prover and verifier. Assuming the prover already has a credential in their wallet:
 
 <p align="center">
-    <img src="./docs/img/anvil_basics.png" width="300" />
+    <img src="./docs/img/anvil_basics.png" width="400" />
 </p>
 
 ### Using apps
-
-![ANVIL](./docs/img/issuer_app.png)
 
 Default mocked testing accounts are already set up for use without the Sovrin mainnet. If just testing, there's no need to set up the wallets section below.
 
@@ -74,7 +72,9 @@ WALLET_KEY=
 
 Optionally, also set `SOVRIN_SEED=` when initialising an actor from a seed (generally only for Steward setup).
 
-### Run actor apps
+#### Run actor apps
+
+![ANVIL](./docs/img/issuer_app.png)
 
 Go to the `anvil` subfolder. Run the agent(s) of choice in a Python `venv`:
 
@@ -91,7 +91,7 @@ python3 prover.py
 python3 verifier.py
 ```
 
-### Example data
+#### Example data
 
 Example data is given in the `anvil/example_data` folder. This includes 2 sets of credentials and their associated proofs: an authenticated data sharing bot (_Sophos_) and a degree certificate. These can be pasted into the front-end apps.
 
