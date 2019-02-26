@@ -43,7 +43,9 @@ The Sovrin node pool sits on ports 9701 through 9708.
 
 ANVIL apps sit on ports 5000 through 5003.
 
-## Actors
+## Fundamentals
+
+ANVIL is written in Python, making use of [Fetch.AI’s OEF Python SDK](https://github.com/fetchai/oef-sdk-python) and the [Python wrapper for HyperLedger Indy](https://github.com/hyperledger/indy-sdk/tree/master/wrappers/python). As an app in the Convergence Stack, ANVIL occupies the top three layers: it handles authentication using Sovrin’s DIDs and encrypted communication channels, querying of Fetch.AI services and various Sovrin blockchain data, serves as a UX tool for developers, as well as sports a front-end application.
 
 There are four key parties involved in an ANVIL interaction:
 1. Steward: an exisiting trust anchor on the Sovrin ledger used to onboard the other parties to Sovrin.
@@ -54,7 +56,7 @@ There are four key parties involved in an ANVIL interaction:
 The negotiation itself only takes place between the prover and verifier. Assuming the prover already has a credential in their wallet:
 
 <p align="center">
-    <img src="./docs/img/anvil_basics.png" width="400" />
+    <img src="./docs/img/anvil_basics.png" width="550" />
 </p>
 
 ### Using apps
