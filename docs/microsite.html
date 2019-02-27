@@ -10,13 +10,14 @@
         .page {
             min-height: 100vh;
             color: #ffffff;
+            position: relative;
             /*padding-top: 4em*/
         }
         .pone {
-            background: linear-gradient(135deg, #6CFDCC, #5A89F9);
+            background: linear-gradient(135deg, #5936cc, #292929);
         }
         .ptwo {
-            background: linear-gradient(45deg, #6CFDCC, #5A89F9);
+            background: linear-gradient(135deg, #292929, #5936cc);
         }
         #header {
             height: 100vh;
@@ -41,11 +42,28 @@
         .box {
             padding: 5vw;
         }
-        .minor {
-            font-size: 4vh
+        .subtitle, .text {
+            font-size: 3vh;
+        }
+        .title {
+            font-size: 4.7vh;
+        }
+        .text {
+            margin-top: 3vh;
+            max-width: 100vh;
         }
         .inline {
-            max-height: 3vh;
+            max-height: 2.35vh;
+        }
+        .left, .right {
+            max-height: 40vh
+        }
+        .right {
+            /*float: right;*/
+            position: absolute;
+            bottom: 5vw;
+            right: 5vw;
+            text-align: right;
         }
         .scroll-down {
             position: absolute;
@@ -82,11 +100,28 @@
     </div>
     <div class="page ptwo" id="start" >
         <div class="box">
-            <div class="minor">
-                An &nbsp;<img class="inline" src="./img/ov_logo_white.png" /> project.
+            <div class="left">
+                <div class="subtitle">An &nbsp;<img class="inline" src="./img/ov_logo_white.png" /> project.</div>
+                <div class="title">Agent Negotiation Verifiable Interaction Layer</div>
+                <div class="text">
+                    The Agent Negotiation Verifiable Interaction Layer (ANVIL) bridges Fetch.AI 
+                    and Sovrin, bringing trusted agents to the Open Economic Framework (OEF). 
+                    <br><br>
+                    In short, ANVIL mitigates risk in AEA negotiations with verifiable claims.
+                </div>
+            </div>
+            <div class="right">
+                <div class="title">An app in the Convergence Stack.</div>
+                <div class="subtitle">ANVIL is built on the OEF and Hyperledger Indy.</div>
+                <div class="text">
+                    As an app in the Convergence Stack, ANVIL occupies the top three layers: it
+                    handles authentication using Sovrin’s DIDs and encrypted communication 
+                    channels, querying of Fetch.AI services and various Sovrin blockchain data, 
+                    serves as a UX tool for developers, as well as sports a front-end application.
+                </div>
             </div>
         </div>
     </div>
-    <div class="page pone">THREE</div>
+    <div class="page pone" id="start" ></div>
     <div class="page ptwo">FOUR</div>
 </body>
