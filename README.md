@@ -53,6 +53,8 @@ There are four key parties involved in an ANVIL interaction:
 3. Prover: the seller in a FIPA negotiation, proving they have the credential to make them trustworthy.
 4. Verifier: the buyer in a FIPA negotiation, verifying the Prover's credential.
 
+![ANVIL](./docs/img/agents.png)
+
 The negotiation itself only takes place between the prover and verifier. Assuming the prover already has a credential in their wallet:
 
 <p align="center">
