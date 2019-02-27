@@ -50,7 +50,7 @@
         }
         .text {
             margin-top: 3vh;
-            max-width: 100vh;
+            max-width: 67vw;
         }
         .inline {
             max-height: 2.35vh;
@@ -65,6 +65,9 @@
             right: 5vw;
             text-align: right;
         }
+        .right .text {
+            float: right;
+        }
         .scroll-down {
             position: absolute;
             margin-left: 48.5vw;
@@ -76,6 +79,54 @@
             border-right: 2px solid #fff;
             animation: bounce 2s infinite;
         }
+        #flow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 5vw;
+        }
+        #diagram {
+            max-height: 200vh;
+            max-width: 100vw;
+        }
+        button, input, textarea {
+            font-family: 'Lato', sans-serif;
+            box-shadow: none;
+            border: 1px solid #ffffff;
+            border-radius: 0.5em;
+            padding: 1em;
+            margin: 1em;
+            user-select: none;
+            outline: none;
+            transition: all .1s ease-in;
+            font-size: 2vh;
+        }
+        input, textarea {
+            background-color: #ffffff;
+            color: #5936cc;
+        }
+        button {
+            background-color: transparent;
+            color: #ffffff;
+        }
+        button:hover {
+            border: 1px solid #292929;
+        }
+        button:focus {
+            animation-name: pulse;
+            animation-duration: 800ms;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+        }
+        ::placeholder {
+            color: #5936cc;
+        }
+        @keyframes pulse {
+            0%   { border-color: #292929; }
+            50%  { border-color: #5936cc; }
+            100% { border-color: #292929; }
+        }
         @keyframes bounce {
             0%, 20%, 50%, 80%, 100% {
                 transform: translateY(0) rotate(45deg);
@@ -85,6 +136,17 @@
             }
             60% {
                 transform: translateY(-0.5em) rotate(45deg);
+            }
+        }
+        @media only screen and (max-width: 600px) {
+            .subtitle, .text {
+                font-size: 2.25vh;
+            }
+            .title {
+                font-size: 3.53vh;
+            }
+            .text{
+                max-width: 90vw;
             }
         }
     </style>
@@ -104,8 +166,7 @@
                 <div class="subtitle">An &nbsp;<img class="inline" src="./img/ov_logo_white.png" /> project.</div>
                 <div class="title">Agent Negotiation Verifiable Interaction Layer</div>
                 <div class="text">
-                    The Agent Negotiation Verifiable Interaction Layer (ANVIL) bridges Fetch.AI 
-                    and Sovrin, bringing trusted agents to the Open Economic Framework (OEF). 
+                    The Agent Negotiation Verifiable Interaction Layer (ANVIL) bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework (OEF). 
                     <br><br>
                     In short, ANVIL mitigates risk in AEA negotiations with verifiable claims.
                 </div>
@@ -114,14 +175,32 @@
                 <div class="title">An app in the Convergence Stack.</div>
                 <div class="subtitle">ANVIL is built on the OEF and Hyperledger Indy.</div>
                 <div class="text">
-                    As an app in the Convergence Stack, ANVIL occupies the top three layers: it
-                    handles authentication using Sovrin’s DIDs and encrypted communication 
-                    channels, querying of Fetch.AI services and various Sovrin blockchain data, 
-                    serves as a UX tool for developers, as well as sports a front-end application.
+                    As an app in the Convergence Stack, ANVIL occupies the top three layers: it handles authentication using Sovrin’s DIDs and encrypted communication channels, querying of Fetch.AI services and various Sovrin blockchain data, serves as a UX tool for developers, as well as sports a front-end application.
                 </div>
             </div>
         </div>
     </div>
-    <div class="page pone" id="start" ></div>
+    <div class="page pone" id="start" >
+        <div class="box">
+            <div class="right">
+                <div class="title">Let ANVIL do the legwork.</div>
+                <form action="" method="post">
+                    <input name="searchterms" placeholder="Search the OEF"><button name="search_for_services" type="submit">Search</button><br>
+                    <button name="search_for_services" type="submit">ZKPs at the click of a button</button>
+                    Secure channel setup.
+                    Automated FIPA negotiations.
+                </form>
+            </div>
+            <div class="left">
+                <div class="title">ZKP-backed negotiation.</div>
+                <div class="text">
+                    ANVIL negotiations are between a verifier, the buyer, and a prover, the seller with credentials to prove.
+                </div>
+            </div>
+        </div>
+        <div id="flow">
+            <img id="diagram" src="./img/anvil_basics_mono.png" />
+        </div>
+    </div>
     <div class="page ptwo">FOUR</div>
 </body>
