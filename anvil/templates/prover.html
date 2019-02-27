@@ -34,11 +34,11 @@
     {% endif %}
     {% if not service_published %}
         <br>
-        Publish Fetch service:
+        Publish a Fetch service:
         <form action="/publish_service" method="post">
-            <input name="servicepath" placeholder="Path to service data"></textarea><br>
-            <input name="price" placeholder="Price"></textarea><br>
-            <button name="publish_service" type="submit">Publish service</button>
+            <input name="servicepath" placeholder="Path to service data"></input>
+            <input name="price" placeholder="Price"></input>
+            <button name="publish_service" type="submit">Publish</button>
         </form>
     {% endif %}
     {% if have_verinym %}

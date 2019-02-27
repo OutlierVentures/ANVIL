@@ -38,17 +38,17 @@
             Results: {{ search_results }}
         {% endif %}
         <br><br>
-        Onboard a prover whose credentials you can verify:
+        Connect to a seller:
         <form action="/connection_request" method="post">
             <input name="name" placeholder="Name">
             <input name="ip_address" placeholder="I.P. address">
-            <button name="connection_request" type="submit">Connection request</button>
+            <button name="connection_request" type="submit">Connect</button>
         </form>
         {% if prover_registered %}
             <br>
             Request a proof:
             <form action="/request_proof" method="post">
-                <textarea name="proofrequest" rows="10" cols="60" placeholder="Proof request JSON"></textarea><br>
+                <textarea name="proofrequest" rows="10" cols="60" placeholder="Proof request"></textarea><br>
                 <button name="request_proof" type="submit">Request proof</button>
             </form>
         {% endif %}

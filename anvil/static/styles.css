@@ -1,6 +1,6 @@
 body {
     min-height: 100vh;
-    background: linear-gradient(135deg, #6CFDCC, #5A89F9);
+    background: linear-gradient(135deg, #5936cc, #292929);;
     color: #ffffff;
     font-family: 'Lato', sans-serif;
     text-align: center;
@@ -22,14 +22,14 @@ button, input, textarea {
 }
 input, textarea {
     background-color: #ffffff;
-    color: #5A89F9;
+    color: #5936cc;
 }
 button {
     background-color: transparent;
     color: #ffffff;
 }
 button:hover {
-    border: 1px solid #6CFDCC;
+    border: 1px solid #292929;
 }
 button:focus {
     animation-name: pulse;
@@ -38,10 +38,10 @@ button:focus {
     animation-timing-function: linear;
 }
 ::placeholder {
-    color: #5A89F9;
+    color: #5936cc;
 }
 @keyframes pulse {
-    0%   { border-color: rgba(108, 253, 204, 1); }
-    50%  { border-color: rgba(108, 253, 204, 0); }
-    100% { border-color: rgba(108, 253, 204, 1); }
+    0%   { border-color: #292929; }
+    50%  { border-color: #5936cc; }
+    100% { border-color: #292929; }
 }
