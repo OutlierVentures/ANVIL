@@ -56,18 +56,25 @@
         .inline {
             max-height: 2.35vh;
         }
-        .left, .right {
-            max-height: 40vh
-        }
         .right {
-            /*float: right;*/
-            position: absolute;
             bottom: 5vw;
+        }
+        .rtop {
+            top: 5vw;
+        }
+        .right, .rtop {
+            position: absolute;
             right: 5vw;
             text-align: right;
         }
-        .right .text {
+        .right .text, .rtop .text {
             float: right;
+        }
+        .workflow .right {
+            max-width: 60vw;
+        }
+        .workflow .rtop {
+            max-width: 40vw;
         }
         .scroll-down {
             position: absolute;
@@ -90,6 +97,32 @@
         #diagram {
             max-height: 200vh;
             max-width: 100vw;
+        }
+        #icons {
+            margin-top: 2vh;
+        }
+        .feature, .tech {
+            padding: 2vh;
+            font-size: 3vh;
+            display: flex;
+            align-items: center;
+            flex-direction: row;
+        }
+        .tech {
+            float: right;
+            padding-right: 0;
+            padding-bottom: 0;
+        }
+        .tool {
+            max-width: 7vw;
+            max-height: 7vw;
+            margin-right: 3vh;
+            float: right;
+        }
+        .icon {
+            max-height: 32px;
+            max-width: 32px;
+            margin-right: 2vh;
         }
         button, input, textarea {
             font-family: 'Lato', sans-serif;
@@ -149,6 +182,10 @@
             .text{
                 max-width: 90vw;
             }
+            .tool {
+                max-width: 18vw;
+                max-height: 18vw;
+            }
         }
     </style>
 </head>
@@ -174,9 +211,12 @@
             </div>
             <div class="right">
                 <div class="title">An app in the Convergence Stack.</div>
-                <div class="subtitle">ANVIL is built on the OEF and Hyperledger Indy.</div>
-                <div class="text">
-                    As an app in the Convergence Stack, ANVIL occupies the top three layers: it handles authentication using Sovrin’s DIDs and encrypted communication channels, querying of Fetch.AI services and various Sovrin blockchain data, serves as a UX tool for developers, as well as sports a front-end application.
+                <div class="subtitle">ANVIL is built with Web 3.0 tools.</div>
+                <div class="tech">
+                    <img class="tool" src="./img/fetch.png" />
+                    <img class="tool" src="./img/sovrin.png" />
+                    <img class="tool" src="./img/python.png" />
+                    <img class="tool" src="./img/quart.png" />
                 </div>
             </div>
         </div>
@@ -185,30 +225,52 @@
         <div class="box">
             <div class="left">
                 <div class="title">Let ANVIL do the legwork.</div>
-                <form action="" method="post">
-                    <img class="icon" src="./img/icons/search.png" /> Search the OEF.<br>
-                    <img class="icon" src="./img/icons/upload.png" /> Publish a data service.<br>
-                    <img class="icon" src="./img/icons/transact.png" /> Automate settlement.<br>
-                    <img class="icon" src="./img/icons/message.png" /> Secure messaging.<br>
-                    <img class="icon" src="./img/icons/prove.png" /> Plug-and-play ZKPs.<br>
-                    <img class="icon" src="./img/icons/develop.png" /> Developer tools.<br>
-                    <img class="icon" src="./img/icons/modify.png" /> Customisable apps.<br>
-                    <img class="icon" src="./img/icons/accelerate.png" /> Fast negotiation.<br>
-                    <img class="icon" src="./img/icons/open.png" /> Open source.<br>
-                </form>
-            </div>
-            <div class="left">
-                <div class="title">ZKP-backed negotiation.</div>
-                <div class="text">
-                    ANVIL negotiations are between a verifier, the buyer, and a prover, the seller with credentials to prove.
+                <div id="icons">
+                    <div class="feature">
+                        <img class="icon" src="./img/icons/search.png" /><div class="itext">Search the OEF.</div>
+                    </div>
+                    <div class="feature">
+                        <img class="icon" src="./img/icons/upload.png" /><div class="itext">Publish a data service.</div>
+                    </div>
+                    <div class="feature">
+                        <img class="icon" src="./img/icons/transact.png" /><div class="itext">Automate settlement.</div>
+                    </div>
+                    <div class="feature">
+                        <img class="icon" src="./img/icons/message.png" /><div class="itext">Secure messaging.</div>
+                    </div>
+                    <div class="feature">
+                        <img class="icon" src="./img/icons/prove.png" /><div class="itext">Plug-and-play ZKPs.</div>
+                    </div>
+                    <div class="feature">
+                        <img class="icon" src="./img/icons/develop.png" /><div class="itext">Developer tools.</div>
+                    </div>
+                    <div class="feature">
+                        <img class="icon" src="./img/icons/modify.png" /><div class="itext">Customisable apps.</div>
+                    </div>
+                    <div class="feature">
+                        <img class="icon" src="./img/icons/accelerate.png" /><div class="itext">Fast negotiation.</div>
+                    </div>
+                    <div class="feature">
+                        <img class="icon" src="./img/icons/open.png" /><div class="itext">Open source.</div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div id="flow">
-            <img id="diagram" src="./img/anvil_basics_mono.png" />
-        </div>
     </div>
     <div class="page ptwo">
+            <div class="box workflow">
+                <div class="rtop">
+                    <div class="title">ZKP-backed negotiation.</div>
+                    <div class="subtitle">Provers sell to verifiers.</div>
+                </div>
+                <div id="flow">
+                        <img id="diagram" src="./img/anvil_basics_mono.png" />
+                </div>
+                <div class="right">
+                    <div class="title">Verifiable interaction.</div>
+                    <div class="subtitle">Risk management by mathematical proofs.</div>
+                </div>
+            </div>
         <a href="https://creativecommons.org/licenses/by/4.0/">Modified Keyamoon icons.</a>
     </div>
 </body>
