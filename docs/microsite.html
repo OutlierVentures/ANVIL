@@ -27,10 +27,15 @@
             align-items: center;
             flex-direction: column;
         }
+        #ov {
+            display: block;
+            max-width: 20vw;
+            margin-top: -3vh;
+            margin-bottom: 2vh;
+        }
         #title {
             display: block;
             max-width: 50vw;
-            margin-top: -1em
         }
         .tone {
             width: 100vw;
@@ -124,6 +129,15 @@
             max-width: 32px;
             margin-right: 2vh;
         }
+        .attr {
+            position: absolute;
+            bottom: 2vh;
+            text-align: center;
+        }
+        .attr a {
+            color: #ffffff;
+            text-decoration: none;
+        }
         button, input, textarea {
             font-family: 'Lato', sans-serif;
             box-shadow: none;
@@ -192,16 +206,16 @@
 <body>
     <div class="page pone">
         <div id="header">
+            <img id="ov" src="./img/ov_logo_white.png" />
             <img id="title" src="./img/anvil_logo_white.png" />
             <div class="tone"></div>
-            <div class="tone">BRIDGING FETCH.AI AND SOVRIN</div>
+            <div class="tone">BRIDGING FETCH.AI & SOVRIN</div>
         </div>
         <a class="scroll-down" href="#start"></a>
     </div>
     <div class="page ptwo" id="start" >
         <div class="box">
             <div class="left">
-                <div class="subtitle">An &nbsp;<img class="inline" src="./img/ov_logo_white.png" /> project.</div>
                 <div class="title">Agent Negotiation Verifiable Interaction Layer</div>
                 <div class="text">
                     The Agent Negotiation Verifiable Interaction Layer (ANVIL) bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework (OEF). 
@@ -271,6 +285,23 @@
                     <div class="subtitle">Risk management by mathematical proofs.</div>
                 </div>
             </div>
-        <a href="https://creativecommons.org/licenses/by/4.0/">Modified Keyamoon icons.</a>
+    </div>
+    <div class="page pone">
+        <div id="header">
+            <form method="get" action="">
+                <button type="submit">LEARN MORE</button>
+            </form>
+            <form method="get" action="https://github.com/OutlierVentures/ANVIL">
+                <button type="submit">GET STARTED</button>
+            </form>
+            <form method="get" action="https://outlierventures.io/">
+                <button type="submit">SEE AUTHORS</button>
+            </form>
+            <div class="attr">
+                <a href="https://www.linkedin.com/in/theoturner/">Written by Theo Turner.</a><br>
+                <a href="https://creativecommons.org/licenses/by/4.0/">Modified Keyamoon icons.</a>
+            </div>
+        </div>
+
     </div>
 </body>
