@@ -39,9 +39,9 @@ Stop Sovrin node pool: `./scripts/stop_sovrin.sh`
 
 The Fetch node sits on port 3333.
 
-The Sovrin node pool sits on ports 9701 through 9708.
+The Sovrin node pool sits on ports 9701 – 9708.
 
-ANVIL apps sit on ports 5000 through 5003.
+ANVIL apps sit on ports 5000 – 5003.
 
 ## Fundamentals
 
