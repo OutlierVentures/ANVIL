@@ -136,3 +136,10 @@ Nonces should be fully numeric for Hyperledger Indy. This is a common cause of t
 Schema versions must be floats to be compatible with Sovrin.
 
 Quart forms do not allow underscores in the `name` field.
+
+
+## Fetch.AI and Sovrin quick install tools
+
+[Fetch.AI](https://github.com/OutlierVentures/Fetch.AI-Springboard)
+
+[Sovrin](https://github.com/OutlierVentures/Sovrin-Springboard)
