@@ -17,6 +17,7 @@
         </form>
     {% endif %}
     {% if have_data and not responded %}
+        <br>
         Connection request from {{ request_ip }}
         <form action="/respond" method="post">
             <button name="respond" type="submit">Send response</button>
@@ -28,31 +29,37 @@
     Multiple onboard: {{ multiple_onboard }}
     -->
     {% if channel_established and (not have_verinym or multiple_onboard) %}
+        <br>
         <form action="/get_verinym" method="post">
             <button name="get_verinym" type="submit">Open secure channel</button>
         </form>
     {% endif %}
-    {% if not service_published %}
+    {% if stored_credentials %}
         <br>
-        Publish a Fetch service:
-        <form action="/publish_service" method="post">
-            <input name="servicepath" placeholder="Path to service data"></input>
-            <input name="price" placeholder="Price"></input>
-            <button name="publish_service" type="submit">Publish</button>
-        </form>
+        Stored credentials: {{ stored_credentials }}
+        <br>
+        {% if not service_published  %}
+            <br>
+            Publish a Fetch service:
+            <form action="/publish_service" method="post">
+                <input name="servicepath" placeholder="Path to service data"></input>
+                <input name="price" placeholder="Price"></input>
+                <button name="publish_service" type="submit">Publish</button>
+            </form>
+        {% endif %}
     {% endif %}
     {% if have_verinym %}
-        {% if unique_schema_name %}
+        {# Hide offers of credentials we already have #}
+        {% if unique_schema_name and unique_schema_name != stored_credentials %}
             <br>
             Credential offer: {{ unique_schema_name }}
             <form action="/request_credential" method="post">
                 <textarea name="credrequest" rows="10" cols="60" placeholder="Credential request JSON"></textarea><br>
                 <button name="request_credential" type="submit">Request credential</button>
             </form>
-            Stored credentials: {{ stored_credentials }}
         {% endif %}
         {% if have_proof_request %}
-            <br><br>
+            <br>
             Proof request from {{ request_ip }}
             <form action="/create_and_send_proof" method="post">
                 <textarea name="proof" rows="10" cols="60" placeholder="Proof JSON"></textarea><br>
@@ -60,10 +67,12 @@
             </form>
         {% endif %}
     {% endif %}
-    <br>
-    <form action="/reset">
-        <button name="reset" type="submit">Reset</button>
-    </form>
+    {% if setup %}
+        <br>
+        <form action="/reset">
+            <button name="reset" type="submit">Reset</button>
+        </form>
+    {% endif %}
 {% else %}
     <h1>Failed to load render_template() parameters.</h1>
 {% endif %}
