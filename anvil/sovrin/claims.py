@@ -86,24 +86,27 @@ async def run():
 
     # Issue credential
     issuer = await offer_credential(issuer, unique_schema_name)
+
     send_data(issuer['authcrypted_cred_offer'])
     prover['authcrypted_cred_offer'] = receive_data()
 
     prover = await receive_credential_offer(prover)
     prover = await request_credential(prover, cred_request)
+
     send_data(prover['authcrypted_cred_request'])
     issuer['authcrypted_cred_request'] = receive_data()
 
-
     issuer = await create_and_send_credential(issuer)
+
     send_data(issuer['authcrypted_cred'])
     prover['authcrypted_cred'] = receive_data()
 
     prover = await store_credential(prover)
     
 
-    
+    # Verify credential
     verifier = await request_proof_of_credential(verifier, proof_request)
+
     send_data(verifier['authcrypted_proof_request'])
     prover['authcrypted_proof_request'] = receive_data()
 
