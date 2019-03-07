@@ -5,7 +5,7 @@ from sovrin.credentials import receive_credential_offer, request_credential, sto
 from sovrin.proofs import create_proof_of_credential
 app = Quart(__name__)
 
-debug = True # Do not enable in production
+debug = False # Do not enable in production
 host = '0.0.0.0'
 # In production everyone runs on same port, use 2 here for same-machine testing 
 port = 5002
@@ -36,6 +36,7 @@ def index():
     unique_schema_name = prover['unique_schema_name'] if 'unique_schema_name' in prover else False
     have_proof_request = True if 'authcrypted_proof_request' in prover else False
     stored_credentials_string = ', '.join(credential for credential in stored_credentials)
+    # If stored credentials == credential offer, hide credential request
     return render_template('prover.html', actor = 'PROVER', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, stored_credentials = stored_credentials_string, unique_schema_name = unique_schema_name, have_proof_request = have_proof_request, multiple_onboard = multiple_onboard, service_published = service_published)
  
 
@@ -152,9 +153,9 @@ async def create_and_send_proof():
 
 
 @app.route('/reset')
-def reset():
+async def reset():
     global prover, pool_handle, received_data, anchor_ip, service_published
-    prover, pool_handle = common_reset([prover], pool_handle)
+    prover, pool_handle = await common_reset([prover], pool_handle)
     received_data = False
     anchor_ip = False
     service_published = False

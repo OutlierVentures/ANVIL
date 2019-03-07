@@ -5,7 +5,7 @@ from sovrin.schema import create_schema, create_credential_definition
 from sovrin.credentials import offer_credential, create_and_send_credential
 app = Quart(__name__)
 
-debug = True # Do not enable in production
+debug = False # Do not enable in production
 host = '0.0.0.0'
 # In production everyone runs on same port, use 2 here for same-machine testing 
 port = 5001
@@ -143,9 +143,9 @@ async def send_credential():
 
 
 @app.route('/reset')
-def reset():
+async def reset():
     global issuer, pool_handle, received_data, anchor_ip
-    issuer, pool_handle = common_reset([issuer], pool_handle)
+    issuer, pool_handle = await common_reset([issuer], pool_handle)
     received_data = False
     anchor_ip = False
     return redirect(url_for('index'))
