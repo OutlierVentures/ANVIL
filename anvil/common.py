@@ -33,7 +33,6 @@ async def common_connection_request(anchor):
 async def common_establish_channel(anchor, counterparty_name):
     received_data = await request.data
     anchor = await onboarding_anchor_receive(anchor, received_data, counterparty_name)
-    print('========== SECURE CHANNEL ESTABLISHED ==========')
     return anchor
 
 
@@ -44,7 +43,6 @@ throws an error otherwise. Establishes the onboardee as a new trust anchor on th
 async def common_verinym_request(anchor, counterparty_name):
     verinym_request = await request.data
     anchor = await onboarding_anchor_register_onboardee_did(anchor, counterparty_name, verinym_request)
-    print('========== REGISTERED NEW TRUST ANCHOR ==========')
     return anchor
 
 
@@ -65,8 +63,8 @@ async def common_get_verinym(onboardee, anchor_ip, anchor_port):
 
 
 
-def common_reset(actor_list, pool_handle):
-    teardown('ANVIL', pool_handle, actor_list)
+async def common_reset(actor_list, pool_handle):
+    await teardown('ANVIL', pool_handle, actor_list)
     for actor in actor_list:
         actor = {}
     pool_handle = 1
