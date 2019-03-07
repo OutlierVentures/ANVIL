@@ -69,10 +69,12 @@ async def set_self_up(name, id_, key, pool_handle, seed = None):
 async def teardown(pool_name, pool_handle, actor_list = []):
     print('Tearing down connections...')
     for actor in actor_list:
-        await wallet.close_wallet(actor['wallet'])
-        await wallet.delete_wallet(actor['wallet_config'], actor['wallet_credentials'])
-    await pool.close_pool_ledger(pool_handle)
-    await pool.delete_pool_ledger_config(pool_name)
+        if 'wallet' in actor:
+            await wallet.close_wallet(actor['wallet'])
+            await wallet.delete_wallet(actor['wallet_config'], actor['wallet_credentials'])
+    if await pool.list_pools():
+        await pool.close_pool_ledger(pool_handle)
+        await pool.delete_pool_ledger_config(pool_name)
     
 
 def wallet_config(operation, wallet_config_str):
