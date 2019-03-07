@@ -17,12 +17,14 @@
         </form>
     {% endif %}
     {% if have_data and not responded %}
+        <br>
         Connection request from {{ request_ip }}
         <form action="/respond" method="post">
             <button name="respond" type="submit">Send response</button>
         </form>
     {% endif %}
     {% if channel_established and not have_verinym %}
+        <br>
         <form action="/get_verinym" method="post">
             <button name="get_verinym" type="submit">Open secure channel</button>
         </form>
@@ -42,14 +44,17 @@
                 <textarea name="schema" rows="10" cols="60" placeholder="Schema JSON"></textarea><br>
                 <button name="create_credential" type="submit">Create</button>
             </form>
-            Created schema: {{ created_schema }}
-            <br><br>
-            You may offer any of the above to anyone at your chosen IP.
-            <form action="/offer_credential" method="post">
-                <input name="schema_name" placeholder="Schema name as above">
-                <input name="ip_address" placeholder="I.P. address">
-                <button name="connection_request" type="submit">Offer credential</button>
-            </form>
+            {% if created_schema %}
+                <br>
+                Created schema: {{ created_schema }}
+                <br><br>
+                You may offer any of the above to anyone at your chosen IP.
+                <form action="/offer_credential" method="post">
+                    <input name="schema_name" placeholder="Schema name as above">
+                    <input name="ip_address" placeholder="I.P. address">
+                    <button name="connection_request" type="submit">Offer credential</button>
+                </form>
+            {% endif %}
         {% endif %}
         {% if credential_requested %}
             <br>
@@ -59,10 +64,12 @@
             </form>
         {% endif %}
     {% endif %}
-    <br>
-    <form action="/reset">
-        <button name="reset" type="submit">Reset</button>
-    </form>
+    {% if setup %}
+        <br>
+        <form action="/reset">
+            <button name="reset" type="submit">Reset</button>
+        </form>
+    {% endif %}
 {% else %}
     <h1>Failed to load render_template() parameters.</h1>
 {% endif %}
