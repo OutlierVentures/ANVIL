@@ -18,11 +18,11 @@
             <input name="ip_address" placeholder="I.P. address">
             <button name="connection_request" type="submit">Connect</button>
         </form>
+        <br>
+        <form action="/reset">
+            <button name="reset" type="submit">Reset</button>
+        </form>
     {% endif %}
-    <br>
-    <form action="/reset">
-        <button name="reset" type="submit">Reset</button>
-    </form>
 {% else %}
     <h1>Failed to load render_template() parameters.</h1>
 {% endif %}
