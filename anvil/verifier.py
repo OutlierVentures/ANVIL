@@ -8,7 +8,7 @@ from fetch.verifier import Verifier
 from oef.query import Query, Constraint, Eq
 app = Quart(__name__)
 
-debug = True # Do not enable in production
+debug = False # Do not enable in production
 host = '0.0.0.0'
 # In production everyone runs on same port, use multiple here for same-machine testing 
 port = 5003
@@ -38,7 +38,7 @@ def index():
     have_verinym = True if 'did_info' in verifier else False
     credential_requested = True if 'authcrypted_cred_request' in verifier else False
     have_proof = True if 'authcrypted_proof' in verifier else False
-    search_results = verifier['search_results'] if 'search_results' in verifier else False
+    search_results = verifier['search_results'].strip('"[]\'').replace(',', ', ') if 'search_results' in verifier else False
     return render_template('verifier.html', actor = 'VERIFIER', setup = setup, have_data = have_data, request_ip = request_ip, responded = responded, channel_established = channel_established, have_verinym = have_verinym, prover_registered = prover_registered, credential_requested = credential_requested, have_proof = have_proof, search_results = search_results)
  
 
@@ -162,9 +162,9 @@ async def purchase_service():
 
 
 @app.route('/reset')
-def reset():
+async def reset():
     global verifier, pool_handle, received_data, anchor_ip
-    verifier, pool_handle = common_reset([verifier], pool_handle)
+    verifier, pool_handle = await common_reset([verifier], pool_handle)
     received_data = False
     anchor_ip = False
     return redirect(url_for('index'))
