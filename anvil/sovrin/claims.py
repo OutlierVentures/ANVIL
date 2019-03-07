@@ -128,7 +128,7 @@ def load_example_data(path):
             example_data[filename.replace('.json', '')] = json.load(file_)
     cred_request = example_data['credential_request']
     # Specify schema version
-    schema = example_data['credential_schema']['restricted']
+    schema = example_data['credential_schema']
     proof_request = example_data['proof_request']['request']
     assertions_to_make = example_data['proof_request']['assertions_to_make']
     # Don't json.dump this

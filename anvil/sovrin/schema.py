@@ -5,7 +5,7 @@ Sovrin schema functions:
 2. Create credential definition.
 '''
 
-import json, time, random
+import json, time
 from indy import anoncreds, ledger
 
     
