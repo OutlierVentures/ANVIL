@@ -5,7 +5,7 @@ from sovrin.setup import setup_pool, set_self_up
 from common import common_setup, common_connection_request, common_establish_channel, common_verinym_request, common_reset
 app = Quart(__name__)
 
-debug = True # Do not enable in production
+debug = False # Do not enable in production
 host = '0.0.0.0'
 port = 5000
 
@@ -56,9 +56,9 @@ async def verinym_request():
 
 
 @app.route('/reset')
-def reset():
+async def reset():
     global steward, pool_handle
-    steward, pool_handle = common_reset([steward], pool_handle)
+    steward, pool_handle = await common_reset([steward], pool_handle)
     return redirect(url_for('index'))
 
 
