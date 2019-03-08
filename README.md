@@ -47,13 +47,15 @@ ANVIL apps sit on ports 5000 – 5003.
 
 ANVIL is written in Python, making use of [Fetch.AI’s OEF Python SDK](https://github.com/fetchai/oef-sdk-python) and the [Python wrapper for HyperLedger Indy](https://github.com/hyperledger/indy-sdk/tree/master/wrappers/python). As an app in the Convergence Stack, ANVIL occupies the top three layers: it handles authentication using Sovrin’s DIDs and encrypted communication channels, querying of Fetch.AI services and various Sovrin blockchain data, serves as a UX tool for developers, as well as sports a front-end application.
 
+![ANVIL stack](./docs/img/anvil_stack.png)
+
 There are four key parties involved in an ANVIL interaction:
 1. Steward: an exisiting trust anchor on the Sovrin ledger used to onboard the other parties to Sovrin.
 2. Issuer: the issuer of the credential used by:
 3. Prover: the seller in a FIPA negotiation, proving they have the credential to make them trustworthy.
 4. Verifier: the buyer in a FIPA negotiation, verifying the Prover's credential.
 
-![ANVIL](./docs/img/agents.png)
+![ANVIL agents](./docs/img/agents.png)
 
 The negotiation itself only takes place between the prover and verifier. Assuming the prover already has a credential in their wallet:
 
