@@ -137,6 +137,16 @@
             color: #ffffff;
             text-decoration: none;
         }
+        #code {
+            margin-top: 10vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #code img {
+            max-width: 70vw;
+        }
         button, input, textarea {
             font-family: 'Lato', sans-serif;
             box-shadow: none;
@@ -198,6 +208,9 @@
             .tool {
                 max-width: 18vw;
                 max-height: 18vw;
+            }
+            #code {
+                max-width: 90vw;
             }
         }
     </style>
@@ -286,6 +299,21 @@
             </div>
     </div>
     <div class="page pone">
+        <div class="box">
+            <div class="left">
+                <div class="title">Plugging trust into the OEF with 6 lines of Python.</div>
+                <div class="text">
+                    Consider an electric car looking to use a manufacturer-certified charging pole, settled using the OEF.
+                    <br><br>
+                    The ANVIL API allows real-time verification that the pole is genuine in just 6 lines of code.
+                </div>
+            </div>
+            <div id="code">
+                <img src="./img/code_flow.png" />
+            </div> 
+        </div>
+    </div>
+    <div class="page ptwo">
         <div id="header">
             <form method="get" action="">
                 <button type="submit">LEARN MORE</button>
