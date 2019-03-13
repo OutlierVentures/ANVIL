@@ -34,7 +34,7 @@ The onboardee needs to have set_self_up() before calling this function.
 async def demo_onboard(anchor, onboardee):
     name = onboardee['name']
     anchor, connection_request = await onboarding_anchor_send(anchor, name)
-    onboardee, anoncrypted_connection_reponse = await onboarding_onboardee_receive_and_send(onboardee, connection_request, anchor['pool'])
+    onboardee, anoncrypted_connection_reponse = await onboarding_onboardee_reply(onboardee, connection_request, anchor['pool'])
     anchor = await onboarding_anchor_receive(anchor, anoncrypted_connection_reponse, name)
     onboardee, authcrypted_did_info = await onboarding_onboardee_create_did(onboardee)
     anchor = await onboarding_anchor_register_onboardee_did(anchor, name, authcrypted_did_info)
@@ -58,7 +58,7 @@ async def onboarding_anchor_send(_from, unique_onboardee_name):
 
 
 # Onboarding 2: Onboardee sends connection response.
-async def onboarding_onboardee_receive_and_send(to, connection_request, from_pool):
+async def onboarding_onboardee_reply(to, connection_request, from_pool):
     to['unique_anchor_name'] = connection_request['name']
     print(to['name'].capitalize() + ' sending connection response to ' + to['unique_anchor_name'] + '...')
     (to_from_did, to_from_key) = await did.create_and_store_my_did(to['wallet'], "{}")

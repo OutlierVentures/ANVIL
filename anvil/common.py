@@ -9,7 +9,7 @@ import os, requests, json
 from quart import request, redirect, url_for
 from sovrin.utilities import generate_base58
 from sovrin.setup import setup_pool, set_self_up, teardown
-from sovrin.onboarding import onboarding_anchor_send, onboarding_anchor_receive, onboarding_anchor_register_onboardee_did, onboarding_onboardee_receive_and_send, onboarding_onboardee_create_did
+from sovrin.onboarding import onboarding_anchor_send, onboarding_anchor_receive, onboarding_anchor_register_onboardee_did, onboarding_onboardee_reply, onboarding_onboardee_create_did
 
 
 # Steward has unique setup from seed, does not use this
@@ -50,7 +50,7 @@ async def common_verinym_request(anchor, counterparty_name):
 async def common_respond(onboardee, received_data, pool_handle, anchor_port):
     anchor_ip = request.remote_addr
     data = json.loads(received_data)
-    onboardee, anoncrypted_connection_response = await onboarding_onboardee_receive_and_send(onboardee, data, pool_handle)
+    onboardee, anoncrypted_connection_response = await onboarding_onboardee_reply(onboardee, data, pool_handle)
     onboardee['connection_response'] = json.loads(onboardee['connection_response'])
     requests.post('http://' + anchor_ip + ':' + str(anchor_port) + '/establish_channel', anoncrypted_connection_response)
     return onboardee, anchor_ip
