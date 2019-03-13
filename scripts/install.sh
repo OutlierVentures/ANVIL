@@ -61,7 +61,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
                                libprotobuf-dev \
                                tox
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    brew install protobuf # Compiler only so no error if already installed
+    brew upgrade protobuf || brew install protobuf
 fi
 
 # Install OEFPython
