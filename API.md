@@ -93,7 +93,7 @@ Parameters:
 
 Returns:
 - `to`: updated actor data structure.
-- `anoncrypted_connection_response`: Encrypted (but not authenticated) response bytes to be sent e.g. by POST.
+- `anoncrypted_connection_response`: Encrypted (but not authenticated) response packet to be sent e.g. by POST.
 
 <br>
 
@@ -145,7 +145,16 @@ Returns:
 
 ### Schema
 
-Schema objects are JSONs of the format:
+```python
+create_schema(schema, creator)
+```
+Creates and registers a new credential schema.
+
+Parameters:
+- `schema`: schema JSON object as shown below.
+- `creator`: actor data structure for actor creating the schema.
+
+Schema objects are JSONs in the format:
 ```JSON
 {
     "name": "Outlier Ventures License to Delegate Access to Data",
@@ -155,18 +164,9 @@ Schema objects are JSONs of the format:
 ```
 Note that version numbers must be `float`s, not `int`s.
 
-```python
-create_schema(schema, creator)
-```
-Creates and registers a new credential schema.
-
-Parameters:
-- `schema`: schema JSON object as shown above.
-- `creator`: actor data structure for actor creating the schema.
-
 Returns:
 - `unique_schema_name`: unique schema name (will be used as a reference).
-- `schema_id`: ID of schema (will be used as a reference).
+- `schema_id`
 - `creator`
 
 <br>
@@ -184,6 +184,91 @@ Parameters:
 
 Returns:
 - `creator`
+
+<br>
+
+### Credentials
+
+```python
+offer_credential(issuer, unique_schema_name)
+```
+Create an authcrypted credential offer object to be sent e.g. by POST to a prover. This references the credential schema / definitions stored in the issuer actor's data structure as defined in the funcctions above.
+
+Parameters:
+- `issuer`: issuer actor data structure.
+- `unique_schema_name`
+
+Returns:
+- `issuer`
+- `authcrypted_credential_offer`: authenticated and encrypted credential offer packet to be sent e.g. by POST to a credential receiver (prover).
+
+<br>
+
+```python
+receive_credential_offer(prover)
+```
+Decrypts a credential offer and sets up a [master secret](https://github.com/hyperledger/indy-sdk/blob/master/docs/getting-started/indy-walkthrough.md#alice-gets-a-transcript) so that the offered credential can be used.
+
+Parameters:
+- `prover`: prover actor data structure.
+
+Returns:
+- `prover`
+
+<br>
+
+```python
+request_credential(prover, values)
+```
+Creates an authcrypted credential request object to be sent e.g. by POST to the sender of a credential offer.
+
+Parameters:
+- `prover`
+- `values`: credential request JSON as below formatted as string (i.e. `json.dumps(credential_request)`)
+
+Credential requests are JSONs in the format:
+```JSON
+{
+    "bot_name": {"raw": "Sophos", "encoded": "123157160150157163"},
+    "data_source": {"raw": "GitHub", "encoded": "107151164110165142"},
+    "license": {"raw": "LDAD restricted", "encoded": "11410410110440162145163164162151143164145144"},
+    "status": {"raw": "active", "encoded": "141143164151166145"},
+    "year": {"raw": "2019", "encoded": "62606171"},
+    "id": {"raw": "did:ov:xb3i0s5v", "encoded": "1441511447215716672170142631516016365166"}
+}
+```
+Encoding is arbitrary.
+
+Returns:
+- `prover`
+- `authcrypted_credential_request`: authenticated and encrypted credential request packet to be sent e.g. by POST to the sender of a credential offer.
+
+<br>
+
+```python
+create_and_send_credential(issuer)
+```
+Creates an authcrypted credential packet to be sent e.g. by POST to a credential receiver (prover).
+
+Parameters:
+- `issuer`
+
+Returns:
+- `issuer`
+- `authcrypted_credential`: authenticated and encrypted credential packet to be sent e.g. by POST to the sender of a credential request.
+
+<br>
+
+```python
+store_credential(prover)
+```
+Decrypts a received credential and stores it in the receiver's wallet (as specified in `set_self_up()` above).
+
+Parameters:
+- `prover`
+
+Returns:
+- `prover`
 
 <br>
 
