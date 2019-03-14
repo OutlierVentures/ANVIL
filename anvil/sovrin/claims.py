@@ -85,35 +85,35 @@ async def run():
     issuer = await create_credential_definition(issuer, schema_id, unique_schema_name, revocable = False)
 
     # Issue credential
-    issuer = await offer_credential(issuer, unique_schema_name)
+    issuer, cred_offer = await offer_credential(issuer, unique_schema_name)
 
-    send_data(issuer['authcrypted_cred_offer'])
+    send_data(cred_offer)
     prover['authcrypted_cred_offer'] = receive_data()
 
     prover = await receive_credential_offer(prover)
-    prover = await request_credential(prover, cred_request)
+    prover, cred_request = await request_credential(prover, cred_request)
 
-    send_data(prover['authcrypted_cred_request'])
+    send_data(cred_request)
     issuer['authcrypted_cred_request'] = receive_data()
 
-    issuer = await create_and_send_credential(issuer)
+    issuer, cred = await create_and_send_credential(issuer)
 
-    send_data(issuer['authcrypted_cred'])
+    send_data(cred)
     prover['authcrypted_cred'] = receive_data()
 
     prover = await store_credential(prover)
     
 
     # Verify credential
-    verifier = await request_proof_of_credential(verifier, proof_request)
+    verifier, proof_request = await request_proof_of_credential(verifier, proof_request)
 
-    send_data(verifier['authcrypted_proof_request'])
+    send_data(proof_request)
     prover['authcrypted_proof_request'] = receive_data()
 
-    prover = await create_proof_of_credential(prover, self_attested_attributes, requested_attributes,
+    prover, proof = await create_proof_of_credential(prover, self_attested_attributes, requested_attributes,
                                               requested_predicates, non_issuer_attributes)
     
-    send_data(prover['authcrypted_proof'])
+    send_data(proof)
     verifier['authcrypted_proof'] = receive_data()
 
     verifier = await verify_proof(verifier, assertions_to_make)

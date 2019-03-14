@@ -29,7 +29,7 @@ async def offer_credential(issuer, unique_schema_name):
     issuer['authcrypted_cred_offer'] = \
         await crypto.auth_crypt(issuer['wallet'], issuer['prover_key'], issuer['prover_key_for_issuer'],
                                 json.dumps(offer).encode('utf-8'))
-    return issuer
+    return issuer, issuer['authcrypted_cred_offer']
 
 
 async def receive_credential_offer(prover):
@@ -66,7 +66,7 @@ async def request_credential(prover, values):
     prover['authcrypted_cred_request'] = \
         await crypto.auth_crypt(prover['wallet'], prover['issuer_key'], prover['issuer_key_for_prover'],
                                 json.dumps(cred_request).encode('utf-8'))
-    return prover
+    return prover, prover['authcrypted_cred_request']
 
 
 
@@ -86,7 +86,7 @@ async def create_and_send_credential(issuer):
     issuer['authcrypted_cred'] = \
         await crypto.auth_crypt(issuer['wallet'], issuer['prover_key'], issuer['prover_key_for_issuer'],
                                 issuer[issuer['unique_schema_name'] + '_cred'].encode('utf-8'))
-    return issuer
+    return issuer, issuer['authcrypted_cred']
 
 
 async def store_credential(prover):

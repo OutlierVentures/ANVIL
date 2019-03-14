@@ -21,7 +21,7 @@ async def request_proof_of_credential(verifier, proof_request = {}):
     verifier['authcrypted_proof_request'] = \
         await crypto.auth_crypt(verifier['wallet'], verifier['prover_key'], verifier['prover_key_for_verifier'],
                                 verifier['proof_request'].encode('utf-8'))
-    return verifier
+    return verifier, verifier['authcrypted_proof_request']
 
 
 '''
@@ -88,7 +88,7 @@ async def create_proof_of_credential(prover, self_attested_attrs = {}, requested
     prover['authcrypted_proof'] = \
         await crypto.auth_crypt(prover['wallet'], prover['verifier_key'], prover['verifier_key_for_prover'],
                                 prover['proof'].encode('utf-8'))
-    return prover
+    return prover, prover['authcrypted_proof']
 
 async def verify_proof(verifier, assertions_to_make):
     print('Verifier getting proof and verifying credential...')
