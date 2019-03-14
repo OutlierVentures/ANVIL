@@ -323,7 +323,7 @@ Proof requests are JSONs in the format:
     }
 }
 ```
-An attribute is just `name = 'Sophos'`. A predicate is a comparison that evaluates to true or false, e.g. `age >= 18`. Note that, as with all Sovrin nonces, the proof request nonce must be fully numeric.
+An attribute is just `name = 'Sophos'`. A predicate is a comparison that evaluates to true or false, e.g. `age >= 18`. Note that, as with all Sovrin nonces, the proof request nonce must be fully numeric (you can use ANVIL's `sovrin.generate_nonce(25)`).
 
 Returns:
 - `verifier`
@@ -388,6 +388,84 @@ Returns:
 - `verifier`
 
 <br>
+
+### Utilities
+
+```python
+write_json(data, filename)
+```
+Writes to a JSON file in the current directory.
+
+Parameters:
+- `data`
+- `filename`
+
+<br>
+
+```python
+read_json(filename):
+```
+Reads a JSON file with the name supplied from the current directory.
+
+Parameters:
+- `filename`
+
+Returns:
+- `data`: the data in the file.
+
+<br>
+
+```python
+generate_nonce(length)
+```
+Generates a Sovrin-compatible numeric nonce.
+
+Parameters:
+- `length`: how many characters the nonce should be.
+
+Returns:
+- `nonce`: the nonce.
+
+<br>
+
+```python
+generate_base58(length)
+```
+Generates a base58 string.
+
+Parameters:
+- `length`: how many characters the base58 string should be.
+
+Returns:
+- `base58`: the base58 string.
+
+<br>
+
+```python
+send_data(data, channel = 0):
+```
+Network simulation send function, writes to a bytes file. Useful for quick testing where agents are in separate files.
+
+Parameters:
+- `data`: data to send.
+- `channel`: network channel, useful if you want to test lots of pariwise connections at once – just run each on a different channel.
+
+
+<br>
+
+```python
+receive_data(channel = 0)
+```
+Network simulation receive function, reads from a bytes file. Useful for quick testing where agents are in separate files.
+
+Parameters:
+- `channel`
+
+Returns:
+- `data`: received data.
+
+<br>
+
 
 ## Fetch
 

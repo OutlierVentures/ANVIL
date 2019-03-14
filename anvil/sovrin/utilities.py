@@ -5,8 +5,7 @@ Sovrin core utilities.
 import asyncio, json, random
 
 
-
-def run_coroutine(coroutine, loop=None):
+def run_coroutine(coroutine, loop = None):
     if loop is None:
         loop = asyncio.get_event_loop()
     loop.run_until_complete(coroutine())
@@ -23,14 +22,14 @@ def read_json(filename):
     return data
 
 
-# Send data to another actor. Currently saves to a network simulation temp file.
+# Network simulation only. Use requests.post() or similar for real transfers.
 def send_data(data, channel = 0):
     f = open('net_sim_' + str(channel), 'wb')
     f.write(data)
     f.close()
 
 
-# Receive data from another actor. Currently loads data from a network simulation file.
+# Network simulation only.
 def receive_data(channel = 0):
     f = open('net_sim_' + str(channel), 'rb')
     data = f.read()
