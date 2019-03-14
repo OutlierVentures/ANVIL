@@ -31,7 +31,7 @@ Returns:
 - `pool_name`
 - `pool_handle`
 
-<br><br>
+<br>
 
 ```python
 set_self_up(name, id_, key, pool_handle, seed = None)
@@ -48,7 +48,7 @@ Parameters:
 Returns:
 - `actor`: actor data structure (dictionary).
 
-<br><br>
+<br>
 
 ```python
 teardown(pool_name, pool_handle, actor_list = [])
@@ -60,7 +60,7 @@ Parameters:
 - `pool_handle`
 - `actor_list`: list of actor data structures to tear down, e.g. `[alice, bob]` for data structures `alice` and `bob` created with `set_self_up()`
 
-<br><br>
+<br>
 
 ### Onboarding
 
@@ -79,7 +79,7 @@ Returns:
 - `_from`: updated actor data structure.
 - `connection_request`: connection request JSON to be sent e.g. by POST.
 
-<br><br>
+<br>
 
 ```python
 onboarding_onboardee_reply(to, connection_request, from_pool)
@@ -95,7 +95,7 @@ Returns:
 - `to`: updated actor data structure.
 - `anoncrypted_connection_response`: Encrypted (but not authenticated) response bytes to be sent e.g. by POST.
 
-<br><br>
+<br>
 
 ```python
 onboarding_anchor_receive(_from, anoncrypted_connection_reponse, unique_onboardee_name)
@@ -112,7 +112,7 @@ Returns:
 
 Note there is nothing to be sent back before calling ```onboarding_onboardee_create_did(to)``` (below) on the receiver's side.
 
-<br><br>
+<br>
 
 ```python
 onboarding_onboardee_create_did(to)
@@ -126,7 +126,7 @@ Returns:
 - `to`
 - `authcrypted_did_info`: authenticated and encrypted DID packet to be sent e.g. by POST to the sender of a connection request.
 
-<br><br>
+<br>
 
 ```python
 onboarding_anchor_register_onboardee_did(_from, unique_onboardee_name, authcrypted_did_info)
@@ -141,7 +141,51 @@ Parameters:
 Returns:
 - `_from`
 
-<br><br>
+<br>
+
+### Schema
+
+Schema objects are JSONs of the format:
+```JSON
+{
+    "name": "Outlier Ventures License to Delegate Access to Data",
+    "version": "1.0",
+    "attributes": ["bot_name", "data_source", "license", "status", "year", "id"]
+}
+```
+Note that version numbers must be `float`s, not `int`s.
+
+```python
+create_schema(schema, creator)
+```
+Creates and registers a new credential schema.
+
+Parameters:
+- `schema`: schema JSON object as shown above.
+- `creator`: actor data structure for actor creating the schema.
+
+Returns:
+- `unique_schema_name`: unique schema name (will be used as a reference).
+- `schema_id`: ID of schema (will be used as a reference).
+- `creator`
+
+<br>
+
+```python
+create_credential_definition(creator, schema_id, unique_schema_name, revocable = False)
+```
+Applies a credential definition to an existing schema and registers this on the ledger.
+
+Parameters:
+- `creator`
+- `schema_id`
+- `unique_schema_name`
+- `revocable`: whether the credential is revocable. If set to `True` you will need to implement a revocation registry: see this [code reference](https://github.com/hyperledger/indy-sdk/blob/8d577007c4d32f6d253e6e83ac0f86821d27dfb8/samples/python/src/anoncreds_revocation.py#L55) and this [guide](https://github.com/hyperledger/indy-sdk/blob/master/docs/getting-started/indy-walkthrough.md#step-6-credential-definition-setup). Revocation registries may be added to the ANVIL API in future.
+
+Returns:
+- `creator`
+
+<br>
 
 
 ### Sovrin verifiable claims demo
