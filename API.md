@@ -2,9 +2,9 @@
 
 ## Sovrin
 
-Import each of these in the format `from sovrin.[module] import [function]`
+Import each of function in the format `from sovrin.[module] import [function]`.
 
-Note that many functions return the actor data structure. This is an updated structure following some interaction with the Sovrin ledger, and should always be re-assigned to the actor, i.e. 
+Note that many functions return an actor data structure when this actor is fed in as a parameter. This is an updated structure following some interaction with the Sovrin ledger, and should always be re-assigned to the actor, i.e. 
 ```python
 actor = function(actor)
 ```
@@ -16,13 +16,21 @@ requests.post('IP_ADDRESS', message)
 ```
 This can be easily combined with an async web framework like [Quart](https://pgjones.gitlab.io/quart/) (a Flask superset) to build apps. For a reference implementation, see the [actor apps](./anvil).
 
+### Sovrin verifiable claims demo
+
+[Claims.py](./anvil/sovrin/claims.py) demoes the ANVIL API's Sovrin functions. It provides a quick overview of the order of functions to be run when dealing with verifiable credentials.
+
+Run:
+```
+python3 claims.py
+```
 
 ### Setup
 
 ```python
 setup_pool(name = 'ANVIL')
 ```
-Sets up the pool for the current actor specified by the IP `TEST_POOL_IP` environment variable. For a local testnet pool there is no need to set this.
+Sets up the pool for the current actor specified by the IP `TEST_POOL_IP` environment variable. For a local testnet pool there is no need to set this. Local pools can be started with `sudo ./scripts/start_sovrin.sh`.
 
 Parameters:
 - `name`
@@ -272,14 +280,178 @@ Returns:
 
 <br>
 
+### Proofs
 
-### Sovrin verifiable claims demo
-
-`claims.py` in the `sovrin` folder demoes the ANVIL abstractions for Hyperledger Indy. This includes a network simulator for sending data and may serve as a base for building Sovrin into various interactions.
-
-Run:
+```python
+request_proof_of_credential(verifier, proof_request = {})
 ```
-python3 claims.py
+Creates an authcrypted proof request packet to be sent e.g. by POST to a prover.
+
+Parameters:
+- `verifier`: verifier actor data structure.
+- `proof_request`: proof request JSON as below formatted as string (i.e. `json.dumps(proof_request)`)
+
+Proof requests are JSONs in the format:
+```JSON
+{
+    "nonce": "0123456789012345678901234",
+    "name": "LDAD restricted proof",
+    "version": "0.1",
+    "requested_attributes": {
+        "attr1_referent": {
+            "name": "bot_name"
+        },
+        "attr2_referent": {
+            "name": "data_source"
+        },
+        "attr3_referent": {
+            "name": "license"
+        },
+        "attr4_referent": {
+            "name": "status"
+        },
+        "attr5_referent": {
+            "name": "id"
+        }
+    },
+    "requested_predicates": {
+        "predicate1_referent": {
+            "name": "year",
+            "p_type": ">=",
+            "p_value": 2019
+        }
+    }
+}
+```
+An attribute is just `name = 'Sophos'`. A predicate is a comparison that evaluates to true or false, e.g. `age >= 18`. Note that, as with all Sovrin nonces, the proof request nonce must be fully numeric.
+
+Returns:
+- `verifier`
+- `authcrypted_proof_request`: authenticated and encrypted proof request packet to be sent e.g. by POST to a prover.
+
+<br>
+
+```python
+create_proof_of_credential(prover, self_attested_attrs = {}, requested_attrs = [], requested_preds = [], non_issuer_attributes = [])
+```
+Decrypts a proof request and constructs a proof according to it.
+
+Parameters:
+- `self_attested_attrs`: JSON of self-attributes.
+- `requested_attrs`: list of indices of requested attributes.
+- `requested_preds`: list of indices of requested predicates.
+- `non_issuer_attributes`: list of indices of attributes that are not in the issued credential, and therefore can't be retrieved from the ledger.
+
+Example proof paramters according to the above example data:
+```python
+self_attested_attrs = {
+    "attr1_referent": "Sophos",
+    "attr5_referent": "did:ov:xb3i0s5v"
+}
+requested_attrs = [2, 3, 4]
+requested_preds = [1]
+non_issuer_attrs = []
+```
+
+Returns:
+- `prover`
+- `authcrypted_proof`: authenticated and encrypted proof packet to be sent e.g. by POST to a verifier.
+
+<br>
+
+```python
+verify_proof(verifier, assertions_to_make)
+```
+Decrypts a proof and verifies it according to your chosen assertions.
+
+
+Parameters:
+- `verifier`
+- `assertions_to_make`: JSON of assertions to make on proof attributes, i.e. ensure attribute X is equal to Y.
+
+Assertions to make are a JSON in the format:
+```JSON
+{
+    "revealed": {
+        "attr2_referent": "GitHub",
+        "attr3_referent": "LDAD restricted",
+        "attr4_referent": "active"
+    },
+    "self_attested": {
+        "attr1_referent": "Sophos",
+        "attr5_referent": "did:ov:xb3i0s5v"
+    }
+}
+```
+
+Returns:
+- `verifier`
+
+<br>
+
+## Fetch
+
+The following assumers you have a running Fetch.AI node. You can start one with `./scripts/start_fetch.sh`.
+
+Fetch.AI interactions are agent-based. For ANVIL, this means running a Python file for as long as the agent is needed. The following assume you prepend the name of the python file with the path to it from wherever you are calling the function.
+
+Imports:
+```python
+import subprocess
+```
+
+### Search the OEF
+
+```python
+subprocess.run('python3 ./path/to/searcher.py ' + search_terms, shell = True)
+```
+
+Parameters:
+- `search_terms`: search terms string split with underscores, e.g. `license_fetch_iota_ocean`.
+
+Result:
+- Writes to file `search_results.json`.
+
+Run directly from bash:
+```
+python3 ./path/to/searcher.py 'search_terms_split_with_underscores'
+```
+
+### Offer a service (run a seller / prover)
+
+```python
+subprocess.Popen('python3 ./path/to/prover.py ' + service_path + ' ' + price, shell = True)
+```
+
+Parameters:
+- `service_path`: path to JSON data models describing your fetch service, e.g. [the Sophos data service](./anvil/example_data/fetch_service).
+- `price`: the price of your service in Fetch.AI tokens.
+
+Result:
+- Sends data to a purchaser in exchange for Fetch.AI tokens if someone purchases the service.
+
+Run directly from bash:
+```
+python3 ./path/to/prover.py ./service/path price
+```
+
+
+### Purchase a service (run a buyer / verifier)
+
+```python
+subprocess.run('python3 ./path/to/verifier.py ' + search_terms + ' ' + max_price, shell = True)
+```
+
+Parameters:
+- `search_terms`: search terms string split with underscores, e.g. `license_fetch_iota_ocean`. If running a `searcher` agent first for service discovery, store the terms used in a variable and feed that in as the the search string here.
+- `max_price`: the maximum price you are willing to pay for the service in Fetch.AI tokens.
+
+Result:
+- Pays a seller in Fetch tokens on a match and the AEA receives the requested data.
+
+Run directly from bash:
+```
+python3 ./path/to/verifier.py search_terms_split_with_underscores max_price
 ```
 
 
