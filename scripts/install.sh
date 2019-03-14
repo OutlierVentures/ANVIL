@@ -98,31 +98,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
     sudo apt-get install -y libindy
     pip3 install base58
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    curl https://sh.rustup.rs -sSf | sh -s -- -y
-    export PATH="$HOME/.cargo/bin:$PATH" # so can use cargo without relog
-    brew install pkg-config \
-                 https://raw.githubusercontent.com/Homebrew/homebrew-core/65effd2b617bade68a8a2c5b39e1c3089cc0e945/Formula/libsodium.rb \
-                 automake \
-                 autoconf \
-                 openssl \
-                 zeromq \
-                 zmq
-    export PKG_CONFIG_ALLOW_CROSS=1
-    export CARGO_INCREMENTAL=1
-    export RUST_LOG=indy=trace
-    export RUST_TEST_THREADS=1
-    for version in `ls -t /usr/local/Cellar/openssl/`; do
-        export OPENSSL_DIR=/usr/local/Cellar/openssl/$version
-        break
-    done
     cd indy/libindy
-    cargo build
-    export LIBRARY_PATH=$(pwd)/target/debug
-    cd ../cli
-    cargo build
-    echo 'export DYLD_LIBRARY_PATH='$LIBRARY_PATH'
-export LD_LIBRARY_PATH='$LIBRARY_PATH >> ~/.bash_profile 
-    cd ../..
+    ./mac.build.sh
 fi
 
 # Install Python wrapper for Hyperledger Indy and Quart
