@@ -104,7 +104,7 @@ Fetch services are loaded in the front-end app using a path to the service data.
 
 ### Secure channel setup key exchange
 
-ANVIL uses Sovrin's authenticated, encrypted, pariwise secure channels. The setup works as follows:
+ANVIL uses Sovrin's authenticated, encrypted, pairwise secure channels. The setup works as follows:
 
 <p align="center">
     <img src="./assets/secure_channel.png" width="300" />
