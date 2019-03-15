@@ -5,7 +5,22 @@
         <img src="./assets/fetch_pr2.svg" />
     </a>
     <a href="https://github.com/hyperledger/indy-sdk" alt="Hyperledger Indy version">
-        <img src="./assets/indy_1.8.svg" />
+        <img src="./assets/sovrin_1.8.1.svg" />
+    </a>
+    <a href="https://github.com/fetchai" alt="Fetch.AI local">
+        <img src="./assets/fetch_local.svg" />
+    </a>
+    <a href="https://github.com/fetchai" alt="Fetch.AI testnet">
+        <img src="./assets/fetch_testnet.svg" />
+    </a>
+    <a href="https://github.com/hyperledger/indy-sdk" alt="Sovrin local">
+        <img src="./assets/sovrin_local.svg" />
+    </a>
+    <a href="https://github.com/hyperledger/indy-sdk" alt="Sovrin testnet">
+        <img src="./assets/sovrin_testnet.svg" />
+    </a>
+    <a href="https://github.com/hyperledger/indy-sdk" alt="Sovrin mainnet">
+        <img src="./assets/sovrin_mainnet.svg" />
     </a>
     <br><br>
     Agent Negotiation Verifiable Interaction Layer

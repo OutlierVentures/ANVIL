@@ -28,12 +28,12 @@ python3 claims.py
 ### Setup
 
 ```python
-setup_pool(name = 'ANVIL')
+setup_pool(net = 'local')
 ```
-Sets up the pool for the current actor specified by the IP `TEST_POOL_IP` environment variable. For a local testnet pool there is no need to set this. Local pools can be started with `sudo ./scripts/start_sovrin.sh`.
+Sets up the pool for the current actor. Local pools can be started with `sudo ./scripts/start_sovrin.sh`. For irregular home IPs (i.e. not `127.0.0.1`, specify your IP with the `TEST_POOL_IP` environment variable).
 
 Parameters:
-- `name`
+- `net`: net type, one of `local`, `test` or `main`.
 
 Returns:
 - `pool_name`
@@ -539,7 +539,7 @@ python3 ./path/to/verifier.py search_terms_split_with_underscores max_price
 
 Error: `indy.error.IndyError: ErrorCode.CommonInvalidStructure` or `indy.error.IndyError: ErrorCode.DidAlreadyExistsError`
 
-Fix:`rm ~/.indy_client` and re-run.
+Fix: `rm ~/.indy_client` and re-run.
 
 ### Dlopen/dylib errors
 
