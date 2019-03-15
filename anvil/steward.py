@@ -26,7 +26,7 @@ def index():
 @app.route('/setup', methods = ['GET', 'POST'])
 async def setup():
     global steward, pool_handle
-    _, pool_handle = await setup_pool('ANVIL')
+    _, pool_handle = await setup_pool('local')
     id_ = os.getenv('WALLET_ID', generate_base58(64))
     key = os.getenv('WALLET_KEY', generate_base58(64))
     seed = os.getenv('SOVRIN_SEED', '000000000000000000000000Steward1')

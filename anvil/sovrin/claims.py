@@ -58,11 +58,12 @@ async def run():
     proof_request = json.dumps(proof_request)
     cred_request = json.dumps(cred_request)
 
-    # Set up actors - LOAD KEYS AS ENVIRONMENT VARIABLES
-    pool_name, pool_handle = await setup_pool('ANVIL')
+    # Set up pool
+    pool_name, pool_handle = await setup_pool('local')
 
+    # Set up actors
     # For demo purposes, parameters ID, KEY are just random base58 strings here
-    # Generally only seed-initialise existing Steward Anchors
+    # Generally only seed-initialise Steward Anchors
     steward = await set_self_up('steward', generate_base58(64), generate_base58(64), pool_handle,
                                 seed = '000000000000000000000000Steward1')
     issuer = await set_self_up('issuer', generate_base58(64), generate_base58(64), pool_handle)

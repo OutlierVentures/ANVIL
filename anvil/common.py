@@ -14,7 +14,7 @@ from sovrin.onboarding import onboarding_anchor_send, onboarding_anchor_receive,
 
 # Steward has unique setup from seed, does not use this
 async def common_setup(actor, pool_handle, name):
-    _, pool_handle = await setup_pool('ANVIL')
+    _, pool_handle = await setup_pool('local')
     id_ = os.getenv('WALLET_ID', generate_base58(64))
     key = os.getenv('WALLET_KEY', generate_base58(64))
     actor = await set_self_up(name, id_, key, pool_handle)
