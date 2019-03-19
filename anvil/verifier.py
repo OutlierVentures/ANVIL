@@ -4,8 +4,7 @@ from common import common_setup, common_respond, common_get_verinym, common_rese
 from sovrin.schema import create_schema, create_credential_definition
 from sovrin.credentials import offer_credential, create_and_send_credential
 from sovrin.proofs import request_proof_of_credential, verify_proof
-from fetch.verifier import Verifier
-from oef.query import Query, Constraint, Eq
+from fetch.agents import search, purchase_service
 app = Quart(__name__)
 
 debug = False # Do not enable in production
@@ -17,7 +16,7 @@ prover_port = 5002
 
 # Globals approach will be dropped once session persistence in Python is fixed.
 verifier = {}
-request_ip = anchor_ip = received_data = counterparty_name = search = False
+request_ip = anchor_ip = received_data = counterparty_name = False
 pool_handle = 1
 
 
@@ -59,7 +58,7 @@ async def search_for_services():
     form = await request.form
     search_terms = form['searchterms'].replace(' ', '_').replace(',', '_')
     verifier['search_terms'] = search_terms
-    subprocess.run('python3 ./fetch/searcher.py ' + search_terms, shell = True)
+    search(search_terms)
     if os.path.isfile('search_results.json'):
         with open('search_results.json') as file_:
             verifier['search_results'] = json.load(file_)
@@ -118,16 +117,16 @@ async def request_proof():
     global verifier
     try:
         form = await request.form
-        proof_request = json.loads(form['proofrequest'])
+        json_request = json.loads(form['proofrequest'])
         '''
         Proof requests have 2 parts:
         1. Request: the requested attributes/predicates (to be sent to prover).
         2. Assertions: the assertions about the attributes/predicates to ensure are true.
         '''
-        request_json = json.dumps(proof_request['request'])
-        verifier['assertions_to_make'] = proof_request['assertions_to_make']
-        verifier = await request_proof_of_credential(verifier, request_json)
-        requests.post('http://' + verifier['prover_ip'] + ':' + str(prover_port) + '/proof_request', verifier['authcrypted_proof_request'])
+        request_json_string = json.dumps(json_request['request'])
+        verifier['assertions_to_make'] = json_request['assertions_to_make']
+        verifier, proof_request = await request_proof_of_credential(verifier, request_json_string)
+        requests.post('http://' + verifier['prover_ip'] + ':' + str(prover_port) + '/proof_request', proof_request)
         return redirect(url_for('index'))
     except:
         return 'Invalid proof request. Check formatting.'
@@ -153,11 +152,11 @@ async def verify():
 
 
 @app.route('/purchase_service', methods = ['GET', 'POST'])
-async def purchase_service():
+async def purchase_service_():
     form = await request.form
     max_price = form['maxprice']
     search_terms = verifier['search_terms']
-    subprocess.run('python3 ./fetch/verifier.py ' + search_terms + ' ' + max_price, shell = True)
+    purchase_service(max_price, search_terms)
     return redirect(url_for('index'))
 
 

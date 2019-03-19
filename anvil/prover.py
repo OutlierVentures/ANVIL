@@ -3,6 +3,7 @@ from quart import Quart, render_template, redirect, url_for, request
 from common import common_setup, common_respond, common_get_verinym, common_reset
 from sovrin.credentials import receive_credential_offer, request_credential, store_credential
 from sovrin.proofs import create_proof_of_credential
+from fetch.agents import offer_service
 app = Quart(__name__)
 
 debug = False # Do not enable in production
@@ -53,7 +54,7 @@ async def publish_service():
     form = await request.form
     service_path = form['servicepath']
     price = form['price']
-    subprocess.Popen('python3 ./fetch/prover.py ' + service_path + ' ' + price, shell = True)
+    offer_service(price, service_path)
     service_published = True
     return redirect(url_for('index'))
 
@@ -106,9 +107,9 @@ async def request_credential_from_issuer():
     global prover
     try:
         form = await request.form
-        credential_request = form['credrequest'] # Request credential demands a string-formatted JSON
-        prover = await request_credential(prover, credential_request)
-        requests.post('http://' + anchor_ip + ':' + str(issuer_port) + '/credential_request', prover['authcrypted_cred_request'])
+        json_request = form['credrequest'] # Request credential demands a string-formatted JSON
+        prover, cred_request = await request_credential(prover, json_request)
+        requests.post('http://' + anchor_ip + ':' + str(issuer_port) + '/credential_request', cred_request)
         return redirect(url_for('index'))
     except:
         return 'Invalid credential request. Check formatting.'
@@ -142,9 +143,9 @@ async def create_and_send_proof():
     try:
         form = await request.form
         proof = json.loads(form['proof'])
-        prover = await create_proof_of_credential(prover, proof['self_attested_attributes'], proof['requested_attributes'],
-                                                  proof['requested_predicates'], proof['non_issuer_attributes'])
-        requests.post('http://' + request_ip + ':' + str(verifier_port) + '/proof_inbox', prover['authcrypted_proof'])
+        prover, proof = await create_proof_of_credential(prover, proof['self_attested_attributes'], proof['requested_attributes'],
+                                                         proof['requested_predicates'], proof['non_issuer_attributes'])
+        requests.post('http://' + request_ip + ':' + str(verifier_port) + '/proof_inbox', proof)
         # Stop ability to send proof until next request
         prover.pop('authcrypted_proof_request', None)
         return redirect(url_for('index'))

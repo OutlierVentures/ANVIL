@@ -116,8 +116,8 @@ async def offer_credential_to_ip():
     form = await request.form
     schema_name = form['schema_name']
     if schema_name in created_schema:
-        issuer = await offer_credential(issuer, schema_name)
-        requests.post('http://' + form['ip_address'] + '/credential_inbox', issuer['authcrypted_cred_offer'])
+        issuer, cred_offer = await offer_credential(issuer, schema_name)
+        requests.post('http://' + form['ip_address'] + '/credential_inbox', cred_offer)
         return redirect(url_for('index'))
     else:
         return 'Schema does not exist. Check name input.'
@@ -135,8 +135,8 @@ async def credential_request():
 @app.route('/send_credential', methods = ['GET', 'POST'])
 async def send_credential():
     global issuer
-    issuer = await create_and_send_credential(issuer)
-    requests.post('http://' + request_ip + ':' + str(prover_port) + '/credential_store', issuer['authcrypted_cred'])
+    issuer, credential = await create_and_send_credential(issuer)
+    requests.post('http://' + request_ip + ':' + str(prover_port) + '/credential_store', credential)
     # Hides send credential function until next credential request
     issuer.pop('authcrypted_cred_request', None)
     return redirect(url_for('index'))
