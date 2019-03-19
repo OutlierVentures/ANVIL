@@ -44,7 +44,7 @@ Install: `./scripts/install.sh`
 
 Start Fetch node: `./scripts/start_fetch.sh`
 
-Spin up Sovrin node pool: `./scripts/start_sovrin.sh`
+Spin up Sovrin node pool: `sudo ./scripts/start_sovrin.sh`
 
 Test install (requires a running Fetch node and Sovrin pool): `./scripts/test.sh`
 

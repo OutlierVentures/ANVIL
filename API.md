@@ -2,7 +2,10 @@
 
 ## Sovrin
 
-Import each of function in the format `from sovrin.[module] import [function]`.
+Import each of function in the format
+```python
+from sovrin.[module] import [function]
+```
 
 Note that many functions return an actor data structure when this actor is fed in as a parameter. This is an updated structure following some interaction with the Sovrin ledger, and should always be re-assigned to the actor, i.e. 
 ```python
@@ -471,26 +474,25 @@ Returns:
 
 The following assumers you have a running Fetch.AI node. You can start one with `./scripts/start_fetch.sh`.
 
-Fetch.AI interactions are agent-based. For ANVIL, this means running a Python file for as long as the agent is needed. The following assume you prepend the name of the python file with the path to it from wherever you are calling the function.
-
 Imports:
 ```python
-import subprocess
+from fetch.agents import [function]
 ```
 
 ### Search the OEF
 
 ```python
-subprocess.run('python3 ./path/to/searcher.py ' + search_terms, shell = True)
+search(search_terms, path_to_fetch_folder = './fetch')
 ```
 
 Parameters:
 - `search_terms`: search terms string split with underscores, e.g. `license_fetch_iota_ocean`.
+- `path_to_fetch_folder`: path to the `ANVIL/anvil/fetch` folder. If you are running agents from the `anvil` folder (e.g. adapting the actor apps you don't need this paramter.)
 
 Result:
-- Writes to file `search_results.json`.
+- Writes search results to file `search_results.json`.
 
-Run directly from bash:
+Alternatively, run the agent directly from bash:
 ```
 python3 ./path/to/searcher.py 'search_terms_split_with_underscores'
 ```
@@ -498,17 +500,18 @@ python3 ./path/to/searcher.py 'search_terms_split_with_underscores'
 ### Offer a service (run a seller / prover)
 
 ```python
-subprocess.Popen('python3 ./path/to/prover.py ' + service_path + ' ' + price, shell = True)
+offer_service(price, service_path, path_to_fetch_folder = './fetch')
 ```
 
 Parameters:
-- `service_path`: path to JSON data models describing your fetch service, e.g. [the Sophos data service](./anvil/example_data/fetch_service).
 - `price`: the price of your service in Fetch.AI tokens.
+- `service_path`: path to JSON data models describing your fetch service, e.g. [the Sophos data service](./anvil/example_data/fetch_service).
+- `path_to_fetch_folder`: path to the `ANVIL/anvil/fetch` folder. If you are running agents from the `anvil` folder (e.g. adapting the actor apps you don't need this paramter.)
 
 Result:
 - Sends data to a purchaser in exchange for Fetch.AI tokens if someone purchases the service.
 
-Run directly from bash:
+Alternatively, run the agent directly from bash:
 ```
 python3 ./path/to/prover.py ./service/path price
 ```
@@ -517,17 +520,18 @@ python3 ./path/to/prover.py ./service/path price
 ### Purchase a service (run a buyer / verifier)
 
 ```python
-subprocess.run('python3 ./path/to/verifier.py ' + search_terms + ' ' + max_price, shell = True)
+purchase_service(max_price, search_terms, path_to_fetch_folder = './fetch')
 ```
 
 Parameters:
-- `search_terms`: search terms string split with underscores, e.g. `license_fetch_iota_ocean`. If running a `searcher` agent first for service discovery, store the terms used in a variable and feed that in as the the search string here.
 - `max_price`: the maximum price you are willing to pay for the service in Fetch.AI tokens.
+- `search_terms`: search terms string split with underscores, e.g. `license_fetch_iota_ocean`. If running a `searcher` agent first for service discovery, store the terms used in a variable and feed that in as the the search string here.
+- `path_to_fetch_folder`: path to the `ANVIL/anvil/fetch` folder. If you are running agents from the `anvil` folder (e.g. adapting the actor apps you don't need this paramter.)
 
 Result:
 - Pays a seller in Fetch tokens on a match and the AEA receives the requested data.
 
-Run directly from bash:
+Alternatively, run the agent directly from bash:
 ```
 python3 ./path/to/verifier.py search_terms_split_with_underscores max_price
 ```
