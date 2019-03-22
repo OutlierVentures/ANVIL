@@ -75,11 +75,13 @@ def load_json_file(path):
 if __name__ == '__main__':
     search_terms = sys.argv[1].split('_')
     max_price = float(sys.argv[2])
+    net = sys.argv[3]
+    oef = 'oef.economicagents.com' if net == 'test' else '127.0.0.1'
     query_array = []
     for term in search_terms:
         query_array.append(Constraint(term, Eq(True)))
     query = Query(query_array)
-    agent = Verifier('Verifier', oef_addr = 'oef.economicagents.com', oef_port = 3333, max_price = max_price)
+    agent = Verifier('Verifier', oef_addr = oef, oef_port = 3333, max_price = max_price)
     agent.connect()
     agent.search_services(0, query)
     try:

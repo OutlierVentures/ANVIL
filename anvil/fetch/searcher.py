@@ -18,11 +18,13 @@ class Searcher(OEFAgent):
 
 if __name__ == '__main__':
     search_terms = sys.argv[1].split('_')
+    net = sys.argv[2]
+    oef = 'oef.economicagents.com' if net == 'test' else '127.0.0.1'
     query_array = []
     for term in search_terms:
         query_array.append(Constraint(term, Eq(True)))
     query = Query(query_array)
-    agent = Searcher('Searcher', oef_addr = 'oef.economicagents.com', oef_port = 3333)
+    agent = Searcher('Searcher', oef_addr = oef, oef_port = 3333)
     agent.connect()
     agent.search_services(0, query)
     try:
