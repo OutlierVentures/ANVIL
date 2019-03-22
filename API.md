@@ -1,5 +1,19 @@
 # ANVIL API Reference
 
+## Net choice
+
+Select one of local, testnet, or mainnet deployment:
+
+
+### Fetch
+
+Fetch: when running a fetch agent (see API below), set the `net` parameter to `local` or `test` (`test` is default if no value is supplied).
+
+Sovrin: when running `setup_pool(net)`, set the `net` parameter to `local`, `test` or `main` (`local` is default if no value is supplied). Testnet and mainnet are still in development and may require some debugging.
+
+
+### Sovrin
+
 ## Sovrin
 
 Import each of function in the format
@@ -482,12 +496,13 @@ from fetch.agents import [function]
 ### Search the OEF
 
 ```python
-search(search_terms, path_to_fetch_folder = './fetch')
+search(search_terms, path_to_fetch_folder = './fetch', net = 'test')
 ```
 
 Parameters:
 - `search_terms`: search terms string split with underscores, e.g. `license_fetch_iota_ocean`.
 - `path_to_fetch_folder`: path to the `ANVIL/anvil/fetch` folder. If you are running agents from the `anvil` folder (e.g. adapting the actor apps you don't need this paramter.)
+- `net`: net type, one of `local` or `test`.
 
 Result:
 - Writes search results to file `search_results.json`.
@@ -500,13 +515,14 @@ python3 ./path/to/searcher.py 'search_terms_split_with_underscores'
 ### Offer a service (run a seller / prover)
 
 ```python
-offer_service(price, service_path, path_to_fetch_folder = './fetch')
+offer_service(price, service_path, path_to_fetch_folder = './fetch', net = 'test')
 ```
 
 Parameters:
 - `price`: the price of your service in Fetch.AI tokens.
 - `service_path`: path to JSON data models describing your fetch service, e.g. [the Sophos data service](./anvil/example_data/fetch_service).
 - `path_to_fetch_folder`: path to the `ANVIL/anvil/fetch` folder. If you are running agents from the `anvil` folder (e.g. adapting the actor apps you don't need this paramter.)
+- `net`: net type, one of `local` or `test`.
 
 Result:
 - Sends data to a purchaser in exchange for Fetch.AI tokens if someone purchases the service.
@@ -520,13 +536,14 @@ python3 ./path/to/prover.py ./service/path price
 ### Purchase a service (run a buyer / verifier)
 
 ```python
-purchase_service(max_price, search_terms, path_to_fetch_folder = './fetch')
+purchase_service(max_price, search_terms, path_to_fetch_folder = './fetch', net = 'test')
 ```
 
 Parameters:
 - `max_price`: the maximum price you are willing to pay for the service in Fetch.AI tokens.
 - `search_terms`: search terms string split with underscores, e.g. `license_fetch_iota_ocean`. If running a `searcher` agent first for service discovery, store the terms used in a variable and feed that in as the the search string here.
 - `path_to_fetch_folder`: path to the `ANVIL/anvil/fetch` folder. If you are running agents from the `anvil` folder (e.g. adapting the actor apps you don't need this paramter.)
+- `net`: net type, one of `local` or `test`.
 
 Result:
 - Pays a seller in Fetch tokens on a match and the AEA receives the requested data.
