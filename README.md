@@ -108,6 +108,12 @@ python3 prover.py
 python3 verifier.py
 ```
 
+For local pools, for opening connections between actors use IP `0.0.0.0` appended with port `:5000` for the Steward, `:5001` for the issuer, `:5002` for the prover and `:5003` for the verifier.
+
+Anyone already on the ledger can onboard others. To start, only Stewards are on the ledger, so for example you could use the Steward app to onboard the issuer and verifier, then your issuer app to onboard the prover.
+
+You can change the ports on which your apps are run in each of the actor apps in the `anvil` folder.
+
 #### Example data
 
 Example data is given in the `anvil/example_data` folder. This includes 2 sets of credentials and their associated proofs: an authenticated data sharing bot (_Sophos_) and a degree certificate. These can be pasted into the front-end apps.
