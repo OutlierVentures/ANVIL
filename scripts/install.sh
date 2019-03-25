@@ -107,7 +107,21 @@ fi
 pip3 install python3-indy quart
 
 # OEF doesn't auto-inflate
-cd /usr/local/lib/python3.7/site-packages || cd /usr/local/lib/python3.6/site-packages
-yes | unzip oef-0.2.0-py3.7.egg
+set -e
+
+tryunzip() {
+	if [ -e $1/$2 ]; then
+		cd $1
+		yes | unzip $2
+	fi	
+}
+
+
+tryunzip /usr/local/lib/python3.7/dist-packages oef-0.2.0-py3.7.egg
+tryunzip /usr/local/lib/python3.7/site-packages oef-0.2.0-py3.7.egg
+tryunzip /usr/local/lib/python3.6/dist-packages oef-0.2.0-py3.6.egg
+tryunzip /usr/local/lib/python3.6/site-packages oef-0.2.0-py3.6.egg
 
 echo -e "${ongreen}ANVIL installed successfully.$endcolor"
+
+
