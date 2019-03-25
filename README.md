@@ -1,25 +1,25 @@
 ![ANVIL](./assets/anvil_logo_colour.png)
 
 <p align="center">
-    <a href="https://github.com/fetchai" alt="Fetch.AI version">
+    <a href="https://github.com/fetchai" alt="Fetch.AI version: PR2">
         <img src="./assets/fetch_pr2.svg" />
     </a>
-    <a href="https://github.com/hyperledger/indy-sdk" alt="Hyperledger Indy version">
+    <a href="https://github.com/hyperledger/indy-sdk" alt="Hyperledger Indy version: 1.8.1">
         <img src="./assets/sovrin_1.8.1.svg" />
     </a>
-    <a href="https://github.com/fetchai" alt="Fetch.AI local">
+    <a href="https://github.com/fetchai" alt="Fetch.AI local: supported">
         <img src="./assets/fetch_local.svg" />
     </a>
-    <a href="https://github.com/fetchai" alt="Fetch.AI testnet">
+    <a href="https://github.com/fetchai" alt="Fetch.AI testnet: supported">
         <img src="./assets/fetch_testnet.svg" />
     </a>
-    <a href="https://github.com/hyperledger/indy-sdk" alt="Sovrin local">
+    <a href="https://github.com/hyperledger/indy-sdk" alt="Sovrin local: supported">
         <img src="./assets/sovrin_local.svg" />
     </a>
-    <a href="https://github.com/hyperledger/indy-sdk" alt="Sovrin testnet">
+    <a href="https://github.com/hyperledger/indy-sdk" alt="Sovrin testnet: in progress">
         <img src="./assets/sovrin_testnet.svg" />
     </a>
-    <a href="https://github.com/hyperledger/indy-sdk" alt="Sovrin mainnet">
+    <a href="https://github.com/hyperledger/indy-sdk" alt="Sovrin mainnet: in progress">
         <img src="./assets/sovrin_mainnet.svg" />
     </a>
     <br><br>

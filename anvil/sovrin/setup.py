@@ -113,7 +113,7 @@ def get_pool_genesis_txn_path(pool_name, net ='local'):
 def pool_genesis_txn_data(net = 'local'):
     # Mainnet and testnet do not appear to have different genesis transaction data
     if (net == 'test' or net == 'main'):
-        with urllib.request.urlopen("https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_sandbox_genesis") as url:
+        with urllib.request.urlopen('https://raw.githubusercontent.com/sovrin-foundation/sovrin/stable/sovrin/pool_transactions_sandbox_genesis') as url:
             data = json.loads(url.read().decode())
         return data
     else:
