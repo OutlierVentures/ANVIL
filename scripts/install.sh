@@ -60,6 +60,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
                                protobuf-compiler \
                                libprotobuf-dev \
                                tox
+    pip3 install gitpython
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     brew upgrade protobuf || brew install protobuf
 fi
