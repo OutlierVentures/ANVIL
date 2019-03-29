@@ -27,7 +27,7 @@ parser.add_argument('-l', '--library', help='dynamic library to load for plug-in
 parser.add_argument('-e', '--entrypoint', help='entry point for dynamic library')
 parser.add_argument('-c', '--config', help='entry point for dynamic library')
 parser.add_argument('-s', '--creds', help='entry point for dynamic library')
-args = parser.parse_args()
+args = parser.parse_known_args()[0]
 
 
 # Check if we need to dyna-load a custom wallet storage plug-in
