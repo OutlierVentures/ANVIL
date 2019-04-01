@@ -66,7 +66,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
                                protobuf-compiler \
                                libprotobuf-dev \
                                tox
-    pip3 install gitpython
+    pip3 install gitpython sphinxcontrib-mermaid
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     brew upgrade protobuf || brew install protobuf
 fi
