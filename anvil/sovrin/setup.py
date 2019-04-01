@@ -27,6 +27,10 @@ PROTOCOL_VERSION = 2
 async def setup_pool(net = 'local'):
     print('Setting up pool...')
     name = 'ANVIL' if net == 'local' else net
+    pool_list = await pool.list_pools()
+    for pool_dict in pool_list:
+        if pool_dict['pool'] == name:
+            return name, 1
     pool_ = {
         'name': name
     }
