@@ -64,6 +64,7 @@ echo -e "${onyellow}Installing Fetch...$endcolor"
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     yes | sudo apt-get install protobuf-compiler \
                                libprotobuf-dev \
+                               unzip \
                                tox
     pip3 install gitpython
 elif [[ "$OSTYPE" == "darwin"* ]]; then
