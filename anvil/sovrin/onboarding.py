@@ -123,3 +123,11 @@ async def auth_decrypt(wallet_handle, key, message):
     decrypted_message = json.loads(decrypted_message_json)
     return from_verkey, decrypted_message_json, decrypted_message
     
+
+# This function establishes secure channels between all actors for same-file demoes.
+async def establish_channels_demo(steward, issuer, prover, verifier):
+    steward, issuer = await demo_onboard(steward, issuer)
+    steward, verifier = await demo_onboard(steward, verifier)
+    issuer, prover = await demo_onboard(issuer, prover)
+    verifier, prover = await demo_onboard(verifier, prover)
+    return steward, issuer, prover, verifier
