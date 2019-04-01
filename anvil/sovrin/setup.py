@@ -134,7 +134,6 @@ def pool_genesis_txn_data(net = 'local'):
         ])
 
 
-
 def save_pool_genesis_txn_file(path, net = 'local'):
     data = pool_genesis_txn_data(net)
 
@@ -142,4 +141,14 @@ def save_pool_genesis_txn_file(path, net = 'local'):
 
     with open(str(path), "w+") as f:
         f.writelines(data)
+
+
+# This function sets up all actors for same-file demoes.
+async def setup_demo():
+    pool_name, pool_handle = await setup_pool('local')
+    steward = await set_self_up('steward', 'STEWARD_DEMO_DID', 'STEWARD_DEMO_KEY', pool_handle, seed = '000000000000000000000000Steward1')
+    issuer = await set_self_up('issuer', 'ISSUER_DEMO_DID', 'ISSUER_DEMO_KEY', pool_handle)
+    prover = await set_self_up('prover', 'PROVER_DEMO_DID', 'PROVER_DEMO_KEY', pool_handle)
+    verifier = await set_self_up('verifier', 'VERIFIER_DEMO_DID', 'VERIFIER_DEMO_KEY', pool_handle)
+    return pool_name, pool_handle, steward, issuer, prover, verifier
 
