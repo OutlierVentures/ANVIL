@@ -62,11 +62,10 @@ pip3 install wheel
 echo -e "${onyellow}Installing Fetch...$endcolor"
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    yes | sudo apt-get install python3-sphinx \
-                               protobuf-compiler \
+    yes | sudo apt-get install protobuf-compiler \
                                libprotobuf-dev \
                                tox
-    pip3 install gitpython sphinxcontrib-mermaid
+    pip3 install gitpython
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     brew upgrade protobuf || brew install protobuf
 fi
@@ -77,11 +76,7 @@ mv oef-sdk-python oefpy
 cd oefpy
 sudo python3 setup.py install
 python3 scripts/setup_test.py
-
-# Build docs
-cd docs
-make html
-cd ../..
+cd ..
 
 # Install OEFCore Docker image for running nodes
 get_latest fetchai oef-core
