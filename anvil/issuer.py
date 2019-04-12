@@ -12,7 +12,7 @@ port = 5001
 anchor_port = 5000
 prover_port = 5002
 
-# Globals approach will be dropped once session persistence in Python is fixed.
+# We use globals for our server-side session since this is not supported in Quart yet.
 issuer = {}
 request_ip = anchor_ip = received_data = counterparty_name = False
 pool_handle = 1

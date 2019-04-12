@@ -9,7 +9,7 @@ debug = False # Do not enable in production
 host = '0.0.0.0'
 port = 5000
 
-# Globals approach will be dropped once session persistence in Python is fixed.
+# We use globals for our server-side session since this is not supported in Quart yet.
 steward = {}
 counterparty_name = False
 pool_handle = 1
