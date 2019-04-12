@@ -42,7 +42,7 @@ def index():
 @app.route('/setup', methods = ['GET', 'POST'])
 async def setup():
     global issuer, pool_handle
-    issuer, pool_handle = await common_setup(issuer, pool_handle, 'issuer')
+    issuer, pool_handle = await common_setup('issuer')
     return redirect(url_for('index'))
 
 

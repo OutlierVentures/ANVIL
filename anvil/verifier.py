@@ -44,7 +44,7 @@ def index():
 @app.route('/setup', methods = ['GET', 'POST'])
 async def setup():
     global verifier, pool_handle
-    verifier, pool_handle = await common_setup(verifier, pool_handle, 'verifier')
+    verifier, pool_handle = await common_setup('verifier')
     return redirect(url_for('index'))
 
 
