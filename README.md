@@ -1,11 +1,11 @@
 ![ANVIL](./assets/anvil_logo_colour.png)
 
 <p align="center">
-    <a href="https://github.com/fetchai" alt="Fetch.AI version: PR2">
-        <img src="./assets/fetch_pr2.svg" />
+    <a href="https://github.com/fetchai" alt="Fetch.AI version: Public Release 2">
+        <img src="./assets/fetch_version.svg" />
     </a>
-    <a href="https://github.com/hyperledger/indy-sdk" alt="Hyperledger Indy version: 1.8.1">
-        <img src="./assets/sovrin_1.8.1.svg" />
+    <a href="https://github.com/hyperledger/indy-sdk" alt="Hyperledger Indy version: 1.8.2">
+        <img src="./assets/sovrin_version.svg" />
     </a>
     <a href="https://github.com/fetchai" alt="Fetch.AI local: supported">
         <img src="./assets/fetch_local.svg" />
