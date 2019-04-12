@@ -56,6 +56,31 @@ fi
 pip3 install --upgrade setuptools
 pip3 install wheel
 
+##### SOVRIN #####
+
+echo -e "${onyellow}Installing Sovrin...$endcolor"
+
+# Install Hyperledger Indy - large repo so fetch incrementally
+git clone https://github.com/hyperledger/indy-sdk.git --depth 1
+cd indy-sdk
+git fetch --deepen=50 && git fetch --deepen=50 && git fetch --deepen=50 && git fetch --unshallow
+cd ..
+mv indy-sdk indy
+if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 68DB5E88
+    sudo add-apt-repository "deb https://repo.sovrin.org/sdk/deb xenial master"
+    sudo apt-get update
+    sudo apt-get install -y libindy
+    pip3 install base58
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    cd indy/libindy
+    chmod +x mac.build.sh
+    ./mac.build.sh
+    cd ../..
+fi
+
+# Install Python wrapper for Hyperledger Indy and Quart
+pip3 install python3-indy quart
 
 ##### FETCH #####
 
@@ -66,10 +91,10 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
                                libprotobuf-dev \
                                unzip \
                                tox
-    pip3 install gitpython
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     brew upgrade protobuf || brew install protobuf
 fi
+pip3 install gitpython
 
 # Install OEFPython
 get_latest fetchai oef-sdk-python
@@ -86,27 +111,6 @@ cd oefcore
 ./oef-core-image/scripts/docker-build-img.sh
 cd ..
 
-
-##### SOVRIN #####
-
-echo -e "${onyellow}Installing Sovrin...$endcolor"
-
-# Install Hyperledger Indy
-get_latest hyperledger indy-sdk
-mv indy-sdk indy
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
-    sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 68DB5E88
-    sudo add-apt-repository "deb https://repo.sovrin.org/sdk/deb xenial master"
-    sudo apt-get update
-    sudo apt-get install -y libindy
-    pip3 install base58
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-    cd indy/libindy
-    ./mac.build.sh
-fi
-
-# Install Python wrapper for Hyperledger Indy and Quart
-pip3 install python3-indy quart
 
 # OEF doesn't auto-inflate
 set -e

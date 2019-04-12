@@ -40,7 +40,7 @@
 
 The installer and install tester should be run from the root directory (the one containg this readme).
 
-Install: `./scripts/install.sh`
+Install: `sudo ./scripts/install.sh`
 
 Start Fetch node: `./scripts/start_fetch.sh`
 
