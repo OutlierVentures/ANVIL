@@ -122,6 +122,13 @@ Encoding used is personal preference. For Sophos, octal was chosen.
 
 Fetch services are loaded in the front-end app using a path to the service data. An example service data struture can be found in the `anvil/example_data` folder.
 
+#### Call to Pull Request: a note on encrypted sessions
+
+We'd like to have used encrypted sessions for the ANVIL Apps. This would be a **server-side** cookie in the style of the [Flask-Session](https://pythonhosted.org/Flask-Session/) extension for Flask.
+
+The ANVIL Apps are built with the [Quart microframework](https://github.com/xutaoding/quart) to allow for the async nature of Fetch.AI and Sovrin. Unfortunately, Flask-Session does not work with Quart and there is no alternative to the extension (yet).
+
+We welcome any pull requests implementing a server-side encrypted cookie or similar.
 
 ### Secure channel setup key exchange
 
