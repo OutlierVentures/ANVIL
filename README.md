@@ -31,7 +31,7 @@
     <br>
     In short, ANVIL mitigates risk in AEA negotiations with verifiable claims.
     <br>
-    [E2E encryption demo: unrivalled security with Sovrin's pairwise channels.](https://github.com/OutlierVentures/ANVIL/blob/master/anvil/sovrin/e2edemo.py)
+    <a href="https://github.com/OutlierVentures/ANVIL/blob/master/anvil/sovrin/e2edemo.py" >E2E encryption demo: unrivalled security with Sovrin's pairwise channels.</a>
     <br>
 </p>
 
