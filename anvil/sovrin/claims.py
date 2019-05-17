@@ -21,7 +21,7 @@ from proofs import request_proof_of_credential, create_proof_of_credential, veri
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.WARN)
 
-parser = argparse.ArgumentParser(description='Run python getting-started scenario (Prover/Issuer)')
+parser = argparse.ArgumentParser(description='Run ANVIL full claims demo.')
 parser.add_argument('-t', '--storage_type', help='load custom wallet storage plug-in')
 parser.add_argument('-l', '--library', help='dynamic library to load for plug-in')
 parser.add_argument('-e', '--entrypoint', help='entry point for dynamic library')
