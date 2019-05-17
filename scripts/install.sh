@@ -108,6 +108,7 @@ cd ..
 get_latest fetchai oef-core
 mv oef-core oefcore
 cd oefcore
+git checkout 146c833 # Use PR2 until Pluto stable on mac
 ./oef-core-image/scripts/docker-build-img.sh
 cd ..
 
