@@ -123,11 +123,11 @@ async def auth_encrypt(wallet_handle, counterparty_key, from_to_verkey, message_
     return authcrypted_message
 
 
-async def auth_decrypt(wallet_handle, key, message):
-    from_verkey, decrypted_message_json = await crypto.auth_decrypt(wallet_handle, key, message)
-    decrypted_message_json = decrypted_message_json.decode("utf-8")
-    decrypted_message = json.loads(decrypted_message_json)
-    return from_verkey, decrypted_message_json, decrypted_message
+async def auth_decrypt(wallet_handle, counterparty_key, message):
+    from_verkey, decrypted_message_string = await crypto.auth_decrypt(wallet_handle, counterparty_key, message)
+    decrypted_message_string = decrypted_message_string.decode("utf-8")
+    decrypted_message_json = json.loads(decrypted_message_string)
+    return from_verkey, decrypted_message_string, decrypted_message_json
     
 
 # This function establishes secure channels between all actors for same-file demoes.
