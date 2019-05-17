@@ -34,8 +34,8 @@ The onboardee needs to have set_self_up() before calling this function.
 async def demo_onboard(anchor, onboardee):
     name = onboardee['name']
     anchor, connection_request = await onboarding_anchor_send(anchor, name)
-    onboardee, anoncrypted_connection_reponse = await onboarding_onboardee_reply(onboardee, connection_request, anchor['pool'])
-    anchor = await onboarding_anchor_receive(anchor, anoncrypted_connection_reponse, name)
+    onboardee, anoncrypted_connection_response = await onboarding_onboardee_reply(onboardee, connection_request, anchor['pool'])
+    anchor = await onboarding_anchor_receive(anchor, anoncrypted_connection_response, name)
     onboardee, authcrypted_did_info = await onboarding_onboardee_create_did(onboardee)
     anchor = await onboarding_anchor_register_onboardee_did(anchor, name, authcrypted_did_info)
     return anchor, onboardee
@@ -115,6 +115,12 @@ async def onboarding_anchor_register_onboardee_did(_from, unique_onboardee_name,
 async def send_nym(pool_handle, wallet_handle, _did, new_did, new_key, role):
     nym_request = await ledger.build_nym_request(_did, new_did, new_key, None, role)
     await ledger.sign_and_submit_request(pool_handle, wallet_handle, _did, nym_request)
+
+
+async def auth_encrypt(wallet_handle, counterparty_key, from_to_verkey, message_json):
+    message_string = json.dumps(message_json)
+    authcrypted_message = await crypto.auth_crypt(wallet_handle, counterparty_key, from_to_verkey, message_string.encode('utf-8'))
+    return authcrypted_message
 
 
 async def auth_decrypt(wallet_handle, key, message):
