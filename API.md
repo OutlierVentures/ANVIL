@@ -168,6 +168,40 @@ Returns:
 
 <br>
 
+```python
+auth_encrypt(wallet_handle, counterparty_key, from_to_verkey, message_json)
+```
+Authenticates and encrypts a message in JSON format. Requires a secure channel to be established between actors, i.e.
+at least up to `onboarding_anchor_receive()`.
+
+Parameters:
+- `wallet_handle`: i.e. `actor['wallet']`
+- `counterparty_key`
+- `from_to_verkey`
+- `message_json`: message in JSON format
+
+Returns:
+- `authcrypted_message`
+
+<br>
+
+```python
+auth_decrypt(wallet_handle, key, message)
+```
+Decrypts and validates an authcrypted message.
+
+Parameters:
+- `wallet_handle`
+- `counterparty_key`
+- `message`
+
+Returns:
+- `from_verkey`: verification key
+- `decrypted_message_string`
+- `decrypted_message_json`
+
+<br>
+
 ### Schema
 
 ```python
