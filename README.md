@@ -30,6 +30,9 @@
     ANVIL bridges Fetch.AI and Sovrin, bringing trusted agents to the Open Economic Framework.
     <br>
     In short, ANVIL mitigates risk in AEA negotiations with verifiable claims.
+    <br>
+    [E2E encryption demo: unrivalled security with Sovrin's pairwise channels.](./anvil/sovrin/e2edemo.py)
+    <br>
 </p>
 
 ## Requirements
