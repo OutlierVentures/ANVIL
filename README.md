@@ -141,6 +141,7 @@ ANVIL uses Sovrin's authenticated, encrypted, pairwise secure channels. The setu
     <img src="./assets/secure_channel.png" width="300" />
 </p>
 
+For an example of how to E2E encrypt with the ANVIL API, take a look at the [demo](https://github.com/OutlierVentures/ANVIL/blob/master/anvil/sovrin/e2edemo.py).
 
 ## Developer tools
 
