@@ -36,7 +36,7 @@ class Prover(OEFAgent):
         self.stop()
 
 
-    # Send data if Proposal accepted
+    # Notify on decline
     def on_decline(self, msg_id: int, dialogue_id: int, origin: str, target: int):
         print("[{0}]: Received decline from {1}.".format(self.public_key, origin))
         self.stop()
