@@ -40,8 +40,8 @@ class Verifier(OEFAgent):
             if abs(int(p.values['price'])) > self.price_threshold:
                 print('[{0}]: Declining Propose.'.format(self.public_key))
                 self.send_decline(msg_id, dialogue_id, origin, msg_id + 1)
-            self.stop()
-            return
+                self.stop()
+                return
         print('[{0}]: Accepting Propose.'.format(self.public_key))
         self.send_accept(msg_id, dialogue_id, origin, msg_id + 1)
         self.stop()
