@@ -37,11 +37,11 @@ class Verifier(OEFAgent):
         print('[{0}]: Received propose from agent {1}'.format(self.public_key, origin))
         for i, p in enumerate(proposals):
             print('[{0}]: Proposal {1}: {2}'.format(self.public_key, i, p.values))
-            if p.values['price'] > self.price_threshold:
+            if abs(int(p.values['price'])) > self.price_threshold:
                 print('[{0}]: Declining Propose.'.format(self.public_key))
                 self.send_decline(msg_id, dialogue_id, origin, msg_id + 1)
-                self.stop()
-                return
+            self.stop()
+            return
         print('[{0}]: Accepting Propose.'.format(self.public_key))
         self.send_accept(msg_id, dialogue_id, origin, msg_id + 1)
         self.stop()
