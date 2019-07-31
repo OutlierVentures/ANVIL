@@ -62,9 +62,6 @@ echo -e "${onyellow}Installing Sovrin...$endcolor"
 
 # Install Hyperledger Indy - large repo so fetch incrementally
 git clone https://github.com/hyperledger/indy-sdk.git --depth 1
-cd indy-sdk
-git fetch --deepen=50 && git fetch --deepen=50 && git fetch --deepen=50 && git fetch --unshallow
-cd ..
 mv indy-sdk indy
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
     sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 68DB5E88
