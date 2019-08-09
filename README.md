@@ -55,7 +55,7 @@ Stop Fetch node: `./scripts/stop_fetch.sh`
 
 Stop Sovrin node pool: `./scripts/stop_sovrin.sh`
 
-The Fetch node sits on port 3333.
+The Fetch node sits on port 10000.
 
 The Sovrin node pool sits on ports 9701 – 9708.
 
