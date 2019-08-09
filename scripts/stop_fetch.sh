@@ -13,5 +13,6 @@ error_report() {
 trap 'error_report $LINENO' ERR
 
 echo -e "${onyellow}Stopping Fetch node...$endcolor"
-docker stop $(docker ps | grep oef-core-image | awk '{ print $1 }')
+docker stop $(docker ps -a | grep oef-search | awk '{print $1}') &> /dev/null
+kill -INT $(ps | grep oef-mt-core | awk '{print $1}') &> /dev/null
 echo -e "${onred}Fetch node stopped.$endcolor"
