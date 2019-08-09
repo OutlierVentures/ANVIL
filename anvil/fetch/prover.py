@@ -67,7 +67,7 @@ if __name__ == '__main__':
     data_model_json = load_json_file(service_path + '/data_model.json')
     service_description_json = load_json_file(service_path + '/service_description.json')
     data_to_send_json = load_json_file(service_path + '/data_to_send.json')
-    agent = Prover('Prover', oef_addr = oef, oef_port = 3333, data_model_json = data_model_json, service_description_json = service_description_json, data_to_send_json = data_to_send_json, price = price)
+    agent = Prover('Prover', oef_addr = oef, oef_port = 10000, data_model_json = data_model_json, service_description_json = service_description_json, data_to_send_json = data_to_send_json, price = price)
     agent.connect()
     agent.register_service(0, agent.service)
     print('Fetch service offered...')

@@ -81,7 +81,7 @@ if __name__ == '__main__':
     for term in search_terms:
         query_array.append(Constraint(term, Eq(True)))
     query = Query(query_array)
-    agent = Verifier('Verifier', oef_addr = oef, oef_port = 3333, max_price = max_price)
+    agent = Verifier('Verifier', oef_addr = oef, oef_port = 10000, max_price = max_price)
     agent.connect()
     agent.search_services(0, query)
     try:

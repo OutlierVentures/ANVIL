@@ -24,7 +24,7 @@ if __name__ == '__main__':
     for term in search_terms:
         query_array.append(Constraint(term, Eq(True)))
     query = Query(query_array)
-    agent = Searcher('Searcher', oef_addr = oef, oef_port = 3333)
+    agent = Searcher('Searcher', oef_addr = oef, oef_port = 10000)
     agent.connect()
     agent.search_services(0, query)
     try:
