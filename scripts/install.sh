@@ -87,43 +87,36 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
                                libprotobuf-dev \
                                unzip \
                                tox
+    bazel version || echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list && \
+                     curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add - && \
+                     sudo apt-get update && \
+                     sudo apt-get install bazel
 elif [[ "$OSTYPE" == "darwin"* ]]; then
     brew upgrade protobuf || brew install protobuf
+    if brew ls --versions bazel >/dev/null; then
+        if [[ $(brew outdated bazel) ]]; then
+            HOMEBREW_NO_AUTO_UPDATE=1 brew upgrade bazelbuild/tap/bazel
+        fi
+    else
+        brew tap bazelbuild/tap
+        HOMEBREW_NO_AUTO_UPDATE=1 brew install bazelbuild/tap/bazel
+    fi
 fi
 pip3 install gitpython
 
-# Install OEFPython
-get_latest fetchai oef-sdk-python
-mv oef-sdk-python oefpy
-cd oefpy
-sudo python3 setup.py install
-python3 scripts/setup_test.py
-cd ..
+# Install OEF SDK
+pip3 install oef
 
-# Install OEFCore Docker image for running nodes
-get_latest fetchai oef-core
-mv oef-core oefcore
+# Install OEFCore for running nodes
+get_latest fetchai oef-mt-core
+mv oef-mt-core oefcore
 cd oefcore
-git checkout 146c833 # Use PR2 until Pluto stable on mac
-./oef-core-image/scripts/docker-build-img.sh
+bazel build mt-core/main/src/cpp:app
 cd ..
 
-
-# OEF doesn't auto-inflate
-set -e
-
-tryunzip() {
-	if [ -e $1/$2 ]; then
-		cd $1
-		yes | unzip $2
-	fi	
-}
-
-
-tryunzip /usr/local/lib/python3.7/dist-packages oef-0.2.0-py3.7.egg
-tryunzip /usr/local/lib/python3.7/site-packages oef-0.2.0-py3.7.egg
-tryunzip /usr/local/lib/python3.6/dist-packages oef-0.2.0-py3.6.egg
-tryunzip /usr/local/lib/python3.6/site-packages oef-0.2.0-py3.6.egg
+## Install OEF search (Pluto)
+get_latest oef-search-pluto
+mv oef-search-pluto oefsearch
 
 echo -e "${ongreen}ANVIL installed successfully.$endcolor"
 
